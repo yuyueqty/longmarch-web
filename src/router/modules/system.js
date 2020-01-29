@@ -54,6 +54,19 @@ const userRouter = {
       component: () => import('@/views/parameter/index'),
       name: 'ParameterManage',
       meta: { title: 'parameterManage', icon: 'clipboard', roles: ['sys:parameter:manage'] }
+    },
+    {
+      path: 'schedule',
+      component: () => import('@/views/job/schedule'),
+      name: 'ScheduleManage',
+      meta: { title: 'scheduleManage', icon: 'list', roles: ['job:schedule:manage'] }
+    },
+    {
+      path: 'joblog',
+      component: () => import('@/views/job/log'),
+      name: 'JoblogManage',
+      hidden: true,
+      meta: { title: 'joblogManage', icon: 'list' }
     }
   ]
 }

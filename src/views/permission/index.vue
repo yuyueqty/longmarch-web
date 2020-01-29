@@ -16,12 +16,12 @@
       row-key="id"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column :label="$t('permissionInfo.permissionName')" min-width="100px">
+      <el-table-column :label="$t('permissionInfo.permissionName')">
         <template slot-scope="scope">
           <span>{{ scope.row.permissionName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('permissionInfo.permissionString')" min-width="150px">
+      <el-table-column :label="$t('permissionInfo.permissionString')">
         <template slot-scope="scope">
           <span>{{ scope.row.permissionString }}</span>
         </template>
@@ -40,12 +40,12 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('permissionInfo.createTime')" align="center" min-width="160">
+      <el-table-column :label="$t('permissionInfo.createTime')" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" min-width="180">
+      <el-table-column :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:permission:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}

@@ -17,67 +17,37 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-      />
-      <el-table-column :label="$t('operateLogInfo.userName')" align="center" width="100">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item :label="$t('operateLogInfo.operateDetail')">
+              <span>{{ props.row.operateDetail }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('operateLogInfo.userName')">
         <template slot-scope="scope">
           <span>{{ scope.row.userName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.busType')" width="120">
+      <el-table-column :label="$t('operateLogInfo.busType')">
         <template slot-scope="scope">
           <span>{{ scope.row.busType }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.operateType')" width="120">
+      <el-table-column :label="$t('operateLogInfo.operateType')">
         <template slot-scope="scope">
           <span>{{ scope.row.operateType }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.operateDetail')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.operateDetail }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.operateTime')" width="160">
+      <el-table-column :label="$t('operateLogInfo.operateTime')">
         <template slot-scope="scope">
           <span>{{ scope.row.operateTime }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column :label="$t('table.actions')" align="center" width="100" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-permission="['sys:operatelog:show']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-            {{ $t('table.show') }}
-          </el-button>
-        </template>
-      </el-table-column> -->
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('operateLogInfo.roleName')" prop="roleName">
-          <el-input v-model="temp.roleName" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('operateLogInfo.description')" prop="description">
-          <el-input v-model="temp.description" />
-        </el-form-item>
-        <el-form-item :label="$t('operateLogInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -262,3 +232,18 @@ export default {
   }
 }
 </script>
+
+<style>
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+</style>

@@ -17,55 +17,32 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-      />
-      <el-table-column :label="$t('loginLogInfo.userName')" align="center" width="100">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item :label="$t('loginLogInfo.userAgent')">
+              <span>{{ props.row.userAgent }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('loginLogInfo.userName')">
         <template slot-scope="scope">
           <span>{{ scope.row.userName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('loginLogInfo.ip')" width="120">
+      <el-table-column :label="$t('loginLogInfo.ip')">
         <template slot-scope="scope">
           <span>{{ scope.row.ip }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('loginLogInfo.loginTime')" width="160">
+      <el-table-column :label="$t('loginLogInfo.loginTime')">
         <template slot-scope="scope">
           <span>{{ scope.row.loginTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('loginLogInfo.userAgent')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.userAgent }}</span>
-        </template>
-      </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('loginLogInfo.roleName')" prop="roleName">
-          <el-input v-model="temp.roleName" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('loginLogInfo.description')" prop="description">
-          <el-input v-model="temp.description" />
-        </el-form-item>
-        <el-form-item :label="$t('loginLogInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -250,3 +227,18 @@ export default {
   }
 }
 </script>
+
+<style>
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+</style>

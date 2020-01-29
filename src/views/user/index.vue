@@ -23,57 +23,54 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item :label="$t('userInfo.headImgUrl')">
+              <img v-if="props.row.headImgUrl" style="margin-top: -10px;border-radius: 100px;width: 50px; height: 50px;" :src="props.row.headImgUrl" class="avatar">
+            </el-form-item>
+            <el-form-item :label="$t('userInfo.loginCount')">
+              <span>{{ props.row.loginCount }}</span>
+            </el-form-item>
+            <el-form-item :label="$t('userInfo.createTime')">
+              <span>{{ props.row.createTime }}</span>
+            </el-form-item>
+            <el-form-item :label="$t('userInfo.lastLoginTime')">
+              <span>{{ props.row.lastLoginTime }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column
         type="selection"
         width="55"
       />
-      <el-table-column :label="$t('userInfo.username')" width="100px">
+      <el-table-column :label="$t('userInfo.username')">
         <template slot-scope="scope">
           <span>{{ scope.row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('userInfo.roleNames')" min-width="100px">
+      <el-table-column :label="$t('userInfo.roleNames')">
         <template slot-scope="scope">
           <span>{{ scope.row.roleNames }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('userInfo.phone')" min-width="120px">
+      <el-table-column :label="$t('userInfo.phone')">
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('userInfo.status')" width="80px" align="center">
+      <el-table-column :label="$t('userInfo.status')" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
             <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('userInfo.loginCount')" width="80px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.loginCount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('userInfo.lastLoginTime')" width="180px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.lastLoginTime }}</span>
-        </template>
-      </el-table-column>
-      <!-- <el-table-column :label="$t('userInfo.createTime')" width="180px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.createTime }}</span>
-        </template>
-      </el-table-column> -->
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:user:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-if="row.userStatus=='0'" v-permission="['sys:user:publish']" class="filter-item" style="margin-left: 10px;" type="success" @click="handleModifyStatus(row,'published')">
-            {{ $t('table.publish') }}
-          </el-button>
-          <el-button v-if="row.userStatus=='1'" v-permission="['sys:user:draft']" class="filter-item" style="margin-left: 10px;" @click="handleModifyStatus(row,'draft')">
-            {{ $t('table.draft') }}
           </el-button>
           <el-button v-permission="['sys:user:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
             {{ $t('table.delete') }}
@@ -332,3 +329,18 @@ export default {
   }
 }
 </script>
+
+<style>
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+</style>

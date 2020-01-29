@@ -27,24 +27,24 @@
         type="selection"
         width="55"
       />
-      <el-table-column :label="$t('roleInfo.roleName')" width="100px">
+      <el-table-column :label="$t('roleInfo.roleName')">
         <template slot-scope="scope">
           <span>{{ scope.row.roleName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('roleInfo.description')" min-width="200px">
+      <el-table-column :label="$t('roleInfo.description')">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('roleInfo.status')" width="80px" align="center">
+      <el-table-column :label="$t('roleInfo.status')" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
             <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('roleInfo.createTime')" width="180px" align="center">
+      <el-table-column :label="$t('roleInfo.createTime')">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime }}</span>
         </template>
@@ -62,7 +62,7 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:80px;">
         <el-form-item :label="$t('roleInfo.roleName')" prop="roleName">
           <el-input v-model="temp.roleName" :disabled="dialogStatus==='update'" />
         </el-form-item>

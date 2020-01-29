@@ -70,7 +70,9 @@ export default {
     dictionaryManage: '字典管理',
     loginLogManage: '登录日志',
     operateLogManage: '操作日志',
-    parameterManage: '参数管理'
+    parameterManage: '参数管理',
+    scheduleManage: '任务管理',
+    joblogManage: '任务日志'
   },
   navbar: {
     dashboard: '首页',
@@ -143,7 +145,17 @@ export default {
     delete: '删除',
     cancel: '取 消',
     confirm: '确 定',
-    batchDelete: '批量删除'
+    batchDelete: '批量删除',
+    batchRun: '批量执行',
+    batchPause: '批量暂停',
+    batchResume: '批量恢复',
+    batchReset: '批量重置',
+    jobRun: '立即执行',
+    jobPause: '暂停',
+    jobResume: '恢复',
+    jobReset: '重置',
+    jobLog: '日志',
+    goBack: '返回'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -193,7 +205,7 @@ export default {
     createTime: '创建时间',
     roleNames: '角色名',
     loginCount: '登录次数',
-    lastLoginTime: '最后登录时间'
+    lastLoginTime: '登录时间'
   },
   roleInfo: {
     id: '角色ID',
@@ -262,5 +274,19 @@ export default {
     expireSeconds: '过期时间',
     defaultSet: '默认角色',
     roleName: '注册角色'
+  },
+  jobInfo: {
+    beanName: '类名称',
+    methodName: '方法名称',
+    params: '方法参数',
+    status: '任务状态',
+    count: '尝试次数',
+    remark: '备注',
+    error: '失败信息',
+    cronExpression: '表达式',
+    executeTime: '执行时间(毫秒)',
+    startTime: '开始时间',
+    endTime: '结束时间',
+    createTime: '创建时间'
   }
 }
