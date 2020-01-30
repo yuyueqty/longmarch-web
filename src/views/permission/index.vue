@@ -248,17 +248,36 @@ export default {
       })
     },
     handleDelete(row) {
-      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-        return obj.id
-      })
-      remove(_ids).then(() => {
-        this.getList()
-        this.dialogFormVisible = false
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【删除权限】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            remove(_ids).then(() => {
+              done()
+              this.getList()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.$message({
           type: 'success',
-          duration: 2000
+          message: '操作完成'
         })
       })
     },

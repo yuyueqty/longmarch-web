@@ -72,7 +72,10 @@ export default {
     operateLogManage: 'OperateLogManage',
     parameterManage: 'ParameterManage',
     scheduleManage: 'ScheduleManage',
-    joblogManage: 'JoblogManage'
+    joblogManage: 'JoblogManage',
+    cmsManage: 'CMSManage',
+    articleManage: 'ArticleManage',
+    categoryManage: 'CategoryManage'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -288,5 +291,21 @@ export default {
     startTime: 'Start Time',
     endTime: 'End Time',
     createTime: 'Create Time'
+  },
+  articleInfo: {
+    title: 'Title',
+    summary: 'Summary',
+    content: 'Content',
+    sourceUrl: 'SourceUrl',
+    imageUrl: 'Image Url',
+    author: 'Author',
+    publishTime: 'Publish Time',
+    publishStatus: 'Publish Status',
+    clicks: 'Clicks',
+    likes: 'Likes',
+    sort: 'Sort',
+    recommend: 'Recommend',
+    createTime: 'Create Time',
+    updateTime: 'Update Time'
   }
 }

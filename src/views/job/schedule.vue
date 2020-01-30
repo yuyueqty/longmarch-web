@@ -8,19 +8,19 @@
       <el-button v-permission="['job:schedule:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
-      <el-button v-permission="['job:schedule:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleDelete()">
+      <el-button v-permission="['job:schedule:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
         {{ $t('table.batchDelete') }}
       </el-button>
-      <el-button v-permission="['job:schedule:run']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleRun()">
+      <el-button v-permission="['job:schedule:run']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="success" @click="handleRun()">
         {{ $t('table.batchRun') }}
       </el-button>
-      <el-button v-permission="['job:schedule:pause']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handlePause()">
+      <el-button v-permission="['job:schedule:pause']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="info" @click="handlePause()">
         {{ $t('table.batchPause') }}
       </el-button>
-      <el-button v-permission="['job:schedule:resume']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleResume()">
+      <el-button v-permission="['job:schedule:resume']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleResume()">
         {{ $t('table.batchResume') }}
       </el-button>
-      <el-button v-permission="['job:schedule:reset']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleReset()">
+      <el-button v-permission="['job:schedule:reset']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset()">
         {{ $t('table.batchReset') }}
       </el-button>
     </div>
@@ -88,16 +88,16 @@
           <el-button v-permission="['job:schedule:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
             {{ $t('table.delete') }}
           </el-button>
-          <el-button v-permission="['job:schedule:run']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleRun(row)">
+          <el-button v-permission="['job:schedule:run']" class="filter-item" style="margin-left: 10px;" type="success" @click="handleRun(row)">
             {{ $t('table.jobRun') }}
           </el-button>
-          <el-button v-if="row.status" v-permission="['job:schedule:pause']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handlePause(row)">
+          <el-button v-if="row.status" v-permission="['job:schedule:pause']" class="filter-item" style="margin-left: 10px;" type="info" @click="handlePause(row)">
             {{ $t('table.jobPause') }}
           </el-button>
-          <el-button v-if="!row.status" v-permission="['job:schedule:resume']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleResume(row)">
+          <el-button v-if="!row.status" v-permission="['job:schedule:resume']" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleResume(row)">
             {{ $t('table.jobResume') }}
           </el-button>
-          <el-button v-permission="['job:schedule:reset']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleReset(row)">
+          <el-button v-permission="['job:schedule:reset']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset(row)">
             {{ $t('table.jobReset') }}
           </el-button>
           <el-button v-permission="['job:log:show']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleJobLog(row)">
@@ -153,11 +153,12 @@ export default {
   directives: { waves, permission },
   filters: {
     dictFirst(status, dict) {
+      const _status = status === true ? 2 : 1
       const statusMap = {}
       dict.forEach(item => {
         statusMap[item.value] = item.label
       })
-      return statusMap[status]
+      return statusMap[_status]
     }
   },
   data() {
@@ -312,70 +313,172 @@ export default {
       })
     },
     handleDelete(row) {
-      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-        return obj.id
-      })
-      remove(_ids).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【删除任务】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            remove(_ids).then(() => {
+              done()
+              this.getList()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.$message({
           type: 'success',
-          duration: 2000
+          message: '操作完成'
         })
       })
     },
     handleRun(row) {
-      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-        return obj.id
-      })
-      run(_ids).then(() => {
-        this.$notify({
-          title: '成功',
-          message: '立即执行完成',
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【立即执行任务】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            run(_ids).then(() => {
+              done()
+              this.getList()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.$message({
           type: 'success',
-          duration: 2000
+          message: '操作完成'
         })
       })
     },
     handlePause(row) {
-      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-        return obj.id
-      })
-      pause(_ids).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '暂停成功',
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【暂停任务】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            pause(_ids).then(() => {
+              done()
+              this.getList()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.$message({
           type: 'success',
-          duration: 2000
-        })
-      })
-    },
-    handleResume(row) {
-      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-        return obj.id
-      })
-      resume(_ids).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '恢复成功',
-          type: 'success',
-          duration: 2000
+          message: '操作完成'
         })
       })
     },
     handleReset(row) {
-      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-        return obj.id
-      })
-      reset(_ids).then(() => {
-        this.$notify({
-          title: '成功',
-          message: '重置成功',
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【重置任务】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            reset(_ids).then(() => {
+              done()
+              this.getList()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.$message({
           type: 'success',
-          duration: 2000
+          message: '操作完成'
+        })
+      })
+    },
+    handleResume(row) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【恢复任务】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            resume(_ids).then(() => {
+              done()
+              this.getList()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.$message({
+          type: 'success',
+          message: '操作完成'
         })
       })
     },

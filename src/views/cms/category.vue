@@ -1,15 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('dictionaryInfo.code')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('operateLogInfo.userName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
-      </el-button>
-      <el-button v-permission="['sys:dictionary:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-permission="['sys:dictionary:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
-        {{ $t('table.batchDelete') }}
       </el-button>
     </div>
     <el-table
@@ -23,94 +17,43 @@
       @sort-change="sortChange"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-      />
-      <el-table-column :label="$t('dictionaryInfo.code')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item :label="$t('operateLogInfo.operateDetail')">
+              <span>{{ props.row.operateDetail }}</span>
+            </el-form-item>
+          </el-form>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('dictionaryInfo.label')">
+      <el-table-column :label="$t('operateLogInfo.userName')">
         <template slot-scope="scope">
-          <span>{{ scope.row.label }}</span>
+          <span>{{ scope.row.userName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('dictionaryInfo.value')" align="center">
+      <el-table-column :label="$t('operateLogInfo.busType')">
         <template slot-scope="scope">
-          <span>{{ scope.row.value }}</span>
+          <span>{{ scope.row.busType }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('dictionaryInfo.sort')" align="center">
+      <el-table-column :label="$t('operateLogInfo.operateType')">
         <template slot-scope="scope">
-          <span>{{ scope.row.sort }}</span>
+          <span>{{ scope.row.operateType }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('dictionaryInfo.description')">
+      <el-table-column :label="$t('operateLogInfo.operateTime')">
         <template slot-scope="scope">
-          <span>{{ scope.row.description }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('dictionaryInfo.status')" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
-            <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('dictionaryInfo.createTime')" width="160">
-        <template slot-scope="scope">
-          <span>{{ scope.row.createTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-permission="['sys:dictionary:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-permission="['sys:dictionary:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
+          <span>{{ scope.row.operateTime }}</span>
         </template>
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('dictionaryInfo.code')" prop="code">
-          <el-input v-model="temp.code" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.label')" prop="label">
-          <el-input v-model="temp.label" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.value')" prop="value">
-          <el-input v-model="temp.value" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.description')" prop="description">
-          <el-input v-model="temp.description" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import permission from '@/directive/permission/index.js'
-import { fetchList, create, update, remove } from '@/api/SysDictionary'
+import { fetchList, create, update, remove } from '@/api/SysOperateLog'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -268,36 +211,17 @@ export default {
       })
     },
     handleDelete(row) {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '提示',
-        message: h('p', null, [
-          h('span', null, '【删除字典】操作，是否继续? ')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-              return obj.id
-            })
-            remove(_ids).then(() => {
-              done()
-              this.getList()
-              instance.confirmButtonLoading = false
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
-        this.$message({
+      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+        return obj.id
+      })
+      remove(_ids).then(() => {
+        this.getList()
+        this.dialogFormVisible = false
+        this.$notify({
+          title: '成功',
+          message: '删除成功',
           type: 'success',
-          message: '操作完成'
+          duration: 2000
         })
       })
     },
@@ -308,3 +232,18 @@ export default {
   }
 }
 </script>
+
+<style>
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+</style>

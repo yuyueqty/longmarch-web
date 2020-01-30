@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function fetchList(data) {
   return request({
-    url: '/cms/article/search',
+    url: '/cms/category/search',
     method: 'post',
     data
   })
@@ -10,7 +10,7 @@ export function fetchList(data) {
 
 export function create(data) {
   return request({
-    url: '/cms/article/create',
+    url: '/cms/category/create',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function create(data) {
 
 export function update(data) {
   return request({
-    url: '/cms/article/update',
+    url: '/cms/category/update',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function update(data) {
 
 export function remove(data) {
   return request({
-    url: '/cms/article/delete',
+    url: '/cms/category/delete',
     method: 'post',
     data
   })

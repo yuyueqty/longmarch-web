@@ -72,7 +72,10 @@ export default {
     operateLogManage: '操作日志',
     parameterManage: '参数管理',
     scheduleManage: '任务管理',
-    joblogManage: '任务日志'
+    joblogManage: '任务日志',
+    cmsManage: '内容管理',
+    articleManage: '文章管理',
+    categoryManage: '分类管理'
   },
   navbar: {
     dashboard: '首页',
@@ -150,7 +153,7 @@ export default {
     batchPause: '批量暂停',
     batchResume: '批量恢复',
     batchReset: '批量重置',
-    jobRun: '立即执行',
+    jobRun: '执行',
     jobPause: '暂停',
     jobResume: '恢复',
     jobReset: '重置',
@@ -288,5 +291,21 @@ export default {
     startTime: '开始时间',
     endTime: '结束时间',
     createTime: '创建时间'
+  },
+  articleInfo: {
+    title: '标题',
+    summary: '摘要',
+    content: '内容',
+    sourceUrl: '来源地址',
+    imageUrl: '封面图片',
+    author: '作者',
+    publishTime: '发布时间',
+    publishStatus: '发布状态',
+    clicks: '点击次数',
+    likes: '点赞次数',
+    sort: '排序',
+    recommend: '推荐',
+    createTime: '创建时间',
+    updateTime: '更新时间'
   }
 }
