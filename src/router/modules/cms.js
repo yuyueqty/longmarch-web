@@ -20,6 +20,20 @@ const cmsRouter = {
       meta: { title: 'articleManage', icon: 'form', roles: ['cms:article:manage'] }
     },
     {
+      path: 'create',
+      component: () => import('@/views/cms/create'),
+      name: 'CreateArticle',
+      meta: { title: '创建文章', icon: 'edit' },
+      hidden: true
+    },
+    {
+      path: 'edit/:id(\\d+)',
+      component: () => import('@/views/cms/edit'),
+      name: 'EditArticle',
+      meta: { title: '编辑文章', noCache: true, activeMenu: '/cms/article' },
+      hidden: true
+    },
+    {
       path: 'category',
       component: () => import('@/views/cms/category'),
       name: 'CategoryManage',

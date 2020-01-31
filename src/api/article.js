@@ -8,6 +8,13 @@ export function fetchList(data) {
   })
 }
 
+export function show(id) {
+  return request({
+    url: '/cms/article/show/' + id,
+    method: 'get'
+  })
+}
+
 export function create(data) {
   return request({
     url: '/cms/article/create',
@@ -28,6 +35,14 @@ export function remove(data) {
   return request({
     url: '/cms/article/delete',
     method: 'post',
+    data
+  })
+}
+
+export function loadCategory(data) {
+  return request({
+    url: '/cms/article/loadCategory',
+    method: 'get',
     data
   })
 }

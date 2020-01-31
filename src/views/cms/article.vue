@@ -5,7 +5,7 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-permission="['cms:article:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button v-permission="['cms:article:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="$router.push({name:'CreateArticle'})">
         {{ $t('table.add') }}
       </el-button>
       <el-button v-permission="['cms:article:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
@@ -26,8 +26,11 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item :label="$t('articleInfo.summary')">
+              <span>{{ props.row.summary }}</span>
+            </el-form-item>
             <el-form-item :label="$t('articleInfo.imageUrl')">
-              <img v-if="props.row.imageUrl" style="margin-top: -10px;border-radius: 100px;width: 50px; height: 50px;" :src="props.row.imageUrl" class="avatar">
+              <img v-if="props.row.imageUrl" style="width: 50px; height: 50px;" :src="props.row.imageUrl" class="avatar">
             </el-form-item>
             <el-form-item :label="$t('articleInfo.sourceUrl')">
               <span>{{ props.row.sourceUrl }}</span>
@@ -51,7 +54,7 @@
         type="selection"
         width="55"
       />
-      <el-table-column :label="$t('articleInfo.title')">
+      <el-table-column :label="$t('articleInfo.title')" width="250px">
         <template slot-scope="scope">
           <span>{{ scope.row.title }}</span>
         </template>
@@ -59,11 +62,6 @@
       <el-table-column :label="$t('articleInfo.author')">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('articleInfo.publishTime')" width="160px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.publishTime }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('articleInfo.publishStatus')" align="center">
@@ -80,11 +78,16 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('articleInfo.publishTime')" width="160px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.publishTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button v-permission="['cms:article:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
+          <router-link :to="'/cms/edit/'+row.id">
+            <el-button v-permission="['cms:article:update']" class="filter-item" style="margin-left: 10px;" type="primary">{{ $t('table.edit') }}</el-button>
+          </router-link>
           <el-button v-permission="['cms:article:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
             {{ $t('table.delete') }}
           </el-button>
@@ -92,50 +95,6 @@
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('articleInfo.username')" prop="username">
-          <el-input v-model="temp.username" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('articleInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-tooltip class="item" effect="dark" :content="$t('contentMessage.roleMsg')" placement="top">
-          <el-form-item :label="$t('contentMessage.roleLabel')" prop="roleIds">
-            <el-select v-model="selectedRoles" multiple :placeholder="$t('contentMessage.select')">
-              <el-option
-                v-for="item in roleList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-tooltip>
-        <el-form-item :label="$t('articleInfo.headImgUrl')" prop="headImgUrl">
-          <el-upload
-            class="avatar-uploader"
-            :action="uploadActionUrl"
-            :show-file-list="false"
-            :with-credentials="true"
-            :on-success="handlePictureCardPreview"
-          >
-            <img v-if="temp.headImgUrl" style="margin-top: 6px;border-radius: 100px;width: 100px; height: 100px" :src="temp.headImgUrl" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
-          </el-upload>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -373,6 +332,6 @@ export default {
   .demo-table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 50%;
+    width: 100%;
   }
 </style>

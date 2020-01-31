@@ -1,66 +1,103 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('operateLogInfo.userName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-    </div>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item :label="$t('operateLogInfo.operateDetail')">
-              <span>{{ props.row.operateDetail }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.userName')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.userName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.busType')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.busType }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.operateType')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.operateType }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.operateTime')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.operateTime }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <el-card class="box-card">
+          <div class="grid-content bg-purple">
+            <el-form ref="dataForm" :rules="rules" :model="temp" label-width="80px">
+              <el-form-item :label="$t('categoryInfo.categoryName')" prop="categoryName">
+                <el-input v-model="temp.categoryName" />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.status')">
+                <el-select v-model="temp.status" class="filter-item">
+                  <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.remark')" prop="remark">
+                <el-input v-model="temp.remark" />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.icon')" prop="icon">
+                <el-input v-model="temp.icon" />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.redirectUrl')" prop="redirectUrl">
+                <el-input v-model="temp.redirectUrl" />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.upMenus')">
+                <el-cascader
+                  v-model="selectedPids"
+                  clearable
+                  expand-trigger="hover"
+                  change-on-select
+                  :options="list"
+                  :props="{ value: 'id', label: 'categoryName' }"
+                  @change="handleChange"
+                />
+              </el-form-item>
+            </el-form>
+            <div>
+              <el-button v-if="dialogStatus=='create'" v-permission="['cms:category:create']" type="primary" @click="createData">
+                {{ $t('table.add') }}
+              </el-button>
+              <el-button v-else v-permission="['cms:category:update']" type="primary" @click="updateData(temp)">
+                {{ $t('table.edit') }}
+              </el-button>
+              <el-button type="warning" @click="resetForm()">
+                {{ $t('table.reset') }}
+              </el-button>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="16">
+        <el-card class="box-card">
+          <div class="grid-content bg-purple">
+            <el-table :data="list" style="width: 100%;margin-bottom: 20px;" row-key="id">
+              <el-table-column :label="$t('categoryInfo.categoryName')">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.categoryName }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('categoryInfo.remark')">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.remark }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('categoryInfo.status')" align="center">
+                <template slot-scope="scope">
+                  <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
+                    <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
+                <template slot-scope="{row}">
+                  <el-button type="text" @click="handleCreateChildren(row)">
+                    {{ $t('table.addChildren') }}
+                  </el-button>
+                  <el-button v-permission="['cms:category:update']" class="filter-item" style="margin-left: 10px;" type="text" @click="handleUpdate(row)">
+                    {{ $t('table.edit') }}
+                  </el-button>
+                  <el-button v-permission="['cms:category:delete']" class="filter-item" style="margin-left: 10px;" type="text" @click="handleDelete(row)">
+                    {{ $t('table.delete') }}
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
 import permission from '@/directive/permission/index.js'
-import { fetchList, create, update, remove } from '@/api/SysOperateLog'
+import { treeList, create, update, remove, getPIds } from '@/api/Category'
 import waves from '@/directive/waves'
-import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'RoleManage',
-  components: { Pagination },
+  name: 'PermissionManage',
   directives: { waves, permission },
   filters: {
     dictFirst(status, dict) {
@@ -74,42 +111,28 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
-      total: 0,
+      list: [],
       listLoading: true,
-      listQuery: {
-        current: 1,
-        size: 10,
-        fuzzySearch: undefined,
-        sort: '+id'
-      },
       ids: [],
+      dialogStatus: 'create',
       temp: {
         id: null,
-        code: null,
-        value: null,
-        label: null,
+        parentId: null,
+        categoryName: null,
+        redirectUrl: null,
+        icon: null,
         sort: null,
-        description: null,
         status: null,
-        createTime: null
-      },
-      dialogFormVisible: false,
-      dialogStatus: 'create',
-      textMap: {
-        update: '编辑字典',
-        create: '添加字典'
+        remark: null
       },
       rules: {
-        code: [{ required: true, message: 'code is required', trigger: 'blur' }]
-      }
+        categoryName: [{ required: true, message: '请填写分类名称', trigger: 'blur' }]
+      },
+      selectedPids: []
     }
   },
   computed: {
-    ...mapGetters(['dictionary']),
-    batchDeleteButtonStatus() {
-      return this.ids.length <= 0
-    }
+    ...mapGetters(['dictionary'])
   },
   created() {
     this.getList()
@@ -117,58 +140,44 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.records
-        this.total = response.data.total
+      treeList().then(response => {
+        this.list = response.data
         this.listLoading = false
       })
     },
-    handleFilter() {
-      this.listQuery.current = 1
-      this.getList()
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
+    resetForm() {
+      this.dialogStatus = 'create'
+      this.selectedPids = []
+      this.resetTemp()
     },
     resetTemp() {
       this.temp = {
         id: null,
-        username: null,
-        status: null
+        parentId: null,
+        categoryName: null,
+        redirectUrl: null,
+        icon: null,
+        sort: null,
+        status: null,
+        remark: null
       }
     },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+    handleCreateChildren(row) {
+      getPIds(row.id).then(response => {
+        this.dialogStatus = 'create'
+        this.resetTemp()
+        this.selectedPids = response.data
+        this.selectedPids.push(row.id)
       })
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.parentId = this.selectedPids[this.selectedPids.length - 1]
           create(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
+            this.getList()
             this.$notify({
               title: '成功',
               message: '创建成功',
@@ -180,17 +189,25 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+      getPIds(row.id).then(response => {
+        this.temp = Object.assign({}, row)
+        this.dialogStatus = 'update'
+        this.dialogFormVisible = true
+        this.$nextTick(() => {
+          this.$refs['dataForm'].clearValidate()
+          if (response.data.length === 1 && response.data[0] === row.id) {
+            this.selectedPids = []
+          } else {
+            this.selectedPids = response.data
+          }
+        })
       })
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
+          tempData.parentId = this.selectedPids[this.selectedPids.length - 1]
           update(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
@@ -199,6 +216,7 @@ export default {
                 break
               }
             }
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -211,39 +229,45 @@ export default {
       })
     },
     handleDelete(row) {
-      const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-        return obj.id
-      })
-      remove(_ids).then(() => {
-        this.getList()
-        this.dialogFormVisible = false
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【删除权限】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            remove(_ids).then(() => {
+              done()
+              this.getList()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.$message({
           type: 'success',
-          duration: 2000
+          message: '操作完成'
         })
       })
     },
     handleSelectionChange(val) {
       this.ids = val
-      console.log(this.ids)
+    },
+    handleChange(value) {
+      this.selectedPids = value
     }
   }
 }
 </script>
-
-<style>
-  .demo-table-expand {
-    font-size: 0;
-  }
-  .demo-table-expand label {
-    width: 90px;
-    color: #99a9bf;
-  }
-  .demo-table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
-</style>

@@ -98,7 +98,7 @@
             {{ $t('table.jobResume') }}
           </el-button>
           <el-button v-permission="['job:schedule:reset']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset(row)">
-            {{ $t('table.jobReset') }}
+            {{ $t('table.reset') }}
           </el-button>
           <el-button v-permission="['job:log:show']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleJobLog(row)">
             {{ $t('table.jobLog') }}

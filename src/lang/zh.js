@@ -156,9 +156,10 @@ export default {
     jobRun: '执行',
     jobPause: '暂停',
     jobResume: '恢复',
-    jobReset: '重置',
+    reset: '重置',
     jobLog: '日志',
-    goBack: '返回'
+    goBack: '返回',
+    addChildren: '添加子分类'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -307,5 +308,16 @@ export default {
     recommend: '推荐',
     createTime: '创建时间',
     updateTime: '更新时间'
+  },
+  categoryInfo: {
+    categoryName: '分类名称',
+    parentId: '上层节点',
+    redirectUrl: '跳转地址',
+    icon: '分类图标',
+    sort: '排序',
+    status: '分类状态',
+    remark: '分类详情',
+    createTime: '创建时间',
+    upMenus: '上级菜单'
   }
 }

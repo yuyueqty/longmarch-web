@@ -156,9 +156,10 @@ export default {
     jobRun: 'Job Run',
     jobPause: 'Job Pause',
     jobResume: 'Job Resume',
-    jobReset: 'Job Reset',
+    reset: 'Reset',
     jobLog: 'Job Log',
-    goBack: 'Go Back'
+    goBack: 'Go Back',
+    addChildren: 'Add Children'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -307,5 +308,16 @@ export default {
     recommend: 'Recommend',
     createTime: 'Create Time',
     updateTime: 'Update Time'
+  },
+  categoryInfo: {
+    categoryName: 'Category Name',
+    parentId: 'Parent Id',
+    redirectUrl: 'Redirect Url',
+    icon: 'Icon',
+    sort: 'Sort',
+    status: 'Status',
+    remark: 'Remark',
+    createTime: 'Create Time',
+    upMenus: 'Up Menus'
   }
 }
