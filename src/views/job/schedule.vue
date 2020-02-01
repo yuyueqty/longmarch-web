@@ -121,9 +121,6 @@
         <el-form-item :label="$t('jobInfo.cronExpression')" prop="cronExpression">
           <el-input v-model="temp.cronExpression" />
         </el-form-item>
-        <el-form-item :label="$t('jobInfo.count')" prop="count">
-          <el-input-number v-model="num" :num="1" :min="0" :max="10" @change="handleChange" />
-        </el-form-item>
         <el-form-item :label="$t('jobInfo.remark')" prop="remark">
           <el-input v-model="temp.remark" />
         </el-form-item>
@@ -166,7 +163,6 @@ export default {
       tableKey: 0,
       list: null,
       total: 0,
-      num: 3,
       listLoading: true,
       listQuery: {
         current: 1,
@@ -253,7 +249,6 @@ export default {
     },
     handleCreate() {
       this.resetTemp()
-      this.temp.count = this.num
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.checkStrictly = true
@@ -281,7 +276,6 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
       this.dialogStatus = 'update'
-      this.temp.count = this.num
       this.dialogFormVisible = true
       this.checkStrictly = true
       this.$nextTick(() => {
@@ -487,9 +481,6 @@ export default {
     },
     handleSelectionChange(val) {
       this.ids = val
-    },
-    handleChange(value) {
-      this.temp.count = value
     }
   }
 }

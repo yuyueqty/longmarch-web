@@ -80,9 +80,23 @@
       <el-tab-pane :label="$t('parameterInfo.defaultSet')" name="default_user_role">
         <el-form ref="dataForm" :model="parameterObj" :rules="rules" label-width="100px" class="demo-ruleForm">
           <el-input v-model="parameterObj.paramId" type="hidden" />
-          <el-input v-model="parameterObj.paramValue.roleId" type="hidden" />
+          <!-- <el-input v-model="parameterObj.paramValue.roleId" type="hidden" />
+          <el-form-item :label="$t('parameterInfo.roleId')" prop="roleId">
+            <el-input v-model="parameterObj.paramValue.roleId" />
+          </el-form-item>
           <el-form-item :label="$t('parameterInfo.roleName')" prop="roleName">
             <el-input v-model="parameterObj.paramValue.roleName" />
+          </el-form-item> -->
+          <!-- <el-input v-model="parameterObj.paramValue.roleId" type="hidden" /> -->
+          <el-form-item :label="$t('parameterInfo.roleName')" prop="roleName">
+            <el-select v-model="parameterObj.paramValue.roleId" placeholder="请选择">
+              <el-option
+                v-for="item in roles"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-button v-permission="['sys:parameter:update']" type="primary" @click="updateData('dataForm')">{{ $t('parameterInfo.buttonName') }}</el-button>
@@ -122,7 +136,16 @@ export default {
       uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload',
       rules: {
         // title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      }
+      },
+      roles: [
+        {
+          value: '1',
+          label: '管理员组'
+        }, {
+          value: '2',
+          label: '普通用户组'
+        }
+      ]
     }
   },
   computed: {

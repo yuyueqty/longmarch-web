@@ -58,9 +58,6 @@
                 @change="handleChange"
               />
             </el-form-item>
-            <el-form-item label="文章发布时间" class="postInfo-container-item">
-              <el-date-picker v-model="postForm.publishTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择发布时间" />
-            </el-form-item>
             <el-form-item label="文章发布状态" class="postInfo-container-item">
               <el-select v-model="postForm.publishStatus" class="filter-item">
                 <el-option v-for="item in dictionary.publish_status_dict" :key="item.value" :label="item.label" :value="item.value" />
@@ -69,9 +66,6 @@
             <el-form-item label="推荐文章" class="postInfo-container-item">
               <el-checkbox v-model="isRecommend" />
             </el-form-item>
-            <el-form-item label="文章作者（默认为当前登录用户）" class="postInfo-container-item">
-              <el-input v-model="postForm.author" type="text" autosize placeholder="请输入文章作者" />
-            </el-form-item>
             <el-form-item label="标签（多个标签用逗号分隔）">
               <el-input
                 v-model="postForm.label"
@@ -79,6 +73,12 @@
                 :rows="2"
                 placeholder="请输入标签"
               />
+            </el-form-item>
+            <el-form-item label="文章作者（默认为当前登录用户）" class="postInfo-container-item">
+              <el-input v-model="postForm.author" type="text" autosize placeholder="请输入文章作者" />
+            </el-form-item>
+            <el-form-item label="文章定时发布时间" class="postInfo-container-item">
+              <el-date-picker v-model="postForm.publishTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择发布时间" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -135,6 +135,7 @@ export default {
     ...mapGetters(['dictionary', 'name'])
   },
   created() {
+    this.postForm.author = this.name
     loadCategory().then((response) => {
       this.categoryList = response.data
     })

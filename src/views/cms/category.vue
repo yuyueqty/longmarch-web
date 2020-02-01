@@ -71,7 +71,7 @@
               </el-table-column>
               <el-table-column :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
                 <template slot-scope="{row}">
-                  <el-button type="text" @click="handleCreateChildren(row)">
+                  <el-button v-permission="['cms:category:create']" type="text" @click="handleCreateChildren(row)">
                     {{ $t('table.addChildren') }}
                   </el-button>
                   <el-button v-permission="['cms:category:update']" class="filter-item" style="margin-left: 10px;" type="text" @click="handleUpdate(row)">
