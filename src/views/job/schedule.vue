@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('jobInfo.beanName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('jobInfo.beanName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
@@ -63,14 +63,9 @@
         type="selection"
         width="55"
       />
-      <el-table-column :label="$t('jobInfo.beanName')">
+      <el-table-column :label="$t('jobInfo.remark')">
         <template slot-scope="scope">
-          <span>{{ scope.row.beanName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('jobInfo.methodName')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.methodName }}</span>
+          <span>{{ scope.row.remark }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('jobInfo.status')" align="center">

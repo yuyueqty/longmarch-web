@@ -31,3 +31,10 @@ export function remove(data) {
     data
   })
 }
+
+export function loadDictionaryCode() {
+  return request({
+    url: '/sys/dictionary/loadDictionaryCode',
+    method: 'get'
+  })
+}

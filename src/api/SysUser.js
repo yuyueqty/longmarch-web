@@ -38,3 +38,19 @@ export function loadRoles() {
     method: 'get'
   })
 }
+
+export function changePassword(data) {
+  return request({
+    url: '/sys/user/changePassword',
+    method: 'post',
+    data
+  })
+}
+
+export function changeStatus(data) {
+  return request({
+    url: '/sys/user/changeStatus',
+    method: 'post',
+    data
+  })
+}

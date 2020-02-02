@@ -1,10 +1,37 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('articleInfo.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
+      <el-form :inline="true" :model="listQuery" class="demo-form-inline">
+        <el-form-item :label="$t('articleInfo.publishStatus')" class="postInfo-container-item">
+          <el-select v-model="listQuery.publishStatus" clearable class="filter-item">
+            <el-option v-for="item in dictionary.publish_status_dict" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('articleInfo.recommend')" class="postInfo-container-item">
+          <el-select v-model="listQuery.recommend" clearable class="filter-item">
+            <el-option v-for="item in dictionary.recommend_dict" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('articleInfo.articleCategory')">
+          <el-cascader
+            v-model="categoryIds"
+            clearable
+            expand-trigger="hover"
+            change-on-select
+            :options="categoryList"
+            :props="{ value: 'id', label: 'categoryName' }"
+            @change="handleChange"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('articleInfo.title')">
+          <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('articleInfo.title')" />
+        </el-form-item>
+        <el-form-item>
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+            {{ $t('table.search') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
       <el-button v-permission="['cms:article:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="$router.push({name:'CreateArticle'})">
         {{ $t('table.add') }}
       </el-button>
@@ -59,9 +86,9 @@
           <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('articleInfo.author')">
+      <el-table-column :label="$t('articleInfo.articleCategory')">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.categoryName }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('articleInfo.publishStatus')" align="center">
@@ -100,7 +127,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
-import { fetchList, create, update, remove, loadRoles } from '@/api/Article'
+import { fetchList, create, update, remove, loadRoles, loadCategory } from '@/api/Article'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -124,11 +151,15 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      categoryList: [],
+      categoryIds: [],
       listQuery: {
         current: 1,
         size: 10,
-        fuzzySearch: undefined,
-        sort: '+id'
+        fuzzySearch: null,
+        publishStatus: null,
+        recommend: null,
+        categoryId: null
       },
       ids: [],
       temp: {
@@ -143,8 +174,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: 'create',
       textMap: {
-        update: '编辑用户',
-        create: '添加用户'
+        update: '编辑文章',
+        create: '添加文章'
       },
       rules: {
         username: [{ required: true, message: 'username is required', trigger: 'blur' }]
@@ -162,14 +193,21 @@ export default {
   },
   created() {
     this.getList()
+    this.loadCategory()
   },
   methods: {
     getList() {
       this.listLoading = true
+      this.listQuery.categoryId = this.categoryIds[this.categoryIds.length - 1]
       fetchList(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
+      })
+    },
+    loadCategory() {
+      loadCategory().then((response) => {
+        this.categoryList = response.data
       })
     },
     handleFilter() {
@@ -316,6 +354,9 @@ export default {
     },
     handlePictureCardPreview(response, file, fileList) {
       this.temp.headImgUrl = response.data.url
+    },
+    handleChange(value) {
+      this.categoryIds = value
     }
   }
 }

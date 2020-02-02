@@ -1,10 +1,25 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('dictionaryInfo.code')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
+      <el-form :inline="true" :model="listQuery" class="demo-form-inline">
+        <el-form-item class="postInfo-container-item">
+          <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('dictionaryInfo.label')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        </el-form-item>
+        <el-form-item class="postInfo-container-item">
+          <el-select v-model="listQuery.code" clearable placeholder="请选择字典编码">
+            <el-option
+              v-for="item in dictionaryCodeList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          {{ $t('table.search') }}
+        </el-button>
+      </el-form>
+
       <el-button v-permission="['sys:dictionary:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
@@ -27,7 +42,7 @@
         type="selection"
         width="55"
       />
-      <el-table-column :label="$t('dictionaryInfo.code')">
+      <el-table-column :label="$t('dictionaryInfo.code')" width="150">
         <template slot-scope="scope">
           <span>{{ scope.row.code }}</span>
         </template>
@@ -47,7 +62,7 @@
           <span>{{ scope.row.sort }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('dictionaryInfo.description')">
+      <el-table-column :label="$t('dictionaryInfo.description')" width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
         </template>
@@ -110,7 +125,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
-import { fetchList, create, update, remove } from '@/api/SysDictionary'
+import { fetchList, create, update, remove, loadDictionaryCode } from '@/api/SysDictionary'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -134,11 +149,12 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      dictionaryCodeList: null,
       listQuery: {
         current: 1,
         size: 10,
         fuzzySearch: undefined,
-        sort: '+id'
+        code: null
       },
       ids: [],
       temp: {
@@ -170,6 +186,7 @@ export default {
   },
   created() {
     this.getList()
+    this.loadDictionaryCode()
   },
   methods: {
     getList() {
@@ -178,6 +195,11 @@ export default {
         this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
+      })
+    },
+    loadDictionaryCode() {
+      loadDictionaryCode().then(response => {
+        this.dictionaryCodeList = response.data
       })
     },
     handleFilter() {

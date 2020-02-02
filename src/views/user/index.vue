@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('userInfo.username')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('userInfo.username')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
@@ -62,12 +62,22 @@
       </el-table-column>
       <el-table-column :label="$t('userInfo.status')" align="center">
         <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            :active-value="0"
+            :inactive-value="1"
+            @change="changeSwitch($event, scope.row.id)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('userInfo.status')" align="center">
+        <template slot-scope="scope">
           <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
             <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="200" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:user:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -75,10 +85,31 @@
           <el-button v-permission="['sys:user:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
             {{ $t('table.delete') }}
           </el-button>
+          <el-button v-permission="['sys:user:change:password']" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleChangePassword(row)">
+            {{ $t('table.changePassword') }}
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible_2">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
+        <el-form-item :label="$t('userInfo.username')" prop="username">
+          <el-input v-model="temp.username" disabled />
+        </el-form-item>
+        <el-form-item :label="$t('userInfo.password')" prop="password">
+          <el-input v-model="temp.password" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_2 = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="changePassword()">
+          {{ $t('table.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('userInfo.username')" prop="username">
@@ -128,7 +159,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
-import { fetchList, create, update, remove, loadRoles } from '@/api/SysUser'
+import { fetchList, create, update, remove, loadRoles, changePassword, changeStatus } from '@/api/SysUser'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -152,6 +183,7 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      isStatus: false,
       listQuery: {
         current: 1,
         size: 10,
@@ -169,10 +201,12 @@ export default {
         roleIds: null
       },
       dialogFormVisible: false,
+      dialogFormVisible_2: false,
       dialogStatus: 'create',
       textMap: {
         update: '编辑用户',
-        create: '添加用户'
+        create: '添加用户',
+        change_password: '修改用户密码'
       },
       rules: {
         username: [{ required: true, message: 'username is required', trigger: 'blur' }]
@@ -248,7 +282,7 @@ export default {
         if (valid) {
           this.temp.roleIds = this.selectedRoles.join()
           create(this.temp).then(() => {
-            this.list.unshift(this.temp)
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -281,6 +315,31 @@ export default {
           const tempData = Object.assign({}, this.temp)
           tempData.roleIds = this.selectedRoles.join()
           update(tempData).then(() => {
+            this.getList()
+            this.dialogFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    handleChangePassword(row) {
+      this.temp = Object.assign({}, row)
+      this.dialogStatus = 'change_password'
+      this.dialogFormVisible_2 = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    changePassword() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp)
+          changePassword(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
@@ -289,7 +348,7 @@ export default {
               }
             }
             this.getList()
-            this.dialogFormVisible = false
+            this.dialogFormVisible_2 = false
             this.$notify({
               title: '成功',
               message: '更新成功',
@@ -344,6 +403,38 @@ export default {
     },
     handlePictureCardPreview(response, file, fileList) {
       this.temp.headImgUrl = response.data.url
+    },
+    changeSwitch($event, id) {
+      const o = { id: id, status: $event }
+      this.$confirm('【修改用户状态】操作，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        changeStatus(o).then(() => {
+          for (const v of this.list) {
+            if (v.id === id) {
+              v.status = o.status
+              break
+            }
+          }
+        })
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+      }).catch(() => {
+        for (const v of this.list) {
+          if (v.id === id) {
+            v.status = o.status === 1 ? 0 : 1
+            break
+          }
+        }
+        this.$message({
+          type: 'info',
+          message: '已取消修改'
+        })
+      })
     }
   }
 }

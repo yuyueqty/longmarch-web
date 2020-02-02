@@ -159,7 +159,8 @@ export default {
     reset: '重置',
     jobLog: '日志',
     goBack: '返回',
-    addChildren: '添加子分类'
+    addChildren: '添加子分类',
+    changePassword: '修改密码'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -202,7 +203,7 @@ export default {
   userInfo: {
     id: '用户ID',
     username: '用户名称',
-    password: '密码',
+    password: '用户密码',
     phone: '手机号',
     status: '用户状态',
     headImgUrl: '用户头像',
@@ -285,7 +286,7 @@ export default {
     params: '方法参数',
     status: '任务状态',
     count: '尝试次数',
-    remark: '备注',
+    remark: '任务描述',
     error: '失败信息',
     cronExpression: '表达式',
     executeTime: '执行时间(毫秒)',
@@ -294,7 +295,7 @@ export default {
     createTime: '创建时间'
   },
   articleInfo: {
-    title: '标题',
+    title: '文章标题',
     summary: '摘要',
     content: '内容',
     sourceUrl: '来源地址',
@@ -307,7 +308,8 @@ export default {
     sort: '排序',
     recommend: '推荐',
     createTime: '创建时间',
-    updateTime: '更新时间'
+    updateTime: '更新时间',
+    articleCategory: '文章分类'
   },
   categoryInfo: {
     categoryName: '分类名称',
