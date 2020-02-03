@@ -1,17 +1,12 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!-- <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('permissionInfo.permissionName')" style="width: 200px;" class="filter-item" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="getList">
-        {{ $t('table.search') }}
-      </el-button> -->
       <el-button v-permission="['sys:permission:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
     </div>
     <el-table
       :data="list"
-      border
       style="width: 100%;margin-bottom: 20px;"
       row-key="id"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
@@ -45,7 +40,7 @@
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
+      <el-table-column v-if="checkPermission(['sys:permission:update', 'sys:permission:delete'])" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:permission:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -103,6 +98,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
+import checkPermission from '@/utils/permission'
 import { treeList, create, update, remove, getPIds } from '@/api/SysPermission'
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
@@ -163,6 +159,7 @@ export default {
     this.getList()
   },
   methods: {
+    checkPermission,
     getList() {
       this.listLoading = true
       treeList().then(response => {
@@ -248,36 +245,25 @@ export default {
       })
     },
     handleDelete(row) {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '提示',
-        message: h('p', null, [
-          h('span', null, '【删除权限】操作，是否继续? ')
-        ]),
-        showCancelButton: true,
+      this.$confirm('【删除权限】操作，是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-              return obj.id
-            })
-            remove(_ids).then(() => {
-              done()
-              this.getList()
-              instance.confirmButtonLoading = false
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
+        type: 'warning'
+      }).then(() => {
+        const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+          return obj.id
+        })
+        remove(_ids).then(() => {
+          this.getList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+      }).catch(() => {
         this.$message({
-          type: 'success',
-          message: '操作完成'
+          type: 'info',
+          message: '已取消删除'
         })
       })
     },

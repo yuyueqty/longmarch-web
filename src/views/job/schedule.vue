@@ -28,8 +28,6 @@
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
-      border
-      fit
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
@@ -75,7 +73,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" width="600px" align="center" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['job:schedule:update', 'job:schedule:delete', 'job:schedule:run', 'job:schedule:pause', 'job:schedule:resume', 'job:schedule:reset', 'job:log:show'])" :label="$t('table.actions')" width="600px" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['job:schedule:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -134,6 +132,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
+import checkPermission from '@/utils/permission'
 import { searchSchedule, create, update, remove, run, resume, pause, reset } from '@/api/JobApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
@@ -197,6 +196,7 @@ export default {
     this.getList()
   },
   methods: {
+    checkPermission,
     getList() {
       this.listLoading = true
       searchSchedule(this.listQuery).then(response => {

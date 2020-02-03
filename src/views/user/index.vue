@@ -16,8 +16,6 @@
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
-      border
-      fit
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
@@ -60,7 +58,7 @@
           <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('userInfo.status')" align="center">
+      <el-table-column v-if="checkPermission(['sys:user:update'])" :label="$t('userInfo.status')" align="center">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -77,7 +75,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['sys:user:update', 'sys:user:delete', 'sys:user:change:password'])" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:user:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -159,6 +157,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
+import checkPermission from '@/utils/permission'
 import { fetchList, create, update, remove, loadRoles, changePassword, changeStatus } from '@/api/SysUser'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
@@ -220,12 +219,16 @@ export default {
     ...mapGetters(['dictionary']),
     batchDeleteButtonStatus() {
       return this.ids.length <= 0
+    },
+    noActions() {
+      return checkPermission(['sys:user:update', 'sys:user:delete', 'sys:user:change:password'])
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    checkPermission,
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {

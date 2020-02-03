@@ -43,8 +43,6 @@
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
-      border
-      fit
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
@@ -110,7 +108,7 @@
           <span>{{ scope.row.publishTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['cms:article:update', 'cms:article:delete'])" :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <router-link :to="'/cms/edit/'+row.id">
             <el-button v-permission="['cms:article:update']" class="filter-item" style="margin-left: 10px;" type="primary">{{ $t('table.edit') }}</el-button>
@@ -127,6 +125,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
+import checkPermission from '@/utils/permission'
 import { fetchList, create, update, remove, loadRoles, loadCategory } from '@/api/Article'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
@@ -196,6 +195,7 @@ export default {
     this.loadCategory()
   },
   methods: {
+    checkPermission,
     getList() {
       this.listLoading = true
       this.listQuery.categoryId = this.categoryIds[this.categoryIds.length - 1]

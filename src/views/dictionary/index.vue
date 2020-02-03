@@ -19,7 +19,6 @@
           {{ $t('table.search') }}
         </el-button>
       </el-form>
-
       <el-button v-permission="['sys:dictionary:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
@@ -31,8 +30,6 @@
       :key="tableKey"
       v-loading="listLoading"
       :data="list"
-      border
-      fit
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
@@ -79,7 +76,7 @@
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['sys:dictionary:update', 'sys:dictionary:delete'])" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:dictionary:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -125,6 +122,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
+import checkPermission from '@/utils/permission'
 import { fetchList, create, update, remove, loadDictionaryCode } from '@/api/SysDictionary'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
@@ -189,6 +187,7 @@ export default {
     this.loadDictionaryCode()
   },
   methods: {
+    checkPermission,
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {

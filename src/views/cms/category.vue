@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col :span="8">
+      <el-col v-if="checkPermission(['cms:category:create', 'cms:category:update', 'cms:category:delete'])" :span="8">
         <el-card class="box-card">
           <div class="grid-content bg-purple">
             <el-form ref="dataForm" :rules="rules" :model="temp" label-width="80px">
@@ -69,7 +69,7 @@
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
+              <el-table-column v-if="checkPermission(['cms:category:create', 'cms:category:update', 'cms:category:delete'])" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
                 <template slot-scope="{row}">
                   <el-button v-permission="['cms:category:create']" type="text" @click="handleCreateChildren(row)">
                     {{ $t('table.addChildren') }}
@@ -92,6 +92,7 @@
 
 <script>
 import permission from '@/directive/permission/index.js'
+import checkPermission from '@/utils/permission'
 import { treeList, create, update, remove, getPIds } from '@/api/Category'
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
@@ -138,6 +139,7 @@ export default {
     this.getList()
   },
   methods: {
+    checkPermission,
     getList() {
       this.listLoading = true
       treeList().then(response => {
@@ -229,36 +231,25 @@ export default {
       })
     },
     handleDelete(row) {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '提示',
-        message: h('p', null, [
-          h('span', null, '【删除权限】操作，是否继续? ')
-        ]),
-        showCancelButton: true,
+      this.$confirm('【删除分类】操作，是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-              return obj.id
-            })
-            remove(_ids).then(() => {
-              done()
-              this.getList()
-              instance.confirmButtonLoading = false
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
+        type: 'warning'
+      }).then(() => {
+        const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+          return obj.id
+        })
+        remove(_ids).then(() => {
+          this.getList()
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+      }).catch(() => {
         this.$message({
-          type: 'success',
-          message: '操作完成'
+          type: 'info',
+          message: '已取消删除'
         })
       })
     },
