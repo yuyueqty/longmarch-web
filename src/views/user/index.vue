@@ -62,8 +62,8 @@
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
-            :active-value="0"
-            :inactive-value="1"
+            :active-value="1"
+            :inactive-value="0"
             @change="changeSwitch($event, scope.row.id)"
           />
         </template>
@@ -75,7 +75,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:user:update', 'sys:user:delete', 'sys:user:change:password'])" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['sys:user:update', 'sys:user:delete', 'sys:user:change:password'])" fixed="right" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:user:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -112,6 +112,9 @@
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('userInfo.username')" prop="username">
           <el-input v-model="temp.username" :disabled="dialogStatus==='update'" />
+        </el-form-item>
+        <el-form-item :label="$t('userInfo.phone')" prop="phone">
+          <el-input v-model="temp.phone" />
         </el-form-item>
         <el-form-item :label="$t('userInfo.status')">
           <el-select v-model="temp.status" class="filter-item">
@@ -186,8 +189,8 @@ export default {
       listQuery: {
         current: 1,
         size: 10,
-        fuzzySearch: undefined,
-        sort: '+id'
+        roleId: null,
+        fuzzySearch: undefined
       },
       ids: [],
       temp: {
@@ -231,10 +234,12 @@ export default {
     checkPermission,
     getList() {
       this.listLoading = true
+      this.listQuery.roleId = this.$route.query.roleId
       fetchList(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
+        this.$router.push({ name: 'UserManage' })
       })
     },
     handleFilter() {

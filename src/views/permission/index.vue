@@ -28,6 +28,16 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column v-if="checkPermission(['sys:permission:update'])" :label="$t('permissionInfo.status')" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            :active-value="1"
+            :inactive-value="0"
+            @change="changeSwitch($event, scope.row.id)"
+          />
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('permissionInfo.status')" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
@@ -35,12 +45,12 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('permissionInfo.createTime')" align="center">
+      <el-table-column :label="$t('permissionInfo.createTime')" align="center" width="160px">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:permission:update', 'sys:permission:delete'])" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
+      <el-table-column v-if="checkPermission(['sys:permission:update', 'sys:permission:delete'])" fixed="right" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:permission:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -99,7 +109,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { treeList, create, update, remove, getPIds } from '@/api/SysPermission'
+import { treeList, create, update, remove, getPIds, changeStatus } from '@/api/SysPermission'
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
 
@@ -272,6 +282,38 @@ export default {
     },
     handleChange(value) {
       this.permsIds = value
+    },
+    changeSwitch($event, id) {
+      const o = { id: id, status: $event }
+      this.$confirm('【修改权限状态】操作，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        changeStatus(o).then(() => {
+          for (const v of this.list) {
+            if (v.id === id) {
+              v.status = o.status
+              break
+            }
+          }
+        })
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+      }).catch(() => {
+        for (const v of this.list) {
+          if (v.id === id) {
+            v.status = o.status === 1 ? 0 : 1
+            break
+          }
+        }
+        this.$message({
+          type: 'info',
+          message: '已取消修改'
+        })
+      })
     }
   }
 }

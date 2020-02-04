@@ -75,3 +75,11 @@ export function showPerms(roleId) {
     method: 'get'
   })
 }
+
+export function changeStatus(data) {
+  return request({
+    url: '/sys/role/changeStatus',
+    method: 'post',
+    data
+  })
+}

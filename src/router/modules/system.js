@@ -17,7 +17,7 @@ const userRouter = {
       path: 'user',
       component: () => import('@/views/user/index'),
       name: 'UserManage',
-      meta: { title: 'userManage', icon: 'user', roles: ['sys:user:manage'] }
+      meta: { title: 'userManage', noCache: true, icon: 'user', roles: ['sys:user:manage'] }
     },
     {
       path: 'role',
@@ -59,7 +59,7 @@ const userRouter = {
       path: 'schedule',
       component: () => import('@/views/job/schedule'),
       name: 'ScheduleManage',
-      meta: { title: 'scheduleManage', icon: 'list', roles: ['job:schedule:manage'] }
+      meta: { title: 'scheduleManage', noCache: true, icon: 'list', roles: ['job:schedule:manage'] }
     },
     {
       path: 'joblog',

@@ -45,3 +45,11 @@ export function getPIds(id) {
     method: 'get'
   })
 }
+
+export function changeStatus(data) {
+  return request({
+    url: '/sys/permission/changeStatus',
+    method: 'post',
+    data
+  })
+}

@@ -38,3 +38,11 @@ export function loadDictionaryCode() {
     method: 'get'
   })
 }
+
+export function changeStatus(data) {
+  return request({
+    url: '/sys/dictionary/changeStatus',
+    method: 'post',
+    data
+  })
+}

@@ -218,7 +218,8 @@ export default {
     description: 'Description',
     status: 'Role Status',
     createTime: 'Create Time',
-    permsList: 'Role Perms'
+    permsList: 'Role Perms',
+    userCount: 'User Count'
   },
   permissionInfo: {
     id: 'Permission ID',

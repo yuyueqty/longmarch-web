@@ -218,7 +218,8 @@ export default {
     description: '角色描述',
     status: '角色状态',
     createTime: '创建时间',
-    permsList: '权限列表'
+    permsList: '权限列表',
+    userCount: '用户数'
   },
   permissionInfo: {
     id: '角色ID',

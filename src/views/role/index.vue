@@ -35,6 +35,23 @@
           <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('roleInfo.userCount')">
+        <template slot-scope="scope">
+          <router-link :to="{ name: 'UserManage', query: {roleId: scope.row.id} }">
+            <span><el-tag type="danger">{{ scope.row.userCount }}</el-tag></span>
+          </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="checkPermission(['sys:role:update'])" :label="$t('roleInfo.status')" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            :active-value="1"
+            :inactive-value="0"
+            @change="changeSwitch($event, scope.row.id)"
+          />
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('roleInfo.status')" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
@@ -42,12 +59,12 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('roleInfo.createTime')">
+      <el-table-column :label="$t('roleInfo.createTime')" width="160px">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:role:update', 'sys:role:delete'])" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['sys:role:update', 'sys:role:delete'])" fixed="right" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:role:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
@@ -91,7 +108,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, showPerms } from '@/api/SysRole'
+import { fetchList, create, update, remove, showPerms, changeStatus } from '@/api/SysRole'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -306,6 +323,38 @@ export default {
     },
     handleSelectionChange(val) {
       this.ids = val
+    },
+    changeSwitch($event, id) {
+      const o = { id: id, status: $event }
+      this.$confirm('【修改角色状态】操作，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        changeStatus(o).then(() => {
+          for (const v of this.list) {
+            if (v.id === id) {
+              v.status = o.status
+              break
+            }
+          }
+        })
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+      }).catch(() => {
+        for (const v of this.list) {
+          if (v.id === id) {
+            v.status = o.status === 1 ? 0 : 1
+            break
+          }
+        }
+        this.$message({
+          type: 'info',
+          message: '已取消修改'
+        })
+      })
     }
   }
 }

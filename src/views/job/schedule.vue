@@ -144,7 +144,7 @@ export default {
   directives: { waves, permission },
   filters: {
     dictFirst(status, dict) {
-      const _status = status === true ? 2 : 1
+      const _status = status === true ? 1 : 0
       const statusMap = {}
       dict.forEach(item => {
         statusMap[item.value] = item.label

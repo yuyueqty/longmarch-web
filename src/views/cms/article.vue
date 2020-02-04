@@ -96,6 +96,16 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column v-if="checkPermission(['cms:article:update'])" :label="$t('articleInfo.recommend')" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.recommend"
+            :active-value="1"
+            :inactive-value="0"
+            @change="changeSwitch($event, scope.row.id)"
+          />
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('articleInfo.recommend')" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.recommend | dictFirst(dictionary.style_dict)">
@@ -108,7 +118,7 @@
           <span>{{ scope.row.publishTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['cms:article:update', 'cms:article:delete'])" :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['cms:article:update', 'cms:article:delete'])" fixed="right" :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <router-link :to="'/cms/edit/'+row.id">
             <el-button v-permission="['cms:article:update']" class="filter-item" style="margin-left: 10px;" type="primary">{{ $t('table.edit') }}</el-button>
@@ -126,7 +136,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, loadRoles, loadCategory } from '@/api/Article'
+import { fetchList, create, update, remove, loadRoles, loadCategory, changeRecommendStatus } from '@/api/Article'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -357,6 +367,38 @@ export default {
     },
     handleChange(value) {
       this.categoryIds = value
+    },
+    changeSwitch($event, id) {
+      const o = { id: id, status: $event }
+      this.$confirm('【修改文章推荐状态】操作，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        changeRecommendStatus(o).then(() => {
+          for (const v of this.list) {
+            if (v.id === id) {
+              v.recommend = o.status
+              break
+            }
+          }
+        })
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        })
+      }).catch(() => {
+        for (const v of this.list) {
+          if (v.id === id) {
+            v.recommend = o.status === 1 ? 0 : 1
+            break
+          }
+        }
+        this.$message({
+          type: 'info',
+          message: '已取消修改'
+        })
+      })
     }
   }
 }

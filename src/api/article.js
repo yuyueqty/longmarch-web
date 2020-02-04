@@ -46,3 +46,11 @@ export function loadCategory(data) {
     data
   })
 }
+
+export function changeRecommendStatus(data) {
+  return request({
+    url: '/cms/article/changeRecommendStatus',
+    method: 'post',
+    data
+  })
+}

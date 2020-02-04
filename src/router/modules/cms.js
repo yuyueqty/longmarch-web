@@ -17,7 +17,7 @@ const cmsRouter = {
       path: 'article',
       component: () => import('@/views/cms/article'),
       name: 'ArticleManage',
-      meta: { title: 'articleManage', icon: 'form', roles: ['cms:article:manage'] }
+      meta: { title: 'articleManage', noCache: true, icon: 'form', roles: ['cms:article:manage'] }
     },
     {
       path: 'create',
