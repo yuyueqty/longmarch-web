@@ -26,6 +26,12 @@ const userRouter = {
       meta: { title: 'roleManage', icon: 'peoples', roles: ['sys:role:manage'] }
     },
     {
+      path: 'department',
+      component: () => import('@/views/department/index'),
+      name: 'DepartmentManage',
+      meta: { title: 'departmentManage', icon: 'peoples', roles: ['sys:department:manage'] }
+    },
+    {
       path: 'permission',
       component: () => import('@/views/permission/index'),
       name: 'PermissionManage',

@@ -75,7 +75,8 @@ export default {
     joblogManage: 'JoblogManage',
     cmsManage: 'CMSManage',
     articleManage: 'ArticleManage',
-    categoryManage: 'CategoryManage'
+    categoryManage: 'CategoryManage',
+    departmentManage: 'DepartmentManage'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -323,5 +324,11 @@ export default {
     remark: 'Remark',
     createTime: 'Create Time',
     upMenus: 'Up Menus'
+  },
+  departmentInfo: {
+    id: 'ID',
+    depName: 'Dep Name',
+    userCount: 'User Count',
+    upMenus: 'Up Dep'
   }
 }

@@ -246,7 +246,7 @@ export default {
       })
     },
     handleChange(value) {
-      this.userIds = value
+      this.checkedKeys = value
     },
     handleFilter() {
       this.listQuery.current = 1

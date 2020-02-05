@@ -75,7 +75,8 @@ export default {
     joblogManage: '任务日志',
     cmsManage: '内容管理',
     articleManage: '文章管理',
-    categoryManage: '分类管理'
+    categoryManage: '分类管理',
+    departmentManage: '部门管理'
   },
   navbar: {
     dashboard: '首页',
@@ -159,7 +160,7 @@ export default {
     reset: '重置',
     jobLog: '日志',
     goBack: '返回',
-    addChildren: '添加子分类',
+    addChildren: '添加子节点',
     changePassword: '修改密码',
     batchAddUser: '添加用户'
   },
@@ -323,5 +324,11 @@ export default {
     remark: '分类详情',
     createTime: '创建时间',
     upMenus: '上级菜单'
+  },
+  departmentInfo: {
+    id: '部门ID',
+    depName: '部门名称',
+    userCount: '用户数',
+    upMenus: '上级部门'
   }
 }
