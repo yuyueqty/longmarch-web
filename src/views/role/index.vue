@@ -64,10 +64,13 @@
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:role:update', 'sys:role:delete'])" fixed="right" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column v-if="checkPermission(['sys:role:update', 'sys:role:delete'])" fixed="right" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-permission="['sys:role:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
+          </el-button>
+          <el-button v-permission="['sys:role:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleAddUsers(row)">
+            {{ $t('table.batchAddUser') }}
           </el-button>
           <el-button v-permission="['sys:role:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
             {{ $t('table.delete') }}
@@ -90,7 +93,7 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('roleInfo.permsList')">
-          <el-tree ref="tree" :data="rolePermsList" :check-strictly="checkStrictly" :props="defaultProps" default-expand-all show-checkbox node-key="id" :default-checked-keys="checkedKeys" class="permission-tree" />
+          <el-tree ref="tree" :data="rolePermsList" :check-strictly="checkStrictly" :props="defaultProps" show-checkbox node-key="id" :default-checked-keys="checkedKeys" class="permission-tree" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -102,13 +105,43 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible_2">
+      <el-form ref="dataForm" :rules="rules" :model="temp" style="width: 100%px;">
+        <div style="text-align: center">
+          <el-transfer
+            v-model="checkedKeys"
+            style="text-align: left; display: inline-block"
+            filterable
+            :left-default-checked="[]"
+            :right-default-checked="[]"
+            :render-content="renderFunc"
+            :titles="['未选择用户', '已选择用户']"
+            :button-texts="['到左边', '到右边']"
+            :format="{
+              noChecked: '${total}',
+              hasChecked: '${checked}/${total}'
+            }"
+            :data="roleUserList"
+            @change="handleChange"
+          />
+        </div>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_2 = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="addUsers()">
+          {{ $t('table.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, showPerms, changeStatus } from '@/api/SysRole'
+import { fetchList, create, update, remove, showPerms, changeStatus, handleLoadRoleUsers, addRoleUsers } from '@/api/SysRole'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -128,6 +161,15 @@ export default {
   },
   data() {
     return {
+      renderFunc(h, option) {
+        return <span>{ option.label }</span>
+      },
+      roleUserList: [],
+      username: null,
+      listQuery2: {
+        roleId: 1,
+        username: null
+      },
       tableKey: 0,
       list: null,
       total: 0,
@@ -147,10 +189,12 @@ export default {
         createTime: null
       },
       dialogFormVisible: false,
+      dialogFormVisible_2: false,
       dialogStatus: 'create',
       textMap: {
         update: '编辑角色',
-        create: '添加角色'
+        create: '添加角色',
+        addUsers: '添加角色用户'
       },
       rules: {
         roleName: [{ required: true, message: 'role name is required', trigger: 'blur' }]
@@ -183,6 +227,26 @@ export default {
         this.total = response.data.total
         this.listLoading = false
       })
+    },
+    handleLoadRoleUsers() {
+      this.listLoading = true
+      this.roleUserList = []
+      this.checkedKeys = []
+      handleLoadRoleUsers(this.listQuery2).then(response => {
+        for (let i = 0; i < response.data.length; i++) {
+          if (response.data[i].checked) {
+            this.checkedKeys.push(response.data[i].userId)
+          }
+          this.roleUserList.push({
+            key: response.data[i].userId,
+            label: response.data[i].username
+          })
+        }
+        this.listLoading = false
+      })
+    },
+    handleChange(value) {
+      this.userIds = value
     },
     handleFilter() {
       this.listQuery.current = 1
@@ -287,6 +351,33 @@ export default {
         }
       })
     },
+    handleAddUsers(row) {
+      this.temp = Object.assign({}, row)
+      this.listQuery2.roleId = row.id
+      this.handleLoadRoleUsers()
+      this.dialogStatus = 'addUsers'
+      this.dialogFormVisible_2 = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+        this.checkStrictly = false
+      })
+    },
+    addUsers() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          addRoleUsers({ id: this.temp.id, checkedKeys: this.checkedKeys }).then(() => {
+            this.getList()
+            this.dialogFormVisible_2 = false
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
     handleDelete(row) {
       const h = this.$createElement
       this.$msgbox({
@@ -359,3 +450,10 @@ export default {
   }
 }
 </script>
+
+<style>
+  .transfer-footer {
+    margin-left: 20px;
+    padding: 6px 5px;
+  }
+</style>

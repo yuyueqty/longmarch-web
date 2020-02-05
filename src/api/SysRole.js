@@ -69,6 +69,22 @@ export function remove(data) {
   })
 }
 
+export function handleLoadRoleUsers(data) {
+  return request({
+    url: '/sys/role/handleLoadRoleUsers',
+    method: 'post',
+    data
+  })
+}
+
+export function addRoleUsers(data) {
+  return request({
+    url: '/sys/role/addRoleUsers',
+    method: 'post',
+    data
+  })
+}
+
 export function showPerms(roleId) {
   return request({
     url: '/sys/role/show/perms/' + roleId,
