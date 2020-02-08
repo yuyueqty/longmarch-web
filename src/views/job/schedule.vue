@@ -1,105 +1,107 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('jobInfo.beanName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button v-permission="['job:schedule:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-permission="['job:schedule:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
-        {{ $t('table.batchDelete') }}
-      </el-button>
-      <el-button v-permission="['job:schedule:run']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="success" @click="handleRun()">
-        {{ $t('table.batchRun') }}
-      </el-button>
-      <el-button v-permission="['job:schedule:pause']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="info" @click="handlePause()">
-        {{ $t('table.batchPause') }}
-      </el-button>
-      <el-button v-permission="['job:schedule:resume']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleResume()">
-        {{ $t('table.batchResume') }}
-      </el-button>
-      <el-button v-permission="['job:schedule:reset']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset()">
-        {{ $t('table.batchReset') }}
-      </el-button>
-    </div>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item :label="$t('jobInfo.beanName')">
-              <span>{{ props.row.beanName }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('jobInfo.methodName')">
-              <span>{{ props.row.methodName }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('jobInfo.params')">
-              <span>{{ props.row.params }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('jobInfo.count')">
-              <span>{{ props.row.count }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('jobInfo.cronExpression')">
-              <span>{{ props.row.cronExpression }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('jobInfo.createTime')">
-              <span>{{ props.row.createTime }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column
-        type="selection"
-        width="55"
-      />
-      <el-table-column :label="$t('jobInfo.remark')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('jobInfo.status')" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
-            <span>{{ scope.row.status | dictFirst(dictionary.job_status_dict) }}</span>
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="checkPermission(['job:schedule:update', 'job:schedule:delete', 'job:schedule:run', 'job:schedule:pause', 'job:schedule:resume', 'job:schedule:reset', 'job:log:show'])" :label="$t('table.actions')" width="600px" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-permission="['job:schedule:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-permission="['job:schedule:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
-          <el-button v-permission="['job:schedule:run']" class="filter-item" style="margin-left: 10px;" type="success" @click="handleRun(row)">
-            {{ $t('table.jobRun') }}
-          </el-button>
-          <el-button v-if="row.status" v-permission="['job:schedule:pause']" class="filter-item" style="margin-left: 10px;" type="info" @click="handlePause(row)">
-            {{ $t('table.jobPause') }}
-          </el-button>
-          <el-button v-if="!row.status" v-permission="['job:schedule:resume']" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleResume(row)">
-            {{ $t('table.jobResume') }}
-          </el-button>
-          <el-button v-permission="['job:schedule:reset']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset(row)">
-            {{ $t('table.reset') }}
-          </el-button>
-          <el-button v-permission="['job:log:show']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleJobLog(row)">
-            {{ $t('table.jobLog') }}
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    <el-card class="box-card">
+      <div slot="header" class="filter-container clearfix">
+        <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('jobInfo.beanName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          {{ $t('table.search') }}
+        </el-button>
+        <el-button v-permission="['job:schedule:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+          {{ $t('table.add') }}
+        </el-button>
+        <el-button v-permission="['job:schedule:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
+          {{ $t('table.batchDelete') }}
+        </el-button>
+        <el-button v-permission="['job:schedule:run']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="success" @click="handleRun()">
+          {{ $t('table.batchRun') }}
+        </el-button>
+        <el-button v-permission="['job:schedule:pause']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="info" @click="handlePause()">
+          {{ $t('table.batchPause') }}
+        </el-button>
+        <el-button v-permission="['job:schedule:resume']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleResume()">
+          {{ $t('table.batchResume') }}
+        </el-button>
+        <el-button v-permission="['job:schedule:reset']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset()">
+          {{ $t('table.batchReset') }}
+        </el-button>
+      </div>
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item :label="$t('jobInfo.beanName')">
+                <span>{{ props.row.beanName }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('jobInfo.methodName')">
+                <span>{{ props.row.methodName }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('jobInfo.params')">
+                <span>{{ props.row.params }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('jobInfo.count')">
+                <span>{{ props.row.count }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('jobInfo.cronExpression')">
+                <span>{{ props.row.cronExpression }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('jobInfo.createTime')">
+                <span>{{ props.row.createTime }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          type="selection"
+          width="55"
+        />
+        <el-table-column :label="$t('jobInfo.remark')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.remark }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('jobInfo.status')" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
+              <span>{{ scope.row.status | dictFirst(dictionary.job_status_dict) }}</span>
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="checkPermission(['job:schedule:update', 'job:schedule:delete', 'job:schedule:run', 'job:schedule:pause', 'job:schedule:resume', 'job:schedule:reset', 'job:log:show'])" :label="$t('table.actions')" width="600px" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="{row}">
+            <el-button v-permission="['job:schedule:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+              {{ $t('table.edit') }}
+            </el-button>
+            <el-button v-permission="['job:schedule:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
+              {{ $t('table.delete') }}
+            </el-button>
+            <el-button v-permission="['job:schedule:run']" class="filter-item" style="margin-left: 10px;" type="success" @click="handleRun(row)">
+              {{ $t('table.jobRun') }}
+            </el-button>
+            <el-button v-if="row.status" v-permission="['job:schedule:pause']" class="filter-item" style="margin-left: 10px;" type="info" @click="handlePause(row)">
+              {{ $t('table.jobPause') }}
+            </el-button>
+            <el-button v-if="!row.status" v-permission="['job:schedule:resume']" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleResume(row)">
+              {{ $t('table.jobResume') }}
+            </el-button>
+            <el-button v-permission="['job:schedule:reset']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset(row)">
+              {{ $t('table.reset') }}
+            </el-button>
+            <el-button v-permission="['job:log:show']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleJobLog(row)">
+              {{ $t('table.jobLog') }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('jobInfo.beanName')" prop="beanName">

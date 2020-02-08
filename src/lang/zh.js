@@ -330,6 +330,7 @@ export default {
     id: '部门ID',
     depName: '部门名称',
     userCount: '用户数',
+    sort: '排序',
     upMenus: '上级部门'
   }
 }

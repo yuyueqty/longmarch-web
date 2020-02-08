@@ -1,51 +1,53 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('operateLogInfo.userName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-    </div>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item :label="$t('operateLogInfo.operateDetail')">
-              <span>{{ props.row.operateDetail }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.userName')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.userName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.busType')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.busType }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.operateType')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.operateType }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('operateLogInfo.operateTime')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.operateTime }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    <el-card class="box-card">
+      <div slot="header" class="filter-container clearfix">
+        <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('operateLogInfo.userName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          {{ $t('table.search') }}
+        </el-button>
+      </div>
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item :label="$t('operateLogInfo.operateDetail')">
+                <span>{{ props.row.operateDetail }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('operateLogInfo.userName')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.userName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('operateLogInfo.busType')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.busType }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('operateLogInfo.operateType')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.operateType }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('operateLogInfo.operateTime')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.operateTime }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    </el-card>
   </div>
 </template>
 

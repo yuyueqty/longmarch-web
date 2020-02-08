@@ -1,100 +1,102 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('userInfo.username')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button v-permission="['sys:user:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-permission="['sys:user:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
-        {{ $t('table.batchDelete') }}
-      </el-button>
-    </div>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item :label="$t('userInfo.headImgUrl')">
-              <img v-if="props.row.headImgUrl" style="margin-top: -10px;border-radius: 100px;width: 50px; height: 50px;" :src="props.row.headImgUrl" class="avatar">
-            </el-form-item>
-            <el-form-item :label="$t('userInfo.loginCount')">
-              <span>{{ props.row.loginCount }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('userInfo.createTime')">
-              <span>{{ props.row.createTime }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('userInfo.lastLoginTime')">
-              <span>{{ props.row.lastLoginTime }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column
-        type="selection"
-        width="55"
-      />
-      <el-table-column :label="$t('userInfo.username')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('userInfo.roleNames')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.roleNames }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('userInfo.deptName')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.deptName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('userInfo.phone')" width="120px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.phone }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:user:update'])" :label="$t('userInfo.status')" align="center">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-            @change="changeSwitch($event, scope.row.id)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('userInfo.status')" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
-            <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:user:update', 'sys:user:delete', 'sys:user:change:password'])" fixed="right" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-permission="['sys:user:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-permission="['sys:user:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
-          <el-button v-permission="['sys:user:change:password']" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleChangePassword(row)">
-            {{ $t('table.changePassword') }}
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    <el-card class="box-card">
+      <div slot="header" class="filter-container clearfix">
+        <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('userInfo.username')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          {{ $t('table.search') }}
+        </el-button>
+        <el-button v-permission="['sys:user:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+          {{ $t('table.add') }}
+        </el-button>
+        <el-button v-permission="['sys:user:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
+          {{ $t('table.batchDelete') }}
+        </el-button>
+      </div>
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        highlight-current-row
+        style="width: 100%;"
+        @sort-change="sortChange"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item :label="$t('userInfo.headImgUrl')">
+                <img v-if="props.row.headImgUrl" style="margin-top: -10px;border-radius: 100px;width: 50px; height: 50px;" :src="props.row.headImgUrl" class="avatar">
+              </el-form-item>
+              <el-form-item :label="$t('userInfo.loginCount')">
+                <span>{{ props.row.loginCount }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('userInfo.createTime')">
+                <span>{{ props.row.createTime }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('userInfo.lastLoginTime')">
+                <span>{{ props.row.lastLoginTime }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          type="selection"
+          width="55"
+        />
+        <el-table-column :label="$t('userInfo.username')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.username }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('userInfo.roleNames')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.roleNames }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('userInfo.deptName')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.deptName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('userInfo.phone')" width="120px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.phone }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="checkPermission(['sys:user:update'])" :label="$t('userInfo.status')" align="center">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
+              @change="changeSwitch($event, scope.row.id)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('userInfo.status')" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
+              <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="checkPermission(['sys:user:update', 'sys:user:delete', 'sys:user:change:password'])" fixed="right" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
+          <template slot-scope="{row}">
+            <el-button v-permission="['sys:user:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+              {{ $t('table.edit') }}
+            </el-button>
+            <el-button v-permission="['sys:user:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
+              {{ $t('table.delete') }}
+            </el-button>
+            <el-button v-permission="['sys:user:change:password']" class="filter-item" style="margin-left: 10px;" type="warning" @click="handleChangePassword(row)">
+              {{ $t('table.changePassword') }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible_2">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('userInfo.username')" prop="username">

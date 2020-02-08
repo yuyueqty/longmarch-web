@@ -1,66 +1,68 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-button v-permission="['sys:permission:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-    </div>
-    <el-table
-      :data="list"
-      style="width: 100%;margin-bottom: 20px;"
-      row-key="id"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-    >
-      <el-table-column :label="$t('permissionInfo.permissionName')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.permissionName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('permissionInfo.permissionString')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.permissionString }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('permissionInfo.type')" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.type | dictFirst(dictionary.style_dict)">
-            <span>{{ scope.row.type | dictFirst(dictionary.perm_dict) }}</span>
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:permission:update'])" :label="$t('permissionInfo.status')" align="center">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-            @change="changeSwitch($event, scope.row.id)"
-          />
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('permissionInfo.status')" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
-            <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('permissionInfo.createTime')" align="center" width="160px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.createTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="checkPermission(['sys:permission:update', 'sys:permission:delete'])" fixed="right" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
-        <template slot-scope="{row}">
-          <el-button v-permission="['sys:permission:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button v-permission="['sys:permission:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-card class="box-card">
+      <div slot="header" class="filter-container clearfix">
+        <el-button v-permission="['sys:permission:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+          {{ $t('table.add') }}
+        </el-button>
+      </div>
+      <el-table
+        :data="list"
+        style="width: 100%;margin-bottom: 20px;"
+        row-key="id"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      >
+        <el-table-column :label="$t('permissionInfo.permissionName')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.permissionName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('permissionInfo.permissionString')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.permissionString }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('permissionInfo.type')" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.type | dictFirst(dictionary.style_dict)">
+              <span>{{ scope.row.type | dictFirst(dictionary.perm_dict) }}</span>
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="checkPermission(['sys:permission:update'])" :label="$t('permissionInfo.status')" align="center">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.status"
+              :active-value="1"
+              :inactive-value="0"
+              @change="changeSwitch($event, scope.row.id)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('permissionInfo.status')" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
+              <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('permissionInfo.createTime')" align="center" width="160px">
+          <template slot-scope="scope">
+            <span>{{ scope.row.createTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="checkPermission(['sys:permission:update', 'sys:permission:delete'])" fixed="right" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
+          <template slot-scope="{row}">
+            <el-button v-permission="['sys:permission:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+              {{ $t('table.edit') }}
+            </el-button>
+            <el-button v-permission="['sys:permission:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
+              {{ $t('table.delete') }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('permissionInfo.permissionName')" prop="permissionName">

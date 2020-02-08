@@ -1,65 +1,67 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('jobInfo.beanName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 50%;" type="text" @click="$router.push({name:'ScheduleManage'})">
-        {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
-      </el-button>
-    </div>
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      highlight-current-row
-      style="width: 100%;"
-    >
-      <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item :label="$t('jobInfo.startTime')">
-              <span>{{ props.row.startTime }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('jobInfo.endTime')">
-              <span>{{ props.row.endTime }}</span>
-            </el-form-item>
-            <el-form-item :label="$t('jobInfo.error')">
-              <span>{{ props.row.error }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('jobInfo.beanName')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.beanName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('jobInfo.methodName')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.methodName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('jobInfo.params')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.params }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('jobInfo.status')" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
-            <span>{{ scope.row.status | dictFirst(dictionary.job_result_status_dict) }}</span>
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('jobInfo.executeTime')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.executeTime }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    <el-card class="box-card">
+      <div slot="header" class="filter-container clearfix">
+        <el-input v-model="listQuery.fuzzySearch" :placeholder="$t('jobInfo.beanName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+          {{ $t('table.search') }}
+        </el-button>
+        <el-button class="filter-item" style="margin-left: 50%;" type="text" @click="$router.push({name:'ScheduleManage'})">
+          {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
+        </el-button>
+      </div>
+      <el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        highlight-current-row
+        style="width: 100%;"
+      >
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item :label="$t('jobInfo.startTime')">
+                <span>{{ props.row.startTime }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('jobInfo.endTime')">
+                <span>{{ props.row.endTime }}</span>
+              </el-form-item>
+              <el-form-item :label="$t('jobInfo.error')">
+                <span>{{ props.row.error }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('jobInfo.beanName')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.beanName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('jobInfo.methodName')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.methodName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('jobInfo.params')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.params }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('jobInfo.status')" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
+              <span>{{ scope.row.status | dictFirst(dictionary.job_result_status_dict) }}</span>
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('jobInfo.executeTime')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.executeTime }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
+    </el-card>
   </div>
 </template>
 

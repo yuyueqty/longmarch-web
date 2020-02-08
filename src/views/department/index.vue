@@ -20,6 +20,10 @@
                   @change="handleChange"
                 />
               </el-form-item>
+              <el-form-item :label="$t('departmentInfo.sort')" prop="sort">
+                <!-- <el-input v-model="temp.sort" /> -->
+                <el-input-number v-model="num" :min="1" :max="10000" @change="handleChange3" />
+              </el-form-item>
             </el-form>
             <div>
               <el-button v-if="dialogStatus=='create'" v-permission="['sys:department:create']" type="primary" @click="createData">
@@ -39,7 +43,7 @@
         <el-card class="box-card">
           <div class="grid-content bg-purple">
             <el-table :data="list" style="width: 100%;margin-bottom: 20px;" row-key="id">
-              <el-table-column :label="$t('departmentInfo.depName')">
+              <el-table-column :label="$t('departmentInfo.depName')" width="200px">
                 <template slot-scope="scope">
                   <span>{{ scope.row.depName }}</span>
                 </template>
@@ -49,11 +53,16 @@
                   <span>{{ scope.row.userCount }}</span>
                 </template>
               </el-table-column>
-              <el-table-column v-if="checkPermission(['sys:department:create', 'sys:department:update', 'sys:department:delete'])" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="300px">
+              <el-table-column :label="$t('departmentInfo.sort')">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.sort }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column v-if="checkPermission(['sys:department:create', 'sys:department:update', 'sys:department:delete'])" :label="$t('table.actions')" align="center" class-name="small-padding fixed-width" width="200px">
                 <template slot-scope="{row}">
-                  <el-button v-permission="['sys:department:update']" class="filter-item" style="margin-left: 10px;" type="text" @click="handleAddUsers(row)">
+                  <!-- <el-button v-permission="['sys:department:update']" class="filter-item" style="margin-left: 10px;" type="text" @click="handleAddUsers(row)">
                     {{ $t('table.batchAddUser') }}
-                  </el-button>
+                  </el-button> -->
                   <el-button v-permission="['sys:department:create']" class="filter-item" style="margin-left: 10px;" type="text" @click="handleCreateChildren(row)">
                     {{ $t('table.addChildren') }}
                   </el-button>
@@ -149,7 +158,8 @@ export default {
       rules: {
         depName: [{ required: true, message: '请填写部门名称', trigger: 'blur' }]
       },
-      selectedPids: []
+      selectedPids: [],
+      num: 0
     }
   },
   computed: {
@@ -196,6 +206,7 @@ export default {
         if (valid) {
           this.temp.parentIds = this.selectedPids.join()
           this.temp.parentId = this.selectedPids[this.selectedPids.length - 1]
+          this.temp.sort = this.num
           create(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -222,6 +233,7 @@ export default {
           const tempData = Object.assign({}, this.temp)
           tempData.parentIds = this.selectedPids.join()
           tempData.parentId = this.selectedPids[this.selectedPids.length - 1]
+          tempData.sort = this.num
           update(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
@@ -273,6 +285,9 @@ export default {
     },
     handleChange2(value) {
       this.checkedKeys = value
+    },
+    handleChange3(value) {
+      this.num = value
     },
     handleLoadDepartmentUsers() {
       this.listLoading = true

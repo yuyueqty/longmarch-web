@@ -330,6 +330,7 @@ export default {
     id: 'ID',
     depName: 'Dep Name',
     userCount: 'User Count',
+    sort: 'sort',
     upMenus: 'Up Dep'
   }
 }
