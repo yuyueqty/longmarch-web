@@ -318,7 +318,6 @@ export default {
             })
             remove(_ids).then(() => {
               done()
-              this.getList()
               instance.confirmButtonLoading = false
             })
           } else {
@@ -326,6 +325,7 @@ export default {
           }
         }
       }).then(action => {
+        this.getList()
         this.$message({
           type: 'success',
           message: '操作完成'
@@ -344,29 +344,27 @@ export default {
         type: 'warning'
       }).then(() => {
         changeStatus(o).then(() => {
-          for (const v of this.list) {
-            if (v.id === id) {
-              v.status = o.status
-              break
-            }
-          }
-        })
-        this.$message({
-          type: 'success',
-          message: '修改成功!'
+          this.forLoop(id, o.status)
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
         })
       }).catch(() => {
-        for (const v of this.list) {
-          if (v.id === id) {
-            v.status = o.status === 1 ? 0 : 1
-            break
-          }
-        }
+        this.forLoop(id, o.status === 1 ? 0 : 1)
         this.$message({
           type: 'info',
           message: '已取消修改'
         })
       })
+    },
+    forLoop(id, status) {
+      for (const v of this.list) {
+        if (v.id === id) {
+          v.status = status
+          break
+        }
+      }
     }
   }
 }

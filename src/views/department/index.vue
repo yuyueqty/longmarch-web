@@ -14,6 +14,7 @@
                   clearable
                   expand-trigger="hover"
                   change-on-select
+                  :show-all-levels="false"
                   :options="list"
                   :props="{ value: 'id', label: 'depName' }"
                   @change="handleChange"
@@ -105,7 +106,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { treeList, create, update, remove, getPIds, handleLoadDepartmentUsers, addDepartmentUsers } from '@/api/SysDepartment'
+import { treeList, create, update, remove, handleLoadDepartmentUsers, addDepartmentUsers } from '@/api/SysDepartment'
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
 
@@ -184,16 +185,16 @@ export default {
       }
     },
     handleCreateChildren(row) {
-      getPIds(row.id).then(response => {
-        this.dialogStatus = 'create'
-        this.resetTemp()
-        this.selectedPids = response.data
-        this.selectedPids.push(row.id)
+      this.resetForm()
+      this.selectedPids = row.pids.split(',').map((id, index) => {
+        return parseInt(id)
       })
+      this.selectedPids.push(row.id)
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.parentIds = this.selectedPids.join()
           this.temp.parentId = this.selectedPids[this.selectedPids.length - 1]
           create(this.temp).then(() => {
             this.list.unshift(this.temp)
@@ -210,24 +211,16 @@ export default {
       })
     },
     handleUpdate(row) {
-      getPIds(row.id).then(response => {
-        this.temp = Object.assign({}, row)
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-          if (response.data.length === 1 && response.data[0] === row.id) {
-            this.selectedPids = []
-          } else {
-            this.selectedPids = response.data
-          }
-        })
+      this.temp = Object.assign({}, row)
+      this.selectedPids = row.pids.split(',').map((id, index) => {
+        return parseInt(id)
       })
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
+          tempData.parentIds = this.selectedPids.join()
           tempData.parentId = this.selectedPids[this.selectedPids.length - 1]
           update(tempData).then(() => {
             for (const v of this.list) {
@@ -238,7 +231,7 @@ export default {
               }
             }
             this.getList()
-            this.dialogFormVisible = false
+            // this.dialogFormVisible = false
             this.$notify({
               title: '成功',
               message: '更新成功',

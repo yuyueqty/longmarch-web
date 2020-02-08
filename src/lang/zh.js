@@ -211,6 +211,7 @@ export default {
     headImgUrl: '用户头像',
     createTime: '创建时间',
     roleNames: '角色名',
+    deptName: '部门名称',
     loginCount: '登录次数',
     lastLoginTime: '登录时间'
   },

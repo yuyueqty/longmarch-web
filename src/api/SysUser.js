@@ -8,6 +8,13 @@ export function fetchList(data) {
   })
 }
 
+export function treeList() {
+  return request({
+    url: '/sys/department/tree',
+    method: 'post'
+  })
+}
+
 export function create(data) {
   return request({
     url: '/sys/user/create',

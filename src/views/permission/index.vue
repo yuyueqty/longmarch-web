@@ -109,7 +109,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { treeList, create, update, remove, getPIds, changeStatus } from '@/api/SysPermission'
+import { treeList, create, update, remove, changeStatus } from '@/api/SysPermission'
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
 
@@ -204,7 +204,7 @@ export default {
         if (valid) {
           this.temp.parentId = this.permsIds[this.permsIds.length - 1]
           create(this.temp).then(() => {
-            this.list.unshift(this.temp)
+            // this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.getList()
             this.$notify({
@@ -218,30 +218,20 @@ export default {
       })
     },
     handleUpdate(row) {
-      getPIds(row.id).then(response => {
-        this.permsIds = []
-        this.temp = Object.assign({}, row)
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-          this.permsIds = response.data
-        })
+      this.temp = Object.assign({}, row)
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.permsIds = row.pids.split(',').map((id, index) => {
+        return parseInt(id)
       })
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
+          tempData.parentIds = this.permsIds.join()
           tempData.parentId = this.permsIds[this.permsIds.length - 1]
           update(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
             this.getList()
             this.dialogFormVisible = false
             this.$notify({
@@ -291,29 +281,31 @@ export default {
         type: 'warning'
       }).then(() => {
         changeStatus(o).then(() => {
-          for (const v of this.list) {
-            if (v.id === id) {
-              v.status = o.status
-              break
-            }
-          }
+          this.recursionLoop(id, o.status)
         })
         this.$message({
           type: 'success',
           message: '修改成功!'
         })
       }).catch(() => {
-        for (const v of this.list) {
-          if (v.id === id) {
-            v.status = o.status === 1 ? 0 : 1
-            break
-          }
-        }
+        this.recursionLoop(this.list, id, o.status === 1 ? 0 : 1)
         this.$message({
           type: 'info',
           message: '已取消修改'
         })
       })
+    },
+    recursionLoop(list, id, status) {
+      for (const v of list) {
+        if (v.id === id) {
+          v.status = status
+          break
+        } else {
+          if (v.children && v.children.length > 0) {
+            this.recursionLoop(v.children, id, status)
+          }
+        }
+      }
     }
   }
 }

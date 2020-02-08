@@ -53,7 +53,12 @@
           <span>{{ scope.row.roleNames }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('userInfo.phone')">
+      <el-table-column :label="$t('userInfo.deptName')">
+        <template slot-scope="scope">
+          <span>{{ scope.row.deptName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('userInfo.phone')" width="120px">
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
@@ -133,6 +138,18 @@
             </el-select>
           </el-form-item>
         </el-tooltip>
+        <el-form-item :label="$t('departmentInfo.upMenus')">
+          <el-cascader
+            v-model="deptIds"
+            clearable
+            expand-trigger="hover"
+            change-on-select
+            :show-all-levels="false"
+            :options="deptList"
+            :props="{ value: 'id', label: 'depName' }"
+            @change="deptHandleChange"
+          />
+        </el-form-item>
         <el-form-item :label="$t('userInfo.headImgUrl')" prop="headImgUrl">
           <el-upload
             class="avatar-uploader"
@@ -161,7 +178,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, loadRoles, changePassword, changeStatus } from '@/api/SysUser'
+import { fetchList, create, update, remove, loadRoles, changePassword, changeStatus, treeList } from '@/api/SysUser'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -181,6 +198,7 @@ export default {
   },
   data() {
     return {
+      selectedIds: [2],
       tableKey: 0,
       list: null,
       total: 0,
@@ -215,6 +233,8 @@ export default {
       },
       roleList: null,
       selectedRoles: null,
+      deptList: [],
+      deptIds: null,
       uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
@@ -240,6 +260,11 @@ export default {
         this.total = response.data.total
         this.listLoading = false
         this.$router.push({ name: 'UserManage' })
+      })
+    },
+    getDeptList() {
+      treeList().then(response => {
+        this.deptList = response.data
       })
     },
     handleFilter() {
@@ -271,12 +296,13 @@ export default {
       this.temp = {
         id: null,
         username: null,
-        status: null,
+        status: 0,
         headImgUrl: null
       }
     },
     handleCreate() {
       this.selectedRoles = []
+      this.deptIds = []
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -284,6 +310,7 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       this.loadRoles()
+      this.getDeptList()
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -316,12 +343,18 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
       this.loadRoles()
+      this.getDeptList()
+      this.deptIds = row.deptPids.split(',').map((id, index) => {
+        return parseInt(id)
+      })
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           tempData.roleIds = this.selectedRoles.join()
+          tempData.deptPids = this.deptIds.join()
+          tempData.deptId = this.deptIds[this.deptIds.length - 1]
           update(tempData).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -348,14 +381,6 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           changePassword(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
-            this.getList()
             this.dialogFormVisible_2 = false
             this.$notify({
               title: '成功',
@@ -387,7 +412,6 @@ export default {
             })
             remove(_ids).then(() => {
               done()
-              this.getList()
               instance.confirmButtonLoading = false
             })
           } else {
@@ -395,6 +419,7 @@ export default {
           }
         }
       }).then(action => {
+        this.getList()
         this.$message({
           type: 'success',
           message: '操作完成'
@@ -403,6 +428,9 @@ export default {
     },
     handleSelectionChange(val) {
       this.ids = val
+    },
+    deptHandleChange(val) {
+      this.deptIds = val
     },
     loadRoles() {
       loadRoles().then(response => {
@@ -420,29 +448,27 @@ export default {
         type: 'warning'
       }).then(() => {
         changeStatus(o).then(() => {
-          for (const v of this.list) {
-            if (v.id === id) {
-              v.status = o.status
-              break
-            }
-          }
-        })
-        this.$message({
-          type: 'success',
-          message: '修改成功!'
+          this.forLoop(id, o.status)
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
         })
       }).catch(() => {
-        for (const v of this.list) {
-          if (v.id === id) {
-            v.status = o.status === 1 ? 0 : 1
-            break
-          }
-        }
+        this.forLoop(id, o.status === 1 ? 0 : 1)
         this.$message({
           type: 'info',
           message: '已取消修改'
         })
       })
+    },
+    forLoop(id, status) {
+      for (const v of this.list) {
+        if (v.id === id) {
+          v.status = status
+          break
+        }
+      }
     }
   }
 }

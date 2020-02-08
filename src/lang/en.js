@@ -211,6 +211,7 @@ export default {
     headImgUrl: 'Head Image',
     createTime: 'Create Time',
     roleNames: 'Role Names',
+    deptName: 'Dept Name',
     loginCount: 'Login Count',
     lastLoginTime: 'Last Login Time'
   },
