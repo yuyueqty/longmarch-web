@@ -50,7 +50,7 @@
               </el-table-column>
               <el-table-column :label="$t('departmentInfo.userCount')">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.userCount }}</span>
+                  <span><el-tag type="danger">{{ scope.row.userCount }}</el-tag></span>
                 </template>
               </el-table-column>
               <el-table-column :label="$t('departmentInfo.sort')">

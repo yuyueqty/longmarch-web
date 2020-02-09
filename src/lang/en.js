@@ -222,6 +222,7 @@ export default {
     status: 'Role Status',
     createTime: 'Create Time',
     permsList: 'Role Perms',
+    deptList: 'Data Perms',
     userCount: 'User Count'
   },
   permissionInfo: {

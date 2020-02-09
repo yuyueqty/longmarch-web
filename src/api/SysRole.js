@@ -7,6 +7,12 @@ export function getRoutes() {
   })
 }
 
+export function treeList() {
+  return request({
+    url: '/sys/department/tree',
+    method: 'post'
+  })
+}
 export function getRoles() {
   return request({
     url: '/roles',

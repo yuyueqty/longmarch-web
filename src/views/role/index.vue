@@ -82,7 +82,7 @@
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:80px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:40px;">
         <el-form-item :label="$t('roleInfo.roleName')" prop="roleName">
           <el-input v-model="temp.roleName" :disabled="dialogStatus==='update'" />
         </el-form-item>
@@ -94,8 +94,33 @@
             <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
+        <el-form-item :label="$t('roleInfo.dataPerm')" prop="dataPerm">
+          <el-radio-group v-model="temp.dataPerm">
+            <el-tooltip :content="$t('roleInfo.oneUser')" placement="top">
+              <el-radio-button :label="1">个人</el-radio-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('roleInfo.moreUser')" placement="top">
+              <el-radio-button :label="2">部门</el-radio-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('roleInfo.allUser')" placement="top">
+              <el-radio-button :label="3">全部</el-radio-button>
+            </el-tooltip>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="deptSelected" :label="$t('roleInfo.deptList')">
+          <el-cascader
+            v-model="deptIds"
+            clearable
+            expand-trigger="hover"
+            change-on-select
+            :show-all-levels="false"
+            :options="deptList"
+            :props="{ value: 'id', label: 'depName' }"
+            @change="deptHandleChange"
+          />
+        </el-form-item>
         <el-form-item :label="$t('roleInfo.permsList')">
-          <el-tree ref="tree" :data="rolePermsList" :check-strictly="checkStrictly" :props="defaultProps" show-checkbox node-key="id" :default-checked-keys="checkedKeys" class="permission-tree" />
+          <el-tree ref="tree" :data="rolePermsList" :check-strictly="checkStrictly" :props="{label: 'permissionName'}" show-checkbox node-key="id" :default-checked-keys="checkedKeys" class="permission-tree" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -143,7 +168,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, showPerms, changeStatus, handleLoadRoleUsers, addRoleUsers } from '@/api/SysRole'
+import { fetchList, create, update, remove, showPerms, changeStatus, handleLoadRoleUsers, addRoleUsers, treeList } from '@/api/SysRole'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -187,6 +212,8 @@ export default {
         id: null,
         roleName: null,
         description: null,
+        dataPerm: null,
+        dataPermIds: null,
         status: null,
         userCount: 0,
         createTime: null
@@ -209,6 +236,8 @@ export default {
       },
       checkStrictly: false,
       rolePermsList: null,
+      deptList: [],
+      deptIds: null,
       checkedKeys: null // 记录选中节点的数组
     }
   },
@@ -216,10 +245,14 @@ export default {
     ...mapGetters(['dictionary']),
     batchDeleteButtonStatus() {
       return this.ids.length <= 0
+    },
+    deptSelected() {
+      return this.temp.dataPerm && this.temp.dataPerm === 2
     }
   },
   created() {
     this.getList()
+    this.getDeptList()
   },
   methods: {
     checkPermission,
@@ -229,6 +262,11 @@ export default {
         this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
+      })
+    },
+    getDeptList() {
+      treeList().then(response => {
+        this.deptList = response.data
       })
     },
     handleLoadRoleUsers() {
@@ -287,6 +325,7 @@ export default {
     handleCreate() {
       showPerms(-1).then(response => {
         this.resetTemp()
+        this.deptIds = []
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
         this.checkStrictly = true
@@ -295,6 +334,7 @@ export default {
           this.checkedKeys = response.data.checkedKeys
           this.rolePermsList = response.data.permissionTree
           this.checkStrictly = false
+          this.getDeptList()
         })
       })
     },
@@ -303,6 +343,11 @@ export default {
         if (valid) {
           const checkedHalfList = this.$refs.tree.getHalfCheckedKeys()
           this.temp.checkedKeys = this.$refs.tree.getCheckedKeys().concat(checkedHalfList)
+          if (this.dataPerm !== 2) {
+            this.temp.dataPermIds = ''
+          } else {
+            this.temp.dataPermIds = this.deptIds.join()
+          }
           create(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -327,6 +372,10 @@ export default {
           this.checkedKeys = response.data.checkedKeys
           this.rolePermsList = response.data.permissionTree
           this.checkStrictly = false
+          this.deptIds = this.temp.dataPermIds.split(',').map((id, index) => {
+            return parseInt(id)
+          })
+          this.getDeptList()
         })
       })
     },
@@ -336,6 +385,11 @@ export default {
           const tempData = Object.assign({}, this.temp)
           const checkedHalfList = this.$refs.tree.getHalfCheckedKeys()
           tempData.checkedKeys = this.$refs.tree.getCheckedKeys().concat(checkedHalfList)
+          if (tempData.dataPerm !== 2) {
+            tempData.dataPermIds = ''
+          } else {
+            tempData.dataPermIds = this.deptIds.join()
+          }
           update(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {

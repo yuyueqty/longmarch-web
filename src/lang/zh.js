@@ -221,8 +221,13 @@ export default {
     description: '角色描述',
     status: '角色状态',
     createTime: '创建时间',
-    permsList: '权限列表',
-    userCount: '用户数'
+    permsList: '系统权限',
+    dataPerm: '数据权限',
+    deptList: '指定部门',
+    userCount: '用户数',
+    oneUser: '只能查看自己创建的数据',
+    moreUser: '可以查看所选部门以及子部门数据',
+    allUser: '可以查看所有数据'
   },
   permissionInfo: {
     id: '角色ID',
