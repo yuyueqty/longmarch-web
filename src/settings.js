@@ -1,5 +1,5 @@
 module.exports = {
-  title: '长征CMS系统',
+  title: '长征后台管理系统',
 
   /**
    * @type {boolean} true | false

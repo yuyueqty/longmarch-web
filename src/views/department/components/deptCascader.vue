@@ -4,11 +4,13 @@
     clearable
     expand-trigger="hover"
     change-on-select
+    :props="{ value: 'id', label: 'deptName' }"
     :options="list"
     @change="handleChange"
   />
 </template>
 <script>
+import { treeList } from '@/api/SysDepartment'
 
 export default {
   props: {
@@ -42,10 +44,14 @@ export default {
     }
   },
   created() {
-    // this.selectIds = this.ids
-    console.log(this.ids)
+    this.treeList()
   },
   methods: {
+    treeList() {
+      treeList().then(response => {
+        this.list = response.data
+      })
+    },
     handleChange(value) {
       this.selectIds = value
       this.$emit('handleChange', value)

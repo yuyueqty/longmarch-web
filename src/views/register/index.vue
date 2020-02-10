@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
       <div class="title-container">
         <h3 class="title">
-          用户注册
+          {{ $t('login.registerTitle') }}
         </h3>
         <lang-select class="set-language" />
       </div>
@@ -64,11 +64,11 @@
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
-        注册
+        {{ $t('login.register') }}
       </el-button>
       <div style="position:relative">
         <div class="tips">
-          <span><router-link :to="{ path: '/login' }">用户登录</router-link></span>
+          <span><router-link :to="{ path: '/login' }">{{ $t('login.logIn') }}</router-link></span>
         </div>
       </div>
     </el-form>

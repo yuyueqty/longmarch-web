@@ -77,6 +77,9 @@
             <el-form-item label="文章作者（默认为当前登录用户）" class="postInfo-container-item">
               <el-input v-model="postForm.author" type="text" autosize placeholder="请输入文章作者" />
             </el-form-item>
+            <el-form-item label="定时发布" class="postInfo-container-item">
+              <el-checkbox v-model="isAutoPublish" />
+            </el-form-item>
             <el-form-item label="文章定时发布时间" class="postInfo-container-item">
               <el-date-picker v-model="postForm.publishTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择发布时间" />
             </el-form-item>
@@ -122,6 +125,7 @@ export default {
       postForm: Object.assign({}, defaultForm),
       loading: false,
       isRecommend: false,
+      isAutoPublish: false,
       categoryList: [],
       categoryIds: [],
       rules: {
@@ -149,7 +153,8 @@ export default {
       show(id).then(response => {
         this.postForm = response.data
         this.categoryIds = response.pIds
-        this.isRecommend = this.postForm.recommend === 2
+        this.isRecommend = this.postForm.recommend === 1
+        this.isAutoPublish = this.postForm.autoPublishStatus === 1
       }).catch(err => {
         console.log(err)
       })
@@ -179,7 +184,8 @@ export default {
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.postForm.categoryId = this.categoryIds[this.categoryIds.length - 1]
-          this.postForm.recommend = this.isRecommend === true ? 2 : 1
+          this.postForm.recommend = this.isRecommend === true ? 1 : 0
+          this.postForm.autoPublishStatus = this.isAutoPublish === true ? 1 : 0
           create(this.postForm).then((response) => {
             this.$notify({
               title: '成功',

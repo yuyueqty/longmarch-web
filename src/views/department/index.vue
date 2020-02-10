@@ -5,8 +5,8 @@
         <el-card class="box-card">
           <div class="grid-content bg-purple">
             <el-form ref="dataForm" :rules="rules" :model="temp" label-width="80px">
-              <el-form-item :label="$t('departmentInfo.depName')" prop="depName">
-                <el-input v-model="temp.depName" />
+              <el-form-item :label="$t('departmentInfo.deptName')" prop="deptName">
+                <el-input v-model="temp.deptName" />
               </el-form-item>
               <el-form-item :label="$t('departmentInfo.upMenus')">
                 <el-cascader
@@ -16,12 +16,14 @@
                   change-on-select
                   :show-all-levels="false"
                   :options="list"
-                  :props="{ value: 'id', label: 'depName' }"
+                  :props="{ value: 'id', label: 'deptName' }"
                   @change="handleChange"
                 />
               </el-form-item>
+              <!-- <el-form-item :label="$t('departmentInfo.upMenus')">
+                <DeptCascader />
+              </el-form-item> -->
               <el-form-item :label="$t('departmentInfo.sort')" prop="sort">
-                <!-- <el-input v-model="temp.sort" /> -->
                 <el-input-number v-model="num" :min="1" :max="10000" @change="handleChange3" />
               </el-form-item>
             </el-form>
@@ -43,9 +45,9 @@
         <el-card class="box-card">
           <div class="grid-content bg-purple">
             <el-table :data="list" style="width: 100%;margin-bottom: 20px;" row-key="id">
-              <el-table-column :label="$t('departmentInfo.depName')" width="200px">
+              <el-table-column :label="$t('departmentInfo.deptName')" width="200px">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.depName }}</span>
+                  <span>{{ scope.row.deptName }}</span>
                 </template>
               </el-table-column>
               <el-table-column :label="$t('departmentInfo.userCount')">
@@ -118,9 +120,13 @@ import checkPermission from '@/utils/permission'
 import { treeList, create, update, remove, handleLoadDepartmentUsers, addDepartmentUsers } from '@/api/SysDepartment'
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
+// import DeptCascader from '@/views/department/components/deptCascader'
 
 export default {
   name: 'DepartmentManage',
+  // components: {
+  //   DeptCascader
+  // },
   directives: { waves, permission },
   filters: {
     dictFirst(status, dict) {
@@ -153,10 +159,10 @@ export default {
       temp: {
         id: null,
         parentId: null,
-        depName: null
+        deptName: null
       },
       rules: {
-        depName: [{ required: true, message: '请填写部门名称', trigger: 'blur' }]
+        deptName: [{ required: true, message: '请填写部门名称', trigger: 'blur' }]
       },
       selectedPids: [],
       num: 0

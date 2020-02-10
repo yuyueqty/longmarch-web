@@ -115,7 +115,7 @@
             change-on-select
             :show-all-levels="false"
             :options="deptList"
-            :props="{ value: 'id', label: 'depName' }"
+            :props="{ value: 'id', label: 'deptName' }"
             @change="deptHandleChange"
           />
         </el-form-item>

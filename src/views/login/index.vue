@@ -54,7 +54,7 @@
 
       <div style="position:relative">
         <div class="tips">
-          <span><router-link :to="{ path: '/register' }">用户注册</router-link></span>
+          <span><router-link :to="{ path: '/register' }">{{ $t('login.register') }}</router-link></span>
         </div>
         <!-- <div class="tips">
           <span>{{ $t('login.username') }} : admin</span>

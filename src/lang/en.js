@@ -88,6 +88,8 @@ export default {
   },
   login: {
     title: 'Login Form',
+    registerTitle: 'User Register',
+    register: 'Register',
     logIn: 'Login',
     username: 'Username',
     password: 'Password',
@@ -329,7 +331,7 @@ export default {
   },
   departmentInfo: {
     id: 'ID',
-    depName: 'Dep Name',
+    deptName: 'Dep Name',
     userCount: 'User Count',
     sort: 'sort',
     upMenus: 'Up Dep'

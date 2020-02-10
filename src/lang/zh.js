@@ -87,7 +87,9 @@ export default {
     size: '布局大小'
   },
   login: {
-    title: '系统登录',
+    title: '长 征 后 台 管 理 系 统 登 录',
+    registerTitle: '用 户 注 册',
+    register: '注册（演示环境，请自行注册账号体验，注册账号默认权限Admin）',
     logIn: '登录',
     username: '账号',
     password: '密码',
@@ -333,7 +335,7 @@ export default {
   },
   departmentInfo: {
     id: '部门ID',
-    depName: '部门名称',
+    deptName: '部门名称',
     userCount: '用户数',
     sort: '排序',
     upMenus: '上级部门'
