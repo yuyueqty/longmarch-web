@@ -112,6 +112,17 @@ export default {
     confirm: 'Confirm',
     cancel: 'Cancel'
   },
+  routeInfo: {
+    path: 'Path',
+    component: 'Component',
+    redirect: 'Redirect',
+    name: 'Name',
+    title: 'Title',
+    icon: 'Icon',
+    hidden: 'Hidden',
+    cache: 'Cache',
+    sort: 'Sort'
+  },
   guide: {
     description: 'The guide page is useful for some people who entered the project for the first time. You can briefly introduce the features of the project. Demo is based on ',
     button: 'Show Guide'

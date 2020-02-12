@@ -235,12 +235,23 @@ export default {
     id: '角色ID',
     parentId: '父节点ID',
     permissionName: '权限名称',
-    permissionString: '权限编码',
+    permissionString: '权限标识',
     description: '权限描述',
     type: '权限类型',
     status: '权限状态',
     createTime: '创建时间',
     upMenus: '上级菜单'
+  },
+  routeInfo: {
+    path: '路由地址',
+    component: '组件路径',
+    redirect: '重定向',
+    name: '组件名称',
+    title: '菜单标题',
+    icon: '菜单图标',
+    hidden: '菜单可见',
+    cache: '菜单缓存',
+    sort: '排序'
   },
   dictionaryInfo: {
     id: '字典ID',

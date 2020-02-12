@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+import { fetchList } from '@/api/Article'
 import { parseTime } from '@/utils'
 // options components
 import FilenameOption from './components/FilenameOption'

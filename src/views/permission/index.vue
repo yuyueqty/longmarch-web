@@ -12,7 +12,7 @@
         row-key="id"
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
-        <el-table-column :label="$t('permissionInfo.permissionName')">
+        <el-table-column :label="$t('permissionInfo.permissionName')" width="160px">
           <template slot-scope="scope">
             <span>{{ scope.row.permissionName }}</span>
           </template>
@@ -29,6 +29,16 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column :label="$t('routeInfo.icon')" align="icon">
+          <template slot-scope="scope">
+            <span><svg-icon :icon-class="scope.row.icon" /></span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('routeInfo.sort')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.sort }}</span>
+          </template>
+        </el-table-column>
         <el-table-column v-if="checkPermission(['sys:permission:update'])" :label="$t('permissionInfo.status')" align="center">
           <template slot-scope="scope">
             <el-switch
@@ -39,13 +49,13 @@
             />
           </template>
         </el-table-column>
-        <el-table-column :label="$t('permissionInfo.status')" align="center">
+        <!-- <el-table-column :label="$t('permissionInfo.status')" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status | dictFirst(dictionary.style_dict)">
               <span>{{ scope.row.status | dictFirst(dictionary.status_dict) }}</span>
             </el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('permissionInfo.createTime')" align="center" width="160px">
           <template slot-scope="scope">
             <span>{{ scope.row.createTime }}</span>
@@ -64,26 +74,7 @@
       </el-table>
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('permissionInfo.permissionName')" prop="permissionName">
-          <el-input v-model="temp.permissionName" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('permissionInfo.permissionString')" prop="permissionString">
-          <el-input v-model="temp.permissionString" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('permissionInfo.description')" prop="description">
-          <el-input v-model="temp.description" />
-        </el-form-item>
-        <el-form-item :label="$t('permissionInfo.type')">
-          <el-select v-model="temp.type" class="filter-item">
-            <el-option v-for="item in dictionary.perm_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('permissionInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 540px; margin-left:20px;">
         <el-form-item :label="$t('permissionInfo.upMenus')">
           <el-cascader
             v-model="permsIds"
@@ -95,6 +86,88 @@
             @change="handleChange"
           />
         </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item :label="$t('permissionInfo.permissionName')" prop="permissionName">
+              <el-input v-model="temp.permissionName" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('permissionInfo.permissionString')" prop="permissionString">
+              <el-input v-model="temp.permissionString" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item :label="$t('permissionInfo.type')">
+              <el-radio-group v-model="temp.type">
+                <el-radio-button v-for="item in dictionary.perm_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('permissionInfo.status')">
+              <el-radio-group v-model="temp.status">
+                <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <div v-if="temp.type === 1">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.hidden')" prop="hidden">
+                <el-radio-group v-model="temp.hidden">
+                  <el-radio-button v-for="item in dictionary.hidden_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.cache')" prop="cache">
+                <el-radio-group v-model="temp.cache">
+                  <el-radio-button v-for="item in dictionary.cache_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.title')" prop="title">
+                <el-input v-model="temp.title" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.icon')" prop="icon">
+                <svg-icon :icon-class="temp.icon" /><el-input v-model="temp.icon" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.name')" prop="name">
+                <el-input v-model="temp.name" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.component')" prop="component">
+                <el-input v-model="temp.component" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.redirect')" prop="redirect">
+                <el-input v-model="temp.redirect" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="$t('routeInfo.sort')" prop="sort">
+                <el-input-number v-model="temp.sort" :min="1" :max="10000" @change="handleChange3" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -132,6 +205,7 @@ export default {
       tableKey: 0,
       list: null,
       total: 0,
+      num: 0,
       listLoading: true,
       listQuery: {
         current: 1,
@@ -183,12 +257,14 @@ export default {
     resetTemp() {
       this.temp = {
         id: null,
-        parentId: null,
+        parentId: 0,
         permissionName: null,
         permissionString: null,
         description: null,
-        type: null,
-        status: null,
+        type: 1,
+        status: 1,
+        hidden: 0,
+        cache: 1,
         createTime: null
       }
     },
@@ -205,6 +281,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.parentId = this.permsIds[this.permsIds.length - 1]
+          // this.temp.sort = this.num
           create(this.temp).then(() => {
             // this.list.unshift(this.temp)
             this.dialogFormVisible = false
@@ -233,6 +310,7 @@ export default {
           const tempData = Object.assign({}, this.temp)
           tempData.parentIds = this.permsIds.join()
           tempData.parentId = this.permsIds[this.permsIds.length - 1]
+          // tempData.sort = this.num
           update(tempData).then(() => {
             this.getList()
             this.dialogFormVisible = false
@@ -274,6 +352,9 @@ export default {
     },
     handleChange(value) {
       this.permsIds = value
+    },
+    handleChange3(value) {
+      this.temp.sort = value
     },
     changeSwitch($event, id) {
       const o = { id: id, status: $event }
