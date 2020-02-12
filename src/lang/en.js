@@ -76,7 +76,8 @@ export default {
     cmsManage: 'CMSManage',
     articleManage: 'ArticleManage',
     categoryManage: 'CategoryManage',
-    departmentManage: 'DepartmentManage'
+    departmentManage: 'DepartmentManage',
+    sysMonitor: 'SystemMonitor'
   },
   navbar: {
     dashboard: 'Dashboard',

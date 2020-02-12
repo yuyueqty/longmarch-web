@@ -8,7 +8,7 @@ export default {
     pagePermission: '页面权限',
     directivePermission: '指令权限',
     icons: '图标',
-    components: '组件',
+    components: '组件管理',
     tinymce: '富文本编辑器',
     markdown: 'Markdown',
     jsonEditor: 'JSON 编辑器',
@@ -76,7 +76,8 @@ export default {
     cmsManage: '内容管理',
     articleManage: '文章管理',
     categoryManage: '分类管理',
-    departmentManage: '部门管理'
+    departmentManage: '部门管理',
+    sysMonitor: '系统监控'
   },
   navbar: {
     dashboard: '首页',

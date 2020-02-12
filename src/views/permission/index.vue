@@ -29,11 +29,11 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('routeInfo.icon')" align="icon">
+        <!-- <el-table-column :label="$t('routeInfo.icon')" align="icon">
           <template slot-scope="scope">
             <span><svg-icon :icon-class="scope.row.icon" /></span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('routeInfo.sort')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.sort }}</span>
@@ -132,6 +132,13 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item :label="$t('routeInfo.path')" prop="path">
+                <el-input v-model="temp.path" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item :label="$t('routeInfo.title')" prop="title">
                 <el-input v-model="temp.title" />
@@ -139,7 +146,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item :label="$t('routeInfo.icon')" prop="icon">
-                <svg-icon :icon-class="temp.icon" /><el-input v-model="temp.icon" />
+                <el-input v-model="temp.icon" />
               </el-form-item>
             </el-col>
           </el-row>
