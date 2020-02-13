@@ -38,9 +38,11 @@
         </el-table-column>
         <el-table-column :label="$t('roleInfo.userCount')">
           <template slot-scope="scope">
-            <router-link :to="{ name: 'UserManage', query: {roleId: scope.row.id} }">
-              <span><el-tag type="danger">{{ scope.row.userCount }}</el-tag></span>
-            </router-link>
+            <span>
+              <el-tag type="danger" @click="$router.push({name:'UserManage',params:{roleId: scope.row.id}})">
+                {{ scope.row.userCount }}
+              </el-tag>
+            </span>
           </template>
         </el-table-column>
         <el-table-column v-if="checkPermission(['sys:role:update'])" :label="$t('roleInfo.status')" align="center">

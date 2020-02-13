@@ -12,6 +12,9 @@
         <el-button v-permission="['sys:user:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
           {{ $t('table.batchDelete') }}
         </el-button>
+        <el-button class="filter-item" style="margin-left: 20%;" @click="$router.push({name:'RoleManage'})">
+          {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
+        </el-button>
       </div>
       <el-table
         :key="tableKey"
@@ -256,12 +259,12 @@ export default {
     checkPermission,
     getList() {
       this.listLoading = true
-      this.listQuery.roleId = this.$route.query.roleId
+      this.listQuery.roleId = this.$route.params.roleId
       fetchList(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
-        this.$router.push({ name: 'UserManage' })
+        // this.$router.push({ name: 'UserManage' })
       })
     },
     getDeptList() {

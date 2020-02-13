@@ -94,7 +94,7 @@
             <el-button v-permission="['job:schedule:reset']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleReset(row)">
               {{ $t('table.reset') }}
             </el-button>
-            <el-button v-permission="['job:log:show']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleJobLog(row)">
+            <el-button v-permission="['job:schedule:log']" class="filter-item" style="margin-left: 10px;" type="danger" @click="$router.push({name:'JoblogManage',params:{jobId: row.id}})">
               {{ $t('table.jobLog') }}
             </el-button>
           </template>
@@ -472,9 +472,6 @@ export default {
           message: '操作完成'
         })
       })
-    },
-    handleJobLog(row) {
-      this.$router.push({ name: 'JoblogManage', query: { jobId: row.id }})
     },
     handleSelectionChange(val) {
       this.ids = val

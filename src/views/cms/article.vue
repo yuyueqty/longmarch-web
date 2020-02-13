@@ -121,9 +121,12 @@
         </el-table-column>
         <el-table-column v-if="checkPermission(['cms:article:update', 'cms:article:delete'])" fixed="right" :label="$t('table.actions')" align="center" width="200px" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <router-link :to="'/cms/edit/'+row.id">
+            <!-- <router-link :to="{name: 'EditArticle'}">
               <el-button v-permission="['cms:article:update']" class="filter-item" style="margin-left: 10px;" type="primary">{{ $t('table.edit') }}</el-button>
-            </router-link>
+            </router-link> -->
+            <el-button v-permission="['cms:article:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="$router.push({name:'EditArticle',params:{id: row.id}})">
+              {{ $t('table.edit') }}
+            </el-button>
             <el-button v-permission="['cms:article:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="handleDelete(row)">
               {{ $t('table.delete') }}
             </el-button>

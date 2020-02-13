@@ -29,11 +29,11 @@
             </el-tag>
           </template>
         </el-table-column>
-        <!-- <el-table-column :label="$t('routeInfo.icon')" align="icon">
+        <el-table-column :label="$t('routeInfo.icon')" align="center">
           <template slot-scope="scope">
             <span><svg-icon :icon-class="scope.row.icon" /></span>
           </template>
-        </el-table-column> -->
+        </el-table-column>
         <el-table-column :label="$t('routeInfo.sort')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.sort }}</span>
@@ -74,7 +74,7 @@
       </el-table>
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 540px; margin-left:20px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 560px; margin-left:15px;">
         <el-form-item :label="$t('permissionInfo.upMenus')">
           <el-cascader
             v-model="permsIds"
@@ -99,14 +99,14 @@
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="14">
             <el-form-item :label="$t('permissionInfo.type')">
               <el-radio-group v-model="temp.type">
                 <el-radio-button v-for="item in dictionary.perm_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="10">
             <el-form-item :label="$t('permissionInfo.status')">
               <el-radio-group v-model="temp.status">
                 <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
@@ -114,7 +114,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <div v-if="temp.type === 1">
+        <div v-if="temp.type !== 2">
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item :label="$t('routeInfo.hidden')" prop="hidden">
@@ -146,10 +146,53 @@
             </el-col>
             <el-col :span="12">
               <el-form-item :label="$t('routeInfo.icon')" prop="icon">
-                <el-input v-model="temp.icon" />
+                <el-input v-model="temp.icon" placeholder="请输入内容">
+                  <template slot="prepend">
+                    <el-button @click="centerDialogVisible = true">
+                      <svg-icon :icon-class="temp.icon?temp.icon:'search'" />
+                    </el-button>
+                  </template>
+                </el-input>
               </el-form-item>
             </el-col>
           </el-row>
+          <el-dialog
+            width="80%"
+            title="Icons"
+            :visible.sync="centerDialogVisible"
+            append-to-body
+          >
+            <div class="icons-container">
+              <el-tabs type="border-card">
+                <el-tab-pane label="Icons">
+                  <div v-for="item of svgIcons" :key="item" @click="handleClipboard(generateIconCode(item),$event)">
+                    <el-tooltip placement="top">
+                      <div slot="content">
+                        {{ generateIconCode(item) }}
+                      </div>
+                      <div class="icon-item">
+                        <svg-icon :icon-class="item" class-name="disabled" />
+                        <span>{{ item }}</span>
+                      </div>
+                    </el-tooltip>
+                  </div>
+                </el-tab-pane>
+                <!-- <el-tab-pane label="Element-UI Icons">
+                  <div v-for="item of elementIcons" :key="item" @click="handleClipboard(generateElementIconCode(item),$event)">
+                    <el-tooltip placement="top">
+                      <div slot="content">
+                        {{ generateElementIconCode(item) }}
+                      </div>
+                      <div class="icon-item">
+                        <i :class="'el-icon-' + item" />
+                        <span>{{ item }}</span>
+                      </div>
+                    </el-tooltip>
+                  </div>
+                </el-tab-pane> -->
+              </el-tabs>
+            </div>
+          </el-dialog>
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item :label="$t('routeInfo.name')" prop="name">
@@ -194,6 +237,9 @@ import checkPermission from '@/utils/permission'
 import { treeList, create, update, remove, changeStatus } from '@/api/SysPermission'
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
+import clipboard from '@/utils/clipboard'
+import svgIcons from './svg-icons'
+import elementIcons from './element-icons'
 
 export default {
   name: 'PermissionManage',
@@ -232,6 +278,7 @@ export default {
         createTime: null
       },
       dialogFormVisible: false,
+      centerDialogVisible: false,
       dialogStatus: 'create',
       textMap: {
         update: '编辑权限',
@@ -242,7 +289,9 @@ export default {
         permissionString: [{ required: true, message: 'permissionString name is required', trigger: 'blur' }]
       },
       permsIds: [7],
-      permsList: []
+      permsList: [],
+      svgIcons,
+      elementIcons
     }
   },
   computed: {
@@ -396,7 +445,46 @@ export default {
           }
         }
       }
+    },
+    generateIconCode(symbol) {
+      // return `<svg-icon icon-class="${symbol}" />`
+      return symbol
+    },
+    generateElementIconCode(symbol) {
+      return `<i class="el-icon-${symbol}" />`
+    },
+    handleClipboard(text, event) {
+      this.temp.icon = text
+      this.centerDialogVisible = false
+      clipboard(text, event)
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+.icons-container {
+  margin: 10px 20px 0;
+  overflow: hidden;
+
+  .icon-item {
+    margin: 20px;
+    height: 85px;
+    text-align: center;
+    width: 100px;
+    float: left;
+    font-size: 30px;
+    color: #24292e;
+    cursor: pointer;
+  }
+
+  span {
+    display: block;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .disabled {
+    pointer-events: none;
+  }
+}
+</style>
