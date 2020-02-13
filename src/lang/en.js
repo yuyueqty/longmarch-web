@@ -77,7 +77,9 @@ export default {
     articleManage: 'ArticleManage',
     categoryManage: 'CategoryManage',
     departmentManage: 'DepartmentManage',
-    sysMonitor: 'SystemMonitor'
+    sysMonitor: 'SystemMonitor',
+    sqlMonitor: 'SqlMonitor',
+    swaggerApi: 'SwaggerApi'
   },
   navbar: {
     dashboard: 'Dashboard',

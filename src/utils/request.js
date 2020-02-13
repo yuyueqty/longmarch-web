@@ -46,26 +46,28 @@ service.interceptors.response.use(
     const res = response.data
 
     // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-    if (res.code === 10) {
-      // to re-login
-      MessageBox.confirm(res.message, '错误提示', {
-        type: 'warning'
-      }).then(() => {
-        store.dispatch('user/resetToken').then(() => {
-          location.reload()
-        })
-      })
-    }
+
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 1000 && res.code !== 200) {
-      MessageBox.confirm(res.message, '错误提示', {
-        type: 'warning'
-      }).then(() => {
-        if (res.code === 401) {
-          location.reload()
-        }
-      })
-      return Promise.reject(new Error(res.message || 'Error'))
+      if (res.code === 10) {
+        // to re-login
+        MessageBox.confirm('用户登录已失效，您可以取消以停留在此页面，或再次登录', '退出', {
+          confirmButtonText: '登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('user/logout')
+        })
+      } else {
+        MessageBox.confirm(res.message, '错误提示', {
+          type: 'warning'
+        }).then(() => {
+          if (res.code === 401) {
+            location.reload()
+          }
+        })
+        return Promise.reject(new Error(res.message || 'Error'))
+      }
     } else {
       return res
     }

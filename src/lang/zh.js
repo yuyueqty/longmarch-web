@@ -77,7 +77,9 @@ export default {
     articleManage: '文章管理',
     categoryManage: '分类管理',
     departmentManage: '部门管理',
-    sysMonitor: '系统监控'
+    sysMonitor: '系统监控',
+    sqlMonitor: 'SQL监控',
+    swaggerApi: 'API接口'
   },
   navbar: {
     dashboard: '首页',
@@ -88,7 +90,7 @@ export default {
     size: '布局大小'
   },
   login: {
-    title: '长 征 后 台 管 理 系 统 登 录',
+    title: '长 征 管 理 系 统 登 录',
     registerTitle: '用 户 注 册',
     register: '注册（演示环境，请自行注册账号体验，注册账号默认权限Admin）',
     logIn: '登录',
