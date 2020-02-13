@@ -8,20 +8,6 @@
               <el-form-item :label="$t('categoryInfo.categoryName')" prop="categoryName">
                 <el-input v-model="temp.categoryName" />
               </el-form-item>
-              <el-form-item :label="$t('categoryInfo.status')">
-                <el-select v-model="temp.status" class="filter-item">
-                  <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-              </el-form-item>
-              <el-form-item :label="$t('categoryInfo.remark')" prop="remark">
-                <el-input v-model="temp.remark" />
-              </el-form-item>
-              <el-form-item :label="$t('categoryInfo.icon')" prop="icon">
-                <el-input v-model="temp.icon" />
-              </el-form-item>
-              <el-form-item :label="$t('categoryInfo.redirectUrl')" prop="redirectUrl">
-                <el-input v-model="temp.redirectUrl" />
-              </el-form-item>
               <el-form-item :label="$t('categoryInfo.upMenus')">
                 <el-cascader
                   v-model="selectedPids"
@@ -32,6 +18,23 @@
                   :props="{ value: 'id', label: 'categoryName' }"
                   @change="handleChange"
                 />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.remark')" prop="remark">
+                <el-input v-model="temp.remark" />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.icon')" prop="icon">
+                <el-input v-model="temp.icon" />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.redirectUrl')" prop="redirectUrl">
+                <el-input v-model="temp.redirectUrl" />
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.status')">
+                <el-radio-group v-model="temp.status">
+                  <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item :label="$t('categoryInfo.sort')" prop="sort">
+                <el-input-number v-model="temp.sort" :min="1" :max="10000" @change="handleChange3" />
               </el-form-item>
             </el-form>
             <div>
@@ -122,8 +125,8 @@ export default {
         categoryName: null,
         redirectUrl: null,
         icon: null,
-        sort: null,
-        status: null,
+        sort: 1,
+        status: 1,
         remark: null
       },
       rules: {
@@ -159,8 +162,8 @@ export default {
         categoryName: null,
         redirectUrl: null,
         icon: null,
-        sort: null,
-        status: null,
+        sort: 1,
+        status: 1,
         remark: null
       }
     },
@@ -258,6 +261,9 @@ export default {
     },
     handleChange(value) {
       this.selectedPids = value
+    },
+    handleChange3(value) {
+      this.temp.sort = value
     }
   }
 }

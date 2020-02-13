@@ -85,16 +85,22 @@
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:40px;">
-        <el-form-item :label="$t('roleInfo.roleName')" prop="roleName">
-          <el-input v-model="temp.roleName" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('roleInfo.description')" prop="description">
-          <el-input v-model="temp.description" />
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item :label="$t('roleInfo.roleName')" prop="roleName">
+              <el-input v-model="temp.roleName" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('roleInfo.description')" prop="description">
+              <el-input v-model="temp.description" />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item :label="$t('roleInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+          <el-radio-group v-model="temp.status">
+            <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('roleInfo.dataPerm')" prop="dataPerm">
           <el-radio-group v-model="temp.dataPerm">

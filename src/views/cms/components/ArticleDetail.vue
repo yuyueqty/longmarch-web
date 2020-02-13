@@ -63,8 +63,20 @@
                 <el-option v-for="item in dictionary.publish_status_dict" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
-            <el-form-item label="推荐文章" class="postInfo-container-item">
-              <el-checkbox v-model="isRecommend" />
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="推荐文章" class="postInfo-container-item">
+                  <el-checkbox v-model="isRecommend" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="定时发布" class="postInfo-container-item">
+                  <el-checkbox v-model="isAutoPublish" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item v-if="isAutoPublish" label="文章定时发布时间" class="postInfo-container-item">
+              <el-date-picker v-model="postForm.publishTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择发布时间" />
             </el-form-item>
             <el-form-item label="标签（多个标签用逗号分隔）">
               <el-input
@@ -76,12 +88,6 @@
             </el-form-item>
             <el-form-item label="文章作者（默认为当前登录用户）" class="postInfo-container-item">
               <el-input v-model="postForm.author" type="text" autosize placeholder="请输入文章作者" />
-            </el-form-item>
-            <el-form-item label="定时发布" class="postInfo-container-item">
-              <el-checkbox v-model="isAutoPublish" />
-            </el-form-item>
-            <el-form-item label="文章定时发布时间" class="postInfo-container-item">
-              <el-date-picker v-model="postForm.publishTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择发布时间" />
             </el-form-item>
           </el-col>
         </el-row>

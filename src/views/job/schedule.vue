@@ -103,9 +103,9 @@
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:40px;">
         <el-form-item :label="$t('jobInfo.beanName')" prop="beanName">
-          <el-input v-model="temp.beanName" :disabled="dialogStatus==='update'" />
+          <el-input v-model="temp.beanName" />
         </el-form-item>
         <el-form-item :label="$t('jobInfo.methodName')" prop="methodName">
           <el-input v-model="temp.methodName" />

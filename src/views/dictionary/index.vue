@@ -101,24 +101,33 @@
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('dictionaryInfo.code')" prop="code">
-          <el-input v-model="temp.code" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.label')" prop="label">
-          <el-input v-model="temp.label" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.value')" prop="value">
-          <el-input v-model="temp.value" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.description')" prop="description">
-          <el-input v-model="temp.description" />
-        </el-form-item>
-        <el-form-item :label="$t('dictionaryInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item :label="$t('dictionaryInfo.code')" prop="code">
+              <el-input v-model="temp.code" :disabled="dialogStatus==='update'" />
+            </el-form-item>
+            <el-form-item :label="$t('dictionaryInfo.label')" prop="label">
+              <el-input v-model="temp.label" />
+            </el-form-item>
+            <el-form-item :label="$t('dictionaryInfo.status')">
+              <el-radio-group v-model="temp.status">
+                <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('dictionaryInfo.description')" prop="description">
+              <el-input v-model="temp.description" />
+            </el-form-item>
+            <el-form-item :label="$t('dictionaryInfo.value')" prop="value">
+              <el-input v-model="temp.value" />
+            </el-form-item>
+            <el-form-item :label="$t('dictionaryInfo.sort')" prop="sort">
+              <el-input-number v-model="temp.sort" :min="1" :max="10000" @change="handleChange3" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -367,6 +376,9 @@ export default {
           break
         }
       }
+    },
+    handleChange3(value) {
+      this.temp.sort = value
     }
   }
 }

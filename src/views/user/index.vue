@@ -119,41 +119,47 @@
       </div>
     </el-dialog>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('userInfo.username')" prop="username">
-          <el-input v-model="temp.username" :disabled="dialogStatus==='update'" />
-        </el-form-item>
-        <el-form-item :label="$t('userInfo.phone')" prop="phone">
-          <el-input v-model="temp.phone" />
-        </el-form-item>
-        <el-form-item :label="$t('userInfo.status')">
-          <el-select v-model="temp.status" class="filter-item">
-            <el-option v-for="item in dictionary.status_dict" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-tooltip class="item" effect="dark" :content="$t('contentMessage.roleMsg')" placement="top">
-          <el-form-item :label="$t('contentMessage.roleLabel')" prop="roleIds">
-            <el-select v-model="selectedRoles" multiple :placeholder="$t('contentMessage.select')">
-              <el-option
-                v-for="item in roleList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item :label="$t('userInfo.username')" prop="username">
+              <el-input v-model="temp.username" :disabled="dialogStatus==='update'" />
+            </el-form-item>
+            <el-tooltip class="item" effect="dark" :content="$t('contentMessage.roleMsg')" placement="top">
+              <el-form-item :label="$t('contentMessage.roleLabel')" prop="roleIds">
+                <el-select v-model="selectedRoles" multiple :placeholder="$t('contentMessage.select')">
+                  <el-option
+                    v-for="item in roleList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-tooltip>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('userInfo.phone')" prop="phone">
+              <el-input v-model="temp.phone" />
+            </el-form-item>
+            <el-form-item :label="$t('departmentInfo.upMenus')">
+              <el-cascader
+                v-model="deptIds"
+                clearable
+                expand-trigger="hover"
+                change-on-select
+                :show-all-levels="false"
+                :options="deptList"
+                :props="{ value: 'id', label: 'deptName' }"
+                @change="deptHandleChange"
               />
-            </el-select>
-          </el-form-item>
-        </el-tooltip>
-        <el-form-item :label="$t('departmentInfo.upMenus')">
-          <el-cascader
-            v-model="deptIds"
-            clearable
-            expand-trigger="hover"
-            change-on-select
-            :show-all-levels="false"
-            :options="deptList"
-            :props="{ value: 'id', label: 'deptName' }"
-            @change="deptHandleChange"
-          />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item :label="$t('userInfo.status')">
+          <el-radio-group v-model="temp.status">
+            <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('userInfo.headImgUrl')" prop="headImgUrl">
           <el-upload
@@ -163,7 +169,7 @@
             :with-credentials="true"
             :on-success="handlePictureCardPreview"
           >
-            <img v-if="temp.headImgUrl" style="margin-top: 6px;border-radius: 100px;width: 100px; height: 100px" :src="temp.headImgUrl" class="avatar">
+            <img v-if="temp.headImgUrl" style="margin-top: 6px;border-radius: 100px;width: 60px; height: 60px" :src="temp.headImgUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
