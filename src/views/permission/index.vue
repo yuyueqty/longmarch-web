@@ -305,8 +305,8 @@ export default {
     getList() {
       this.listLoading = true
       treeList().then(response => {
-        this.list = response.data
-        this.permsList = response.permsList
+        this.list = response.data.permissionTrees
+        this.permsList = response.data.permsList
         this.listLoading = false
       })
     },

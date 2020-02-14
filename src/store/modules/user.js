@@ -43,9 +43,9 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { username, password, rememberMe } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ username: username.trim(), password: password, rememberMe: rememberMe }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -79,12 +79,11 @@ const actions = {
 
         const { roles, permissions, menus, dictionary, username, avatar, introduction } = data
 
-        // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
+          commit('SET_ROLES', ['未授权用户'])
+        } else {
+          commit('SET_ROLES', roles)
         }
-        data.roles = menus
-        commit('SET_ROLES', roles)
         commit('SET_PERMISSIONS', permissions)
         commit('SET_MENUS', menus)
         commit('SET_DICTIONARY', dictionary)

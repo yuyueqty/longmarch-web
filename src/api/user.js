@@ -24,6 +24,13 @@ export function getInfo(token) {
   })
 }
 
+export function refresh() {
+  return request({
+    url: '/refresh',
+    method: 'get'
+  })
+}
+
 export function logout() {
   return request({
     url: '/logout',
