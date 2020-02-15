@@ -79,7 +79,9 @@ export default {
     departmentManage: 'DepartmentManage',
     sysMonitor: 'SystemMonitor',
     sqlMonitor: 'SqlMonitor',
-    swaggerApi: 'SwaggerApi'
+    swaggerApi: 'SwaggerApi',
+    generator: 'Generator',
+    systemTool: 'SystemTool'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -349,5 +351,17 @@ export default {
     userCount: 'User Count',
     sort: 'sort',
     upMenus: 'Up Dep'
+  },
+  tableInfo: {
+    tableName: 'Table Name',
+    engine: 'Engine',
+    encoding: 'Encoding',
+    comment: 'Comment',
+    createTime: 'Create Time'
+  },
+  columnInfo: {
+    columnName: 'Column Name',
+    columnType: 'Column Type',
+    comment: 'Comment'
   }
 }

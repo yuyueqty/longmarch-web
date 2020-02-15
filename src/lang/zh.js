@@ -79,7 +79,9 @@ export default {
     departmentManage: '部门管理',
     sysMonitor: '系统监控',
     sqlMonitor: 'SQL监控',
-    swaggerApi: 'API接口'
+    swaggerApi: 'API接口',
+    generator: '代码生成',
+    systemTool: '系统工具'
   },
   navbar: {
     dashboard: '首页',
@@ -353,5 +355,17 @@ export default {
     userCount: '用户数',
     sort: '排序',
     upMenus: '上级部门'
+  },
+  tableInfo: {
+    tableName: '表名',
+    engine: '数据库引擎',
+    encoding: '字符集编码',
+    comment: '备注',
+    createTime: '创建时间'
+  },
+  columnInfo: {
+    columnName: '字段名称',
+    columnType: '字段类型',
+    comment: '备注'
   }
 }
