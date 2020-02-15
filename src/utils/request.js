@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
+import { refresh } from '@/api/user'
 import { getToken } from '@/utils/auth'
 
 // create an axios instance
@@ -45,41 +46,51 @@ service.interceptors.response.use(
   response => {
     const res = response.data
 
-    // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 1000 && res.code !== 200) {
+    if (res.code !== 1000) {
+      Message({
+        message: res.message || 'Error',
+        type: 'error',
+        duration: 5 * 1000
+      })
+
+      if (res.code === 401) {
+        refresh().then(response => {
+          location.reload()
+        })
+      }
+      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 10) {
         // to re-login
-        MessageBox.confirm('用户登录已失效，您可以取消以停留在此页面，或再次登录', '退出', {
-          confirmButtonText: '登录',
+        MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
+          confirmButtonText: '重新登录',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          store.dispatch('user/logout')
-        })
-      } else {
-        MessageBox.confirm(res.message, '错误提示', {
-          type: 'warning'
-        }).then(() => {
-          if (res.code === 401) {
+          store.dispatch('user/logout').then(() => {
             location.reload()
-          }
+          })
         })
-        return Promise.reject(new Error(res.message || 'Error'))
       }
+      return Promise.reject(new Error(res.message || 'Error'))
     } else {
       return res
     }
   },
   error => {
-    console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
+    // Error: Network Error
+    console.log(error)
+    // if (error.toString().indexOf('Error: Network Error') !== -1) {
+    //   Message({
+    //     message: '网络请求超时',
+    //     title: '网络请求超时',
+    //     duration: 5000
+    //   })
+    //   return Promise.reject(error)
+    // }
+    store.dispatch('user/logout').then(() => {
+      location.reload()
     })
-    return Promise.reject(error)
   }
 )
 
