@@ -1,5 +1,6 @@
 module.exports = {
   title: '长征后台管理系统',
+  logo: 'http://upload.longmarch.top/Fu4PdLM7iWZiXMnqUzHRUTPsqrr6',
 
   /**
    * @type {boolean} true | false

@@ -1,16 +1,20 @@
 <template>
   <el-card style="margin-bottom:20px;">
     <div slot="header" class="clearfix">
-      <span>About me</span>
+      <svg-icon icon-class="person" /><span>{{ $t('route.profile') }}</span>
     </div>
 
     <div class="user-profile">
       <div class="box-center">
-        <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
-          <div>Hello</div>
-          {{ user.role }}
-        </pan-thumb>
-      </div>
+        <el-upload
+          class="avatar-uploader"
+          :action="uploadActionUrl"
+          :show-file-list="false"
+          :with-credentials="true"
+          :on-success="handlePictureCardPreview"
+        >
+          <img v-if="userInfo.headImgUrl" style="margin-top: 6px;border-radius: 100px;width: 100px; height: 100px" :src="userInfo.headImgUrl" class="avatar">
+        </el-upload></div>
       <div class="box-center">
         <div class="user-name text-center">{{ user.name }}</div>
         <div class="user-role text-center text-muted">{{ user.role | uppercaseFirst }}</div>
@@ -19,44 +23,69 @@
 
     <div class="user-bio">
       <div class="user-education user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="education" /><span>Education</span></div>
+        <div class="user-bio-section-header"><svg-icon icon-class="userinfo" /><span>用户资料</span></div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            JS in Computer Science from the University of Technology
+            <el-form ref="dataForm" :model="userInfo" label-width="60px">
+              <el-form-item label="账号：">
+                <span>{{ userInfo.username }}</span>
+              </el-form-item>
+              <el-form-item label="手机：">
+                <span v-if="!isEdit">{{ userInfo.phone }}</span>
+                <el-input v-if="isEdit" v-model="userInfo.phone" />
+              </el-form-item>
+              <el-form-item label="部门：">
+                <span>{{ userInfo.dept }}</span>
+              </el-form-item>
+              <el-form-item label="次数：">
+                <span>{{ userInfo.loginCount }}</span>
+              </el-form-item>
+              <el-form-item label="时间：">
+                <span>{{ userInfo.lastLoginTime }}</span>
+              </el-form-item>
+              <el-button v-if="!isEdit" type="primary" icon="el-icon-edit" circle @click="handleUpdate()" />
+              <el-button v-if="isEdit" type="success" icon="el-icon-check" circle @click="saveData()" />
+            </el-form>
           </div>
         </div>
       </div>
-
       <div class="user-skills user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>Skills</span></div>
+        <div class="user-bio-section-header"><svg-icon icon-class="safety" /><span>安全设置</span></div>
         <div class="user-bio-section-body">
           <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="70" />
-          </div>
-          <div class="progress-item">
-            <span>JavaScript</span>
-            <el-progress :percentage="18" />
-          </div>
-          <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="12" />
-          </div>
-          <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress :percentage="100" status="success" />
+            <el-button type="text" @click="dialogStatus = true">修改密码</el-button>
           </div>
         </div>
       </div>
+      <el-dialog title="修改密码" :visible.sync="dialogStatus">
+        <el-form ref="dataForm" :rules="rules" :model="temp" label-width="80px" style="width: 400px; margin-left:80px;">
+          <el-form-item label="旧密码" prop="oldPassword">
+            <el-input v-model="temp.oldPassword" type="password" />
+          </el-form-item>
+          <el-form-item label="新密码" prop="newPassword">
+            <el-input v-model="temp.newPassword" type="password" />
+          </el-form-item>
+          <el-form-item label="确认密码" prop="confirmPassword">
+            <el-input v-model="temp.confirmPassword" type="password" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogStatus = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <el-button type="primary" @click="changePassword()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
+      </el-dialog>
     </div>
   </el-card>
 </template>
 
 <script>
-import PanThumb from '@/components/PanThumb'
+import { modifyingPersonalInfo, loadPersonalInfo, modifyingPersonalPassword } from '@/api/SysUser'
 
 export default {
-  components: { PanThumb },
   props: {
     user: {
       type: Object,
@@ -68,6 +97,80 @@ export default {
           roles: ''
         }
       }
+    }
+  },
+  data() {
+    return {
+      isEdit: false,
+      dialogStatus: false,
+      temp: {},
+      userInfo: {},
+      tempUserInfo: {},
+      rules: {
+        oldPassword: [{ required: true, message: '旧密码不能为空', trigger: 'blur' }],
+        newPassword: [{ required: true, message: '新密码不能为空', trigger: 'blur' }],
+        confirmPassword: [{ required: true, message: '确认密码不能为空', trigger: 'blur' }]
+      },
+      uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
+    }
+  },
+  computed: {
+    avatar() {
+      return this.$store.state.avatar
+    }
+  },
+  created() {
+    loadPersonalInfo().then(response => {
+      this.userInfo = response.data
+    })
+  },
+  methods: {
+    handleUpdate() {
+      this.isEdit = true
+      this.tempUserInfo = Object.assign({}, this.userInfo)
+    },
+    saveData() {
+      if (this.userInfo.phone === this.tempUserInfo.phone) {
+        this.isEdit = false
+        return
+      }
+      modifyingPersonalInfo(this.userInfo).then(response => {
+        this.isEdit = false
+        this.$notify({
+          title: '成功',
+          message: '修改成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    changePassword() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          modifyingPersonalPassword(this.temp).then(() => {
+            this.dialogStatus = false
+            this.$notify({
+              title: '成功',
+              message: '密码修改成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    handlePictureCardPreview(response, file, fileList) {
+      this.userInfo.headImgUrl = response.data.url
+      this.$store.commit('user/SET_AVATAR', this.userInfo.headImgUrl)
+      modifyingPersonalInfo(this.userInfo).then(response => {
+        this.isEdit = false
+        this.$notify({
+          title: '成功',
+          message: '修改成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
     }
   }
 }

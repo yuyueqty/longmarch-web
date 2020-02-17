@@ -40,7 +40,7 @@
           type="selection"
           width="55"
         />
-        <el-table-column :label="$t('dictionaryInfo.code')" width="150">
+        <el-table-column prop="code" sortable="custom" :label="$t('dictionaryInfo.code')" width="150">
           <template slot-scope="scope">
             <span>{{ scope.row.code }}</span>
           </template>
@@ -235,17 +235,11 @@ export default {
     },
     sortChange(data) {
       const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
+      if (prop !== null && order !== null) {
+        this.listQuery.prop = prop
+        this.listQuery.order = order
+        this.handleFilter()
       }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
     },
     resetTemp() {
       this.temp = {

@@ -23,6 +23,21 @@ export function create(data) {
   })
 }
 
+export function modifyingPersonalInfo(data) {
+  return request({
+    url: '/sys/user/modifyingPersonalInfo',
+    method: 'post',
+    data
+  })
+}
+
+export function loadPersonalInfo() {
+  return request({
+    url: '/sys/user/loadPersonalInfo',
+    method: 'get'
+  })
+}
+
 export function update(data) {
   return request({
     url: '/sys/user/update',
@@ -49,6 +64,14 @@ export function loadRoles() {
 export function changePassword(data) {
   return request({
     url: '/sys/user/changePassword',
+    method: 'post',
+    data
+  })
+}
+
+export function modifyingPersonalPassword(data) {
+  return request({
+    url: '/sys/user/modifyingPersonalPassword',
     method: 'post',
     data
   })
