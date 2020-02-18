@@ -81,7 +81,8 @@ export default {
     sqlMonitor: 'SQL监控',
     swaggerApi: 'API接口',
     generator: '代码生成',
-    systemTool: '系统工具'
+    systemTool: '系统工具',
+    memberManage: '会员管理'
   },
   navbar: {
     dashboard: '首页',
@@ -169,7 +170,8 @@ export default {
     goBack: '返回',
     addChildren: '添加子节点',
     changePassword: '修改密码',
-    batchAddUser: '添加用户'
+    batchAddUser: '添加用户',
+    fuzzySearch: '模糊搜索'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -367,5 +369,12 @@ export default {
     columnName: '字段名称',
     columnType: '字段类型',
     comment: '备注'
+  },
+  Member: {
+    id: 'ID',
+    name: '用户名',
+    sex: '性别',
+    status: '用户状态',
+    createTime: '创建日期'
   }
 }

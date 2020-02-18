@@ -81,7 +81,8 @@ export default {
     sqlMonitor: 'SqlMonitor',
     swaggerApi: 'SwaggerApi',
     generator: 'Generator',
-    systemTool: 'SystemTool'
+    systemTool: 'SystemTool',
+    memberManage: 'MemberManage'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -180,7 +181,8 @@ export default {
     goBack: 'Go Back',
     addChildren: 'Add Children',
     changePassword: 'Change Password',
-    batchAddUser: 'Batch AddUsers'
+    batchAddUser: 'Batch AddUsers',
+    fuzzySearch: 'Fuzzy Search'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -363,5 +365,12 @@ export default {
     columnName: 'Column Name',
     columnType: 'Column Type',
     comment: 'Comment'
+  },
+  Member: {
+    id: 'Id',
+    name: 'Name',
+    sex: 'Sex',
+    status: 'Status',
+    createTime: 'CreateTime'
   }
 }
