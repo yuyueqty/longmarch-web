@@ -13,3 +13,18 @@ export function tableColumns(tableName) {
     method: 'get'
   })
 }
+
+export function saveGenerator(data) {
+  return request({
+    url: '/sys/generator/saveGenerator',
+    method: 'post',
+    data
+  })
+}
+
+export function download(tableName) {
+  return request({
+    url: '/sys/generator/download?tableName=' + tableName,
+    method: 'get'
+  })
+}

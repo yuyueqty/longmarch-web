@@ -168,9 +168,7 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
-        current: 1,
-        size: 10,
-        fuzzySearch: null
+        current: 1
       },
       temp: {
         id: null,
