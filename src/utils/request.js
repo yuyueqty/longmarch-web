@@ -60,17 +60,28 @@ service.interceptors.response.use(
             location.reload()
           })
         })
-      }
-      if (res.code === 401) {
+      } else if (res.code === 20) {
+        // to re-login
+        MessageBox.confirm(res.message, '系统提示', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('user/logout').then(() => {
+            location.reload()
+          })
+        })
+      } else if (res.code === 401) {
         refresh().then(response => {
           location.reload()
         })
+      } else {
+        Message({
+          message: res.message || 'Error',
+          type: 'error',
+          duration: 5 * 1000
+        })
       }
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
       return res
