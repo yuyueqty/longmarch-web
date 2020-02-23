@@ -5,8 +5,11 @@
         <el-tag type="danger">
           {{ $t('tableInfo.tableName') }}：{{ tableName }}
         </el-tag>
-        <el-button class="filter-item" style="margin-left: 50%;" @click="$router.push({name:'GeneratorTable'})">
+        <el-button class="filter-item" style="float: right;margin-left: 2%;" @click="$router.push({name:'GeneratorTable'})">
           {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
+        </el-button>
+        <el-button class="filter-item" type="primary" style="float: right;margin-left: 2%;" @click="batchSaveGenerator">
+          {{ $t('table.batchSave') }}
         </el-button>
       </div>
       <el-table
@@ -112,11 +115,13 @@
 </template>
 
 <script>
-import { tableColumns, saveGenerator } from '@/api/GeneratorApi'
+import permission from '@/directive/permission/index.js'
+import { tableColumns, saveGenerator, batchSaveGenerator } from '@/api/GeneratorApi'
 import { loadDictionaryCode } from '@/api/SysDictionary'
 
 export default {
   name: 'ColumnManage',
+  directives: { permission },
   data() {
     return {
       // 表单类型（input, textarea, radio, checkbox, date）
@@ -165,7 +170,6 @@ export default {
       })
     },
     saveData(row) {
-      console.log(row.remark)
       if (row.remark === undefined || row.remark === '') {
         row.remark = row.comment
       }
@@ -173,6 +177,22 @@ export default {
         this.$notify({
           title: '成功',
           message: '创建成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    batchSaveGenerator() {
+      const newList = this.list.map(row => {
+        if (row.remark === null || row.remark === undefined || row.remark === '') {
+          row.remark = row.comment
+        }
+        return row
+      })
+      batchSaveGenerator(newList).then(response => {
+        this.$notify({
+          title: '成功',
+          message: '批量保存成功',
           type: 'success',
           duration: 2000
         })

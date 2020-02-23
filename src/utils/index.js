@@ -348,3 +348,16 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+// 下载文件
+export function downloadFile(obj, name, suffix) {
+  // const url = window.URL.createObjectURL(new Blob([obj]))
+  // const link = document.createElement('a')
+  // link.style.display = 'none'
+  // link.href = url
+  // const fileName = parseTime(new Date()) + '-' + name + '.' + suffix
+  // link.setAttribute('download', '')
+  // document.body.appendChild(link)
+  // link.click()
+  // document.body.removeChild(link)
+}

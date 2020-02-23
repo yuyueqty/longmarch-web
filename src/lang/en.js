@@ -183,7 +183,9 @@ export default {
     changePassword: 'Change Password',
     batchAddUser: 'Batch AddUsers',
     fuzzySearch: 'Fuzzy Search',
-    download: 'Download'
+    download: 'Download',
+    config: 'Config',
+    batchSave: 'Batch Save'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -221,7 +223,8 @@ export default {
     theme: 'Theme Color',
     tagsView: 'Open Tags-View',
     fixedHeader: 'Fixed Header',
-    sidebarLogo: 'Sidebar Logo'
+    sidebarLogo: 'Sidebar Logo',
+    uniqueOpened: 'Unique Opened'
   },
   userInfo: {
     id: 'User ID',

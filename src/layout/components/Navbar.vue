@@ -6,9 +6,11 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        <search id="header-search" class="right-menu-item" />
+
         <refresh id="header-search" class="right-menu-item" />
 
-        <search id="header-search" class="right-menu-item" />
+        <web id="header-search" class="right-menu-item" />
 
         <error-log class="errLog-container right-menu-item hover-effect" />
 
@@ -65,6 +67,7 @@ import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import Search from '@/components/HeaderSearch'
 import Refresh from '@/components/HeaderRefresh'
+import Web from '@/components/HeaderWeb'
 
 export default {
   components: {
@@ -75,7 +78,8 @@ export default {
     SizeSelect,
     LangSelect,
     Search,
-    Refresh
+    Refresh,
+    Web
   },
   computed: {
     ...mapGetters([

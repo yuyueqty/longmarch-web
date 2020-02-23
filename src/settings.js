@@ -32,5 +32,13 @@ module.exports = {
    * The default is only used in the production env
    * If you want to also use it in dev, you can pass ['production', 'development']
    */
-  errorLog: 'production'
+  errorLog: 'production',
+  /**
+   * 左侧菜单控制
+   */
+  uniqueOpened: true,
+  /**
+   * blog url
+   */
+  webUrl: 'http://blog.longmarch.top'
 }

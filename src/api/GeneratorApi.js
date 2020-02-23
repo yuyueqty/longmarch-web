@@ -22,9 +22,17 @@ export function saveGenerator(data) {
   })
 }
 
-export function download(tableName) {
+export function batchSaveGenerator(data) {
   return request({
-    url: '/sys/generator/download?tableName=' + tableName,
+    url: '/sys/generator/batchSaveGenerator',
+    method: 'post',
+    data
+  })
+}
+
+export function download(data) {
+  return request({
+    url: '/sys/generator/download?moduleName=' + data.moduleName + '&tableName=' + data.tableName,
     method: 'get'
   })
 }

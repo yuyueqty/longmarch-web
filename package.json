@@ -53,6 +53,7 @@
     "file-saver": "2.0.1",
     "fuse.js": "3.4.4",
     "js-cookie": "2.2.0",
+    "js-file-download": "^0.4.10",
     "jsonlint": "1.6.3",
     "jszip": "3.2.1",
     "normalize.css": "7.0.0",

@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { modifyingPersonalInfo, loadPersonalInfo, modifyingPersonalPassword } from '@/api/SysUser'
+import { modifyingPersonalInfo, loadPersonalInfo, modifyingPersonalPassword } from '@/api/SysCenterUser'
 
 export default {
   props: {

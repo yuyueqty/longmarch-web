@@ -12,7 +12,7 @@
         <el-button v-permission="['sys:user:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="handleDelete()">
           {{ $t('table.batchDelete') }}
         </el-button>
-        <el-button class="filter-item" style="margin-left: 20%;" @click="$router.push({name:'RoleManage'})">
+        <el-button class="filter-item" style="float: right;margin-left: 2%;" @click="$router.push({name:'RoleManage'})">
           {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
         </el-button>
       </div>

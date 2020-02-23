@@ -6,7 +6,7 @@
         <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
           {{ $t('table.search') }}
         </el-button>
-        <el-button class="filter-item" style="margin-left: 50%;" @click="$router.push({name:'ScheduleManage'})">
+        <el-button class="filter-item" style="float: right;margin-left: 2%;" @click="$router.push({name:'ScheduleManage'})">
           {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
         </el-button>
       </div>
