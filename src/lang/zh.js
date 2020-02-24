@@ -301,6 +301,8 @@ export default {
     description: '网站描述',
     code: '统计代码',
     copyright: '版权信息',
+    slideshow: '轮播图',
+    ad: '广告',
     logo: '网站Logo',
     headImgUrl: '默认头像',
     qiniuUpload: '上传参数',

@@ -22,6 +22,16 @@
           <el-form-item :label="$t('parameterInfo.copyright')" prop="copyright">
             <el-input v-model="parameterObj.paramValue.copyright" />
           </el-form-item>
+          <el-form-item :label="$t('parameterInfo.slideshow')" prop="slideshow">
+            <el-radio-group v-model="parameterObj.paramValue.slideshow">
+              <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item :label="$t('parameterInfo.ad')" prop="ad">
+            <el-radio-group v-model="parameterObj.paramValue.ad">
+              <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item :label="$t('parameterInfo.logo')" prop="logo">
             <el-upload
               class="avatar-uploader"

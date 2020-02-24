@@ -1,7 +1,7 @@
 <template>
   <div class="upload-container">
     <el-button :style="{background:color,borderColor:color}" icon="el-icon-upload" size="mini" type="primary" @click=" dialogVisible=true">
-      upload
+      点击上传
     </el-button>
     <el-dialog :visible.sync="dialogVisible">
       <el-upload
@@ -11,19 +11,20 @@
         :on-remove="handleRemove"
         :on-success="handleSuccess"
         :before-upload="beforeUpload"
+        :with-credentials="true"
         class="editor-slide-upload"
-        action="https://httpbin.org/post"
+        :action="uploadActionUrl"
         list-type="picture-card"
       >
         <el-button size="small" type="primary">
-          Click upload
+          选择上传
         </el-button>
       </el-upload>
       <el-button @click="dialogVisible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" @click="handleSubmit">
-        Confirm
+        提交
       </el-button>
     </el-dialog>
   </div>
@@ -44,7 +45,9 @@ export default {
     return {
       dialogVisible: false,
       listObj: {},
-      fileList: []
+      fileList: [],
+      uploadActionUrl: 'https://httpbin.org/post'
+      // uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
   methods: {

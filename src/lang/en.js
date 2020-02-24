@@ -297,6 +297,8 @@ export default {
     description: 'Description',
     code: 'Code',
     copyright: 'Copyright',
+    slideshow: 'SlideShow',
+    ad: 'Ad',
     logo: 'Logo',
     headImgUrl: 'Head Img Url',
     qiniuUpload: 'Qiniu Upload',

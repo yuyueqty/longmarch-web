@@ -242,10 +242,10 @@ export default {
       rules: {
         username: [{ required: true, message: 'username is required', trigger: 'blur' }]
       },
-      roleList: null,
-      selectedRoles: null,
+      roleList: [],
+      selectedRoles: [],
       deptList: [],
-      deptIds: null,
+      deptIds: [],
       uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
@@ -355,9 +355,11 @@ export default {
       })
       this.loadRoles()
       this.getDeptList()
-      this.deptIds = row.deptPids.split(',').map((id, index) => {
-        return parseInt(id)
-      })
+      if (row.deptPids && row.deptPids.split(',') && row.deptPids.split(',').length) {
+        this.deptIds = row.deptPids.split(',').map((id, index) => {
+          return parseInt(id)
+        })
+      }
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {

@@ -7,7 +7,7 @@
       :on-success="handleImageSuccess"
       class="image-uploader"
       drag
-      action="https://httpbin.org/post"
+      :action="uploadActionUrl"
     >
       <i class="el-icon-upload" />
       <div class="el-upload__text">
@@ -47,7 +47,8 @@ export default {
   data() {
     return {
       tempUrl: '',
-      dataObj: { token: '', key: '' }
+      dataObj: { token: '', key: '' },
+      uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
   computed: {
