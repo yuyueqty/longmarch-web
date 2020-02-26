@@ -46,8 +46,8 @@ export default {
       dialogVisible: false,
       listObj: {},
       fileList: [],
-      uploadActionUrl: 'https://httpbin.org/post'
-      // uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
+      // uploadActionUrl: 'https://httpbin.org/post'
+      uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
   methods: {
@@ -66,11 +66,14 @@ export default {
       this.dialogVisible = false
     },
     handleSuccess(response, file) {
+      console.log(response)
       const uid = file.uid
       const objKeyArr = Object.keys(this.listObj)
       for (let i = 0, len = objKeyArr.length; i < len; i++) {
         if (this.listObj[objKeyArr[i]].uid === uid) {
-          this.listObj[objKeyArr[i]].url = response.files.file
+          // response.files.file 获取的是base64
+          // this.listObj[objKeyArr[i]].url = response.files.file
+          this.listObj[objKeyArr[i]].url = response.data.url
           this.listObj[objKeyArr[i]].hasSuccess = true
           return
         }
