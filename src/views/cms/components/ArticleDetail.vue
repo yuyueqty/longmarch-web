@@ -78,13 +78,25 @@
             <el-form-item v-if="isAutoPublish" label="文章定时发布时间" class="postInfo-container-item">
               <el-date-picker v-model="postForm.publishTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择发布时间" />
             </el-form-item>
-            <el-form-item label="标签（多个标签用逗号分隔）">
-              <el-input
-                v-model="postForm.label"
-                type="textarea"
-                :rows="2"
-                placeholder="请输入标签"
-              />
+            <el-form-item label="标签为空会根据文章内容自动创建">
+              <el-select
+                v-model="tagNames"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                :placeholder="postForm.tags?postForm.tags:'选择或创建文章标签'"
+              >
+                <el-option
+                  v-for="item in hotTags"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.label"
+                >
+                  <span style="float: left">{{ item.label }}</span>
+                  <span style="margin-left: 10%; color: #8492a6; font-size: 13px">{{ item.hot }}</span>
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="文章作者（默认为当前登录用户）" class="postInfo-container-item">
               <el-input v-model="postForm.author" type="text" autosize placeholder="请输入文章作者" />
@@ -134,6 +146,8 @@ export default {
       isAutoPublish: false,
       categoryList: [],
       categoryIds: [],
+      hotTags: [],
+      tagNames: [],
       rules: {
 
       },
@@ -148,6 +162,7 @@ export default {
     this.postForm.author = this.name
     loadCategory().then((response) => {
       this.categoryList = response.data
+      this.hotTags = response.hotTags
     })
     if (this.$route.params && this.$route.params.id) {
       this.loadArticle(this.$route.params.id)
@@ -192,6 +207,9 @@ export default {
           this.postForm.categoryId = this.categoryIds[this.categoryIds.length - 1]
           this.postForm.recommend = this.isRecommend === true ? 1 : 0
           this.postForm.autoPublishStatus = this.isAutoPublish === true ? 1 : 0
+          if (this.tagNames !== undefined && this.tagNames.length > 0) {
+            this.postForm.tags = this.tagNames.join()
+          }
           create(this.postForm).then((response) => {
             this.$notify({
               title: '成功',

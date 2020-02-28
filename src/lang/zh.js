@@ -82,7 +82,8 @@ export default {
     swaggerApi: 'API接口',
     generator: '代码生成',
     systemTool: '系统工具',
-    memberManage: '会员管理'
+    memberManage: '会员管理',
+    tagManage: '标签管理'
   },
   navbar: {
     dashboard: '首页',
@@ -382,5 +383,15 @@ export default {
     sex: '性别',
     status: '用户状态',
     createTime: '创建日期'
+  },
+  Tag: {
+    id: '主键',
+    tagName: '标签',
+    num: '文章数量',
+    hot: '热度',
+    createBy: '创建者ID',
+    createTime: '创建时间',
+    updateBy: '更新ID',
+    updateTime: '更新时间'
   }
 }

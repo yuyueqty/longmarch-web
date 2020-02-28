@@ -22,6 +22,9 @@
           <el-form-item :label="$t('parameterInfo.copyright')" prop="copyright">
             <el-input v-model="parameterObj.paramValue.copyright" />
           </el-form-item>
+          <el-form-item label="默认昵称" prop="code">
+            <el-input v-model="parameterObj.paramValue.defaultNickname" />
+          </el-form-item>
           <el-form-item :label="$t('parameterInfo.slideshow')" prop="slideshow">
             <el-radio-group v-model="parameterObj.paramValue.slideshow">
               <el-radio-button v-for="item in dictionary.status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
@@ -33,6 +36,18 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="$t('parameterInfo.logo')" prop="logo">
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadActionUrl"
+              :show-file-list="false"
+              :with-credentials="true"
+              :on-success="handlePictureCardPreviewLogo"
+            >
+              <img v-if="parameterObj.paramValue.logo" style="width: 200px; height: 80px" :src="parameterObj.paramValue.logo" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="文章封面" prop="default_blog_img">
             <el-upload
               class="avatar-uploader"
               :action="uploadActionUrl"

@@ -82,7 +82,8 @@ export default {
     swaggerApi: 'SwaggerApi',
     generator: 'Generator',
     systemTool: 'SystemTool',
-    memberManage: 'MemberManage'
+    memberManage: 'MemberManage',
+    tagManage: 'TagManage'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -378,5 +379,15 @@ export default {
     sex: 'Sex',
     status: 'Status',
     createTime: 'CreateTime'
+  },
+  Tag: {
+    id: 'Id',
+    tagName: 'TagName',
+    num: 'Num',
+    hot: 'Hot',
+    createBy: 'CreateBy',
+    createTime: 'CreateTime',
+    updateBy: 'UpdateBy',
+    updateTime: 'UpdateTime'
   }
 }
