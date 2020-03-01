@@ -30,6 +30,10 @@
               <el-form-item label="账号：">
                 <span>{{ userInfo.username }}</span>
               </el-form-item>
+              <el-form-item label="昵称：">
+                <span v-if="!isEdit">{{ userInfo.nickname }}</span>
+                <el-input v-if="isEdit" v-model="userInfo.nickname" />
+              </el-form-item>
               <el-form-item label="手机：">
                 <span v-if="!isEdit">{{ userInfo.phone }}</span>
                 <el-input v-if="isEdit" v-model="userInfo.phone" />
@@ -37,8 +41,8 @@
               <el-form-item label="部门：">
                 <span>{{ userInfo.dept }}</span>
               </el-form-item>
-              <el-form-item label="次数：">
-                <span>{{ userInfo.loginCount }}</span>
+              <el-form-item label="登录：">
+                <span>{{ userInfo.loginCount }}（次）</span>
               </el-form-item>
               <el-form-item label="时间：">
                 <span>{{ userInfo.lastLoginTime }}</span>

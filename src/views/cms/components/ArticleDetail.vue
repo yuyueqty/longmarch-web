@@ -66,16 +66,16 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="推荐文章" class="postInfo-container-item">
-                  <el-checkbox v-model="isRecommend" />
+                  <el-checkbox v-model="postForm.recommend" :true-label="1" :false-label="0" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="定时发布" class="postInfo-container-item">
-                  <el-checkbox v-model="isAutoPublish" />
+                  <el-checkbox v-model="postForm.autoPublishStatus" :true-label="1" :false-label="0" />
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item v-if="isAutoPublish" label="文章定时发布时间" class="postInfo-container-item">
+            <el-form-item v-if="postForm.autoPublishStatus===1" label="文章定时发布时间" class="postInfo-container-item">
               <el-date-picker v-model="postForm.publishTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择发布时间" />
             </el-form-item>
             <el-form-item label="标签为空会根据文章内容自动创建">
@@ -142,8 +142,6 @@ export default {
     return {
       postForm: Object.assign({}, defaultForm),
       loading: false,
-      isRecommend: false,
-      isAutoPublish: false,
       categoryList: [],
       categoryIds: [],
       hotTags: [],
@@ -174,8 +172,6 @@ export default {
       show(id).then(response => {
         this.postForm = response.data
         this.categoryIds = response.pIds
-        this.isRecommend = this.postForm.recommend === 1
-        this.isAutoPublish = this.postForm.autoPublishStatus === 1
       }).catch(err => {
         console.log(err)
       })
@@ -205,8 +201,6 @@ export default {
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.postForm.categoryId = this.categoryIds[this.categoryIds.length - 1]
-          this.postForm.recommend = this.isRecommend === true ? 1 : 0
-          this.postForm.autoPublishStatus = this.isAutoPublish === true ? 1 : 0
           if (this.tagNames !== undefined && this.tagNames.length > 0) {
             this.postForm.tags = this.tagNames.join()
           }

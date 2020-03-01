@@ -83,7 +83,8 @@ export default {
     generator: '代码生成',
     systemTool: '系统工具',
     memberManage: '会员管理',
-    tagManage: '标签管理'
+    tagManage: '标签管理',
+    onlineUserManage: '在线用户'
   },
   navbar: {
     dashboard: '首页',
@@ -175,7 +176,8 @@ export default {
     fuzzySearch: '模糊搜索',
     download: '下载',
     config: '配置',
-    batchSave: '批量保存'
+    batchSave: '批量保存',
+    kickOutUser: '踢出'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -379,10 +381,13 @@ export default {
   },
   Member: {
     id: 'ID',
-    name: '用户名',
+    name: '名字',
     sex: '性别',
-    status: '用户状态',
-    createTime: '创建日期'
+    status: '状态',
+    createTime: '创建时间',
+    nickname: '昵称',
+    headImg: '头像',
+    loginTime: '登录时间'
   },
   Tag: {
     id: '主键',
@@ -393,5 +398,13 @@ export default {
     createTime: '创建时间',
     updateBy: '更新ID',
     updateTime: '更新时间'
+  },
+  onlineUserInfo: {
+    username: '用户名称',
+    host: 'IP',
+    sessionId: '会话ID',
+    startTimestamp: '创建时间',
+    lastAccessTime: '最后活跃时间',
+    timeout: '超时（小时）'
   }
 }

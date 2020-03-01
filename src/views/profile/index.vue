@@ -13,11 +13,11 @@
               <!-- <el-tab-pane label="最新文章" name="ArticleTimeline">
                 <ArticleTimeline />
               </el-tab-pane> -->
-              <el-tab-pane label="登录日志" name="LoginLogTimeline">
-                <LoginLogTimeline />
-              </el-tab-pane>
               <el-tab-pane label="操作日志" name="OperateTimeline">
                 <OperateTimeline />
+              </el-tab-pane>
+              <el-tab-pane label="登录日志" name="LoginLogTimeline">
+                <LoginLogTimeline />
               </el-tab-pane>
               <!-- <el-tab-pane label="Account" name="account">
                 <account :user="user" />
@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       user: {},
-      activeTab: 'LoginLogTimeline'
+      activeTab: 'OperateTimeline'
     }
   },
   computed: {

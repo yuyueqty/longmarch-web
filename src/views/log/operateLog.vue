@@ -18,11 +18,14 @@
       >
         <el-table-column type="expand">
           <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
+            <!-- <el-form label-position="left" inline class="demo-table-expand">
               <el-form-item :label="$t('operateLogInfo.operateDetail')">
-                <span>{{ props.row.operateDetail }}</span>
+                <json-editor ref="jsonEditor" v-model="props.row.operateDetail" style="height:100%;" />
               </el-form-item>
-            </el-form>
+            </el-form> -->
+            <div class="editor-container">
+              <json-editor ref="jsonEditor" v-model="props.row.operateDetail" style="height:100%;" />
+            </div>
           </template>
         </el-table-column>
         <el-table-column :label="$t('operateLogInfo.userName')">
@@ -56,11 +59,12 @@ import permission from '@/directive/permission/index.js'
 import { fetchList, create, update, remove } from '@/api/SysOperateLog'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
+import JsonEditor from '@/components/JsonEditor'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'RoleManage',
-  components: { Pagination },
+  components: { Pagination, JsonEditor },
   directives: { waves, permission },
   filters: {
     dictFirst(status, dict) {
@@ -118,7 +122,10 @@ export default {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.records
+        this.list = response.data.records.map(item => {
+          item.operateDetail = JSON.parse(item.operateDetail)
+          return item
+        })
         this.total = response.data.total
         this.listLoading = false
       })

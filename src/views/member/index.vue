@@ -7,7 +7,7 @@
             <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('table.fuzzySearch')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
           <el-form-item class="postInfo-container-item">
-            <el-select v-model="listQuery.sex" clearable placeholder="请选择性别">
+            <el-select v-model="listQuery.sex" clearable placeholder="请选择">
               <el-option
                 v-for="item in dictionary.sex_dict"
                 :key="item.value"
@@ -17,7 +17,7 @@
             </el-select>
           </el-form-item>
           <el-form-item class="postInfo-container-item">
-            <el-select v-model="listQuery.status" clearable placeholder="请选择用户状态">
+            <el-select v-model="listQuery.status" clearable placeholder="请选择">
               <el-option
                 v-for="item in dictionary.status_dict"
                 :key="item.value"
@@ -32,8 +32,18 @@
               value-format="yyyy-MM-dd HH:mm:ss"
               type="daterange"
               range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
+              start-placeholder="创建时间开始日期"
+              end-placeholder="创建时间结束日期"
+            />
+          </el-form-item>
+          <el-form-item class="postInfo-container-item">
+            <el-date-picker
+              v-model="listQuery.loginTime"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="登录时间开始日期"
+              end-placeholder="登录时间结束日期"
             />
           </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -70,7 +80,7 @@
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('Member.sex')" align="center">
+        <el-table-column prop="sex" sortable="custom" :label="$t('Member.sex')" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.sex | dictFirst(dictionary.style_dict)">
               <span>{{ scope.row.sex | dictFirst(dictionary.sex_dict) }}</span>
@@ -84,9 +94,19 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('Member.createTime')" align="center">
+        <el-table-column prop="createTime" sortable="custom" :label="$t('Member.createTime')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.createTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('Member.nickname')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('Member.loginTime')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.loginTime }}</span>
           </template>
         </el-table-column>
         <el-table-column v-if="checkPermission(['test:member:update', 'test:test_member:delete'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
@@ -120,6 +140,30 @@
         <el-form-item :label="$t('Member.createTime')">
           <el-date-picker
             v-model="temp.createTime"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            type="date"
+            placeholder="选择日期"
+            :picker-options="pickerOptions"
+          />
+        </el-form-item>
+        <el-form-item :label="$t('Member.nickname')">
+          <el-input v-model="temp.nickname" />
+        </el-form-item>
+        <el-form-item :label="$t('Member.headImg')">
+          <el-upload
+            class="avatar-uploader"
+            :action="uploadActionUrl"
+            :show-file-list="false"
+            :with-credentials="true"
+            :on-success="handlePictureCardPreview"
+          >
+            <img v-if="temp.headImg" style="margin-top: 6px;border-radius: 100px;width: 60px; height: 60px" :src="temp.headImg" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
+        </el-form-item>
+        <el-form-item :label="$t('Member.loginTime')">
+          <el-date-picker
+            v-model="temp.loginTime"
             value-format="yyyy-MM-dd HH:mm:ss"
             type="date"
             placeholder="选择日期"
@@ -171,11 +215,14 @@ export default {
         current: 1
       },
       temp: {
-        id: null,
-        name: null,
-        sex: 1,
-        status: 1,
-        createTime: null
+        id: undefined,
+        name: undefined,
+        sex: undefined,
+        status: undefined,
+        createTime: undefined,
+        nickname: undefined,
+        headImg: undefined,
+        loginTime: undefined
       },
       dialogFormVisible: false,
       dialogStatus: 'create',
@@ -209,11 +256,11 @@ export default {
         }]
       },
       rules: {
-        name: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
-        sex: [{ required: true, message: '性别不能为空', trigger: 'blur' }],
-        status: [{ required: true, message: '用户状态不能为空', trigger: 'blur' }],
-        createTime: [{ required: true, message: '创建日期不能为空', trigger: 'blur' }]
-      }
+        name: [{ required: true, message: '名字不能为空', trigger: 'blur' }],
+        sex: [{ required: true, message: '性别（1 男 2 女 3 未知）不能为空', trigger: 'blur' }],
+        status: [{ required: true, message: '状态不能为空', trigger: 'blur' }]
+      },
+      uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
   computed: {
@@ -254,11 +301,14 @@ export default {
     /** 初始化属性值 **/
     resetTemp() {
       this.temp = {
-        id: null,
-        name: null,
-        sex: null,
-        status: null,
-        createTime: null
+        id: undefined,
+        name: undefined,
+        sex: 1,
+        status: 1,
+        createTime: undefined,
+        nickname: undefined,
+        headImg: undefined,
+        loginTime: undefined
       }
     },
     /** 创建前置处理 **/
@@ -354,6 +404,10 @@ export default {
           message: '操作完成'
         })
       })
+    },
+    /** 上传事件 **/
+    handlePictureCardPreview(response, file, fileList) {
+      this.temp.headImg = response.data.url
     },
     /** 多选触发操作 **/
     handleSelectionChange(selectionIds) {

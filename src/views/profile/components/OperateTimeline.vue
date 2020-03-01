@@ -6,7 +6,7 @@
           <h4>{{ item.busType }}</h4>
           <p>{{ item.operateType }}</p>
           <div class="editor-container">
-            <json-editor ref="jsonEditor" v-model="item.operateDetail" />
+            <json-editor ref="jsonEditor" v-model="item.operateDetail" style="height:100%;" />
           </div>
         </el-card>
       </el-timeline-item>

@@ -63,11 +63,11 @@
             <el-checkbox v-model="row.orderBy" />
           </template>
         </el-table-column>
-        <el-table-column label="参数" align="center" width="50px">
+        <!-- <el-table-column label="参数" align="center" width="50px">
           <template slot-scope="{row}">
             <el-checkbox v-model="row.parameter" />
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="表单类型" align="center" width="120px">
           <template slot-scope="{row}">
             <el-select v-model="row.formType" clearable placeholder="请选择">
@@ -136,13 +136,19 @@ export default {
         label: '文本域'
       }, {
         value: 'radio',
-        label: '单选'
+        label: '单选框'
+      }, {
+        value: 'option',
+        label: '下拉框'
       }, {
         value: 'checkbox',
-        label: '多选'
+        label: '多选框'
       }, {
         value: 'date',
-        label: '日期'
+        label: '日期框'
+      }, {
+        value: 'uplaod',
+        label: '上传框'
       }],
       queryTypeOption: [{
         value: 'eq',

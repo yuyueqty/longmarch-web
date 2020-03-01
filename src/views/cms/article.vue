@@ -107,13 +107,13 @@
             />
           </template>
         </el-table-column>
-        <el-table-column :label="$t('articleInfo.recommend')" align="center">
+        <!-- <el-table-column :label="$t('articleInfo.recommend')" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.recommend | dictFirst(dictionary.style_dict)">
               <span>{{ scope.row.recommend | dictFirst(dictionary.recommend_dict) }}</span>
             </el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('articleInfo.publishTime')" width="160px">
           <template slot-scope="scope">
             <span>{{ scope.row.publishTime }}</span>

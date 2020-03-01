@@ -83,7 +83,8 @@ export default {
     generator: 'Generator',
     systemTool: 'SystemTool',
     memberManage: 'MemberManage',
-    tagManage: 'TagManage'
+    tagManage: 'TagManage',
+    onlineUserManage: 'OnlineUserManage'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -186,7 +187,8 @@ export default {
     fuzzySearch: 'Fuzzy Search',
     download: 'Download',
     config: 'Config',
-    batchSave: 'Batch Save'
+    batchSave: 'Batch Save',
+    kickOutUser: 'KickOut User'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -378,7 +380,10 @@ export default {
     name: 'Name',
     sex: 'Sex',
     status: 'Status',
-    createTime: 'CreateTime'
+    createTime: 'CreateTime',
+    nickname: 'Nickname',
+    headImg: 'HeadImg',
+    loginTime: 'LoginTime'
   },
   Tag: {
     id: 'Id',
@@ -389,5 +394,13 @@ export default {
     createTime: 'CreateTime',
     updateBy: 'UpdateBy',
     updateTime: 'UpdateTime'
+  },
+  onlineUserInfo: {
+    username: '用户名称',
+    host: 'IP',
+    sessionId: '会话ID',
+    startTimestamp: '创建时间',
+    lastAccessTime: '最后活跃时间',
+    timeout: '超时（小时）'
   }
 }
