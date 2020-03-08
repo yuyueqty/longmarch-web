@@ -1,5 +1,31 @@
 <template>
-  <div :id="id" />
+  <div>
+    <div :id="id" />
+    <el-dialog :visible.sync="dialogVisible">
+      <el-upload
+        :multiple="true"
+        :file-list="fileList"
+        :show-file-list="true"
+        :on-remove="handleRemove"
+        :on-success="handleSuccess"
+        :before-upload="beforeUpload"
+        :with-credentials="true"
+        class="editor-slide-upload"
+        :action="uploadActionUrl"
+        list-type="picture-card"
+      >
+        <el-button size="small" type="primary">
+          选择上传
+        </el-button>
+      </el-upload>
+      <el-button @click="dialogVisible = false">
+        取消
+      </el-button>
+      <el-button type="primary" @click="handleSubmit">
+        提交
+      </el-button>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -38,7 +64,7 @@ export default {
     height: {
       type: String,
       required: false,
-      default: '300px'
+      default: '500px'
     },
     language: {
       type: String,
@@ -48,7 +74,11 @@ export default {
   },
   data() {
     return {
-      editor: null
+      editor: null,
+      dialogVisible: false,
+      listObj: {},
+      fileList: [],
+      uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
   computed: {
@@ -95,6 +125,20 @@ export default {
       this.editor.on('change', () => {
         this.$emit('input', this.editor.getValue())
       })
+      // 添加自定义按钮，获取编辑器上的功能条
+      const toolbar = this.editor.getUI().getToolbar()
+      // 添加事件
+      this.editor.eventManager.addEventType('uploadEvent')
+      this.editor.eventManager.listen('uploadEvent', () => {
+        this.dialogVisible = true
+      })
+      // 添加自定义按钮 第二个参数代表位置，不传默认放在最后
+      toolbar.addButton({
+        name: 'customize',
+        className: 'upload-img',
+        event: 'uploadEvent',
+        tooltip: 'insert image'
+      }, 13)
     },
     destroyEditor() {
       if (!this.editor) return
@@ -112,7 +156,83 @@ export default {
     },
     getHtml() {
       return this.editor.getHtml()
+    },
+    checkAllSuccess() {
+      return Object.keys(this.listObj).every(item => this.listObj[item].hasSuccess)
+    },
+    handleSubmit() {
+      const arr = Object.keys(this.listObj).map(v => this.listObj[v])
+      if (!this.checkAllSuccess()) {
+        this.$message('Please wait for all images to be uploaded successfully. If there is a network problem, please refresh the page and upload again!')
+        return
+      }
+      this.$emit('successCBK', arr)
+      this.listObj = {}
+      this.fileList = []
+      this.dialogVisible = false
+    },
+    handleSuccess(response, file) {
+      console.log(response)
+      const uid = file.uid
+      const objKeyArr = Object.keys(this.listObj)
+      for (let i = 0, len = objKeyArr.length; i < len; i++) {
+        if (this.listObj[objKeyArr[i]].uid === uid) {
+          this.listObj[objKeyArr[i]].url = response.data.url
+          this.listObj[objKeyArr[i]].hasSuccess = true
+          this.addImgToMd(response.data.url)
+          return
+        }
+      }
+    },
+    handleRemove(file) {
+      const uid = file.uid
+      const objKeyArr = Object.keys(this.listObj)
+      for (let i = 0, len = objKeyArr.length; i < len; i++) {
+        if (this.listObj[objKeyArr[i]].uid === uid) {
+          delete this.listObj[objKeyArr[i]]
+          return
+        }
+      }
+    },
+    beforeUpload(file) {
+      const _self = this
+      const _URL = window.URL || window.webkitURL
+      const fileName = file.uid
+      this.listObj[fileName] = {}
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.src = _URL.createObjectURL(file)
+        img.onload = function() {
+          _self.listObj[fileName] = { hasSuccess: false, uid: file.uid, width: this.width, height: this.height }
+        }
+        resolve(true)
+      })
+    },
+    addImgToMd(data) {
+      const editor = this.editor.getCodeMirror()
+      const editorHtml = this.editor.getCurrentModeEditor()
+      const isMarkdownMode = this.editor.isMarkdownMode()
+      if (isMarkdownMode) {
+        editor.replaceSelection(`![img](${data})`)
+      } else {
+        const range = editorHtml.getRange()
+        const img = document.createElement('img')
+        img.src = `${data}`
+        img.alt = 'img'
+        range.insertNode(img)
+      }
     }
   }
 }
 </script>
+<style>
+.upload-img{
+  background-position: -130px -4px;
+}
+.editor-slide-upload {
+  margin-bottom: 20px;
+}
+.el-upload--picture-card {
+  width: 100%;
+}
+</style>

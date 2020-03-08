@@ -19,6 +19,7 @@
             </el-form-item>
             <el-form-item prop="content">
               <Tinymce ref="editor" v-model="postForm.content" />
+              <!-- <markdown-editor ref="editor" v-model="postForm.content" :language="language" /> -->
             </el-form-item>
             <el-form-item label="文章封面图片" prop="imageUrl">
               <el-upload
@@ -110,6 +111,7 @@
 
 <script>
 import Tinymce from '@/components/Tinymce'
+// import MarkdownEditor from '@/components/MarkdownEditor'
 import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky'
 import { parseTime } from '@/utils'
@@ -122,6 +124,7 @@ const defaultForm = {
 
 export default {
   name: 'ArticleDetail',
+  // components: { MarkdownEditor, Tinymce, MDinput, Sticky },
   components: { Tinymce, MDinput, Sticky },
   filters: {
     dictFirst(status, dict) {
@@ -141,6 +144,11 @@ export default {
   data() {
     return {
       postForm: Object.assign({}, defaultForm),
+      languageTypeList: {
+        'en': 'en_US',
+        'zh': 'zh_CN',
+        'es': 'es_ES'
+      },
       loading: false,
       categoryList: [],
       categoryIds: [],
@@ -154,7 +162,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['dictionary', 'name'])
+    ...mapGetters(['dictionary', 'name']),
+    language() {
+      return this.languageTypeList[this.$store.getters.language]
+    }
   },
   created() {
     this.postForm.author = this.name

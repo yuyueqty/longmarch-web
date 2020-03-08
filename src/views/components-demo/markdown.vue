@@ -1,91 +1,72 @@
 <template>
   <div class="components-container">
-    <aside>Markdown is based on
-      <a href="https://github.com/nhnent/tui.editor" target="_blank">tui.editor</a> ，simply wrapped with Vue.
-      <a
-        target="_blank"
-        href="https://panjiachen.github.io/vue-element-admin-site/feature/component/markdown-editor.html"
-      >
-        Documentation </a>
-    </aside>
-
-    <div class="editor-container">
-      <el-tag class="tag-title">
-        Basic:
-      </el-tag>
-      <markdown-editor v-model="content1" height="300px" />
-    </div>
-
-    <div class="editor-container">
-      <el-tag class="tag-title">
-        Markdown Mode:
-      </el-tag>
-      <markdown-editor ref="markdownEditor" v-model="content2" :options="{hideModeSwitch:true,previewStyle:'tab'}" height="200px" />
-    </div>
-
-    <div class="editor-container">
-      <el-tag class="tag-title">
-        Customize Toolbar:
-      </el-tag>
-      <markdown-editor v-model="content3" :options="{ toolbarItems: ['heading','bold','italic']}" />
-    </div>
-
-    <div class="editor-container">
-      <el-tag class="tag-title">
-        I18n:
-      </el-tag>
-      <el-alert
-        :closable="false"
-        title="You can change the language of the admin system to see the effect"
-        type="success"
-      />
-      <markdown-editor ref="markdownEditor" v-model="content4" :language="language" height="300px" />
-    </div>
-
-    <el-button style="margin-top:80px;" type="primary" icon="el-icon-document" @click="getHtml">
-      Get HTML
-    </el-button>
-    <div v-html="html" />
+    <el-form ref="postForm" :model="postForm" class="form-container">
+      <el-form-item label="文章封面图片">
+        <el-upload
+          class="avatar-uploader"
+          :action="uploadActionUrl"
+          :show-file-list="false"
+          :with-credentials="true"
+          :on-success="handlePictureCardPreview"
+        >
+          <img v-if="postForm.imageUrl" style="width: 300px; height: 150px" :src="postForm.imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon" />
+        </el-upload>
+      </el-form-item>
+      <el-form-item class="postInfo-container-item">
+        <el-input v-model="postForm.title">
+          <template slot="prepend">标题</template>
+          <template slot="append">
+            <el-button type="success" @click="submitForm">保存</el-button>
+          </template>
+        </el-input>
+      </el-form-item>
+      <markdown-editor ref="editor" v-model="postForm.content" language="zh_CN" height="300px" />
+    </el-form>
   </div>
 </template>
 
 <script>
 import MarkdownEditor from '@/components/MarkdownEditor'
+import { create } from '@/api/Article'
+import { parseTime } from '@/utils'
 
-const content = `
-**This is test**
-
-* vue
-* element
-* webpack
-
-`
 export default {
   name: 'MarkdownDemo',
   components: { MarkdownEditor },
   data() {
     return {
-      content1: content,
-      content2: content,
-      content3: content,
-      content4: content,
-      html: '',
-      languageTypeList: {
-        'en': 'en_US',
-        'zh': 'zh_CN',
-        'es': 'es_ES'
-      }
-    }
-  },
-  computed: {
-    language() {
-      return this.languageTypeList[this.$store.getters.language]
+      postForm: {},
+      uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
   methods: {
-    getHtml() {
-      this.html = this.$refs.markdownEditor.getHtml()
-      console.log(this.html)
+    submitForm() {
+      if (this.postForm.title === undefined || this.postForm.title === '') {
+        this.$message({
+          message: '请别忘了填写文章标题',
+          type: 'warning'
+        })
+        return
+      }
+      this.$refs.postForm.validate(() => {
+        this.postForm.categoryId = 1
+        this.postForm.publishStatus = 3
+        this.postForm.publishTime = parseTime(new Date())
+        this.postForm.author = '跃哥'
+        create(this.postForm).then((response) => {
+          this.$notify({
+            title: '成功',
+            message: '发布文章成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.$router.push({ name: 'ArticleManage' })
+        })
+      })
+    },
+    handlePictureCardPreview(response, file, fileList) {
+      this.postForm.imageUrl = response.data.url
     }
   }
 }
