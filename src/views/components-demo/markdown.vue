@@ -23,6 +23,9 @@
       </el-form-item>
       <markdown-editor ref="editor" v-model="postForm.content" language="zh_CN" height="300px" />
     </el-form>
+    <el-button style="margin-top:80px;" type="primary" icon="el-icon-document" @click="getHtml">
+      效果预览
+    </el-button>
   </div>
 </template>
 
@@ -36,11 +39,16 @@ export default {
   components: { MarkdownEditor },
   data() {
     return {
+      html: '',
       postForm: {},
       uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
     }
   },
   methods: {
+    getHtml() {
+      this.html = this.$refs.editor.getHtml()
+      console.log(this.html)
+    },
     submitForm() {
       if (this.postForm.title === undefined || this.postForm.title === '') {
         this.$message({
@@ -54,6 +62,7 @@ export default {
         this.postForm.publishStatus = 3
         this.postForm.publishTime = parseTime(new Date())
         this.postForm.author = '跃哥'
+        this.postForm.content = this.$refs.editor.getHtml()
         create(this.postForm).then((response) => {
           this.$notify({
             title: '成功',
