@@ -21,7 +21,7 @@
           </template>
         </el-input>
       </el-form-item>
-      <markdown-editor ref="editor" v-model="postForm.content" language="zh_CN" height="300px" />
+      <markdown-editor ref="editor" v-model="postForm.content" language="zh_CN" height="500px" />
     </el-form>
     <el-button style="margin-top:80px;" type="primary" icon="el-icon-document" @click="getHtml">
       效果预览
