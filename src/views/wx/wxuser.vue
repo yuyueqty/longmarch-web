@@ -6,6 +6,25 @@
           <el-form-item class="postInfo-container-item">
             <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('table.fuzzySearch')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-form-item>
+          <el-form-item class="postInfo-container-item">
+            <el-select v-model="listQuery.sex" clearable placeholder="性别">
+              <el-option
+                v-for="item in dictionary.sex_dict"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item class="postInfo-container-item">
+            <el-input v-model="listQuery.country" clearable placeholder="国家" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item class="postInfo-container-item">
+            <el-input v-model="listQuery.province" clearable placeholder="市区" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-form-item class="postInfo-container-item">
+            <el-input v-model="listQuery.city" clearable placeholder="城市" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             {{ $t('table.search') }}
           </el-button>
@@ -19,9 +38,9 @@
         <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(true)">
           {{ $t('table.fullSync') }}
         </el-button>
-        <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(false)">
+        <!-- <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(false)">
           {{ $t('table.incrSync') }}
-        </el-button>
+        </el-button> -->
         <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
           {{ $t('table.analyseTag') }}
         </el-button>
@@ -37,6 +56,7 @@
         style="width: 100%;"
         @sort-change="sortChange"
         @selection-change="handleSelectionChange"
+        @click="$router.push({name:'GzhFenweiTagManage',params:{openId: scope.row.openId}})"
       >
         <el-table-column
           type="selection"
@@ -44,12 +64,12 @@
         />
         <el-table-column :label="$t('GzhUser.headImgUrl')" align="center">
           <template slot-scope="scope">
-            <img v-if="scope.row.headImgUrl" style="border-radius: 100px;width: 35px; height: 35px;" :src="scope.row.headImgUrl" class="avatar">
+            <img v-if="scope.row.headImgUrl" style="border-radius: 100px;width: 35px; height: 35px;" :src="scope.row.headImgUrl" class="avatar" @click="$router.push({name:'GzhFenweiTagManage',params:{openId: scope.row.openId}})">
           </template>
         </el-table-column>
         <el-table-column :label="$t('GzhUser.openId')" align="center" width="280">
           <template slot-scope="scope">
-            <span>{{ scope.row.openId }}</span>
+            <span @click="$router.push({name:'GzhFenweiTagManage',params:{openId: scope.row.openId}})">{{ scope.row.openId }}</span>
           </template>
         </el-table-column>
         <el-table-column :label="$t('GzhUser.nickname')" align="center">

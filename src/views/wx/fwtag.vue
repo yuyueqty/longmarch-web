@@ -2,20 +2,9 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="filter-container clearfix">
-        <!-- <el-form :inline="true" :model="listQuery" class="demo-form-inline">
-          <el-form-item class="postInfo-container-item">
-            <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('table.fuzzySearch')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-          </el-form-item>
-          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-            {{ $t('table.search') }}
-          </el-button>
-        </el-form> -->
-        <!-- <el-button v-permission="['wx:gzhfenweitag:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-          {{ $t('table.add') }}
+        <el-button class="filter-item" style="float: right;margin-left: 2%;" @click="$router.push({name:'GzhUserManage'})">
+          {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
         </el-button>
-        <el-button v-permission="['wx:gzhfenweitag:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="deleteData()">
-          {{ $t('table.batchDelete') }}
-        </el-button> -->
       </div>
       <el-table
         :key="tableKey"
@@ -35,11 +24,11 @@
             <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column> -->
-        <el-table-column :label="$t('GzhFenweiTag.gzhId')" align="center">
+        <!-- <el-table-column :label="$t('GzhFenweiTag.gzhId')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.gzhId }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('GzhFenweiTag.openId')" align="center" width="280">
           <template slot-scope="scope">
             <span>{{ scope.row.openId }}</span>
@@ -47,7 +36,9 @@
         </el-table-column>
         <el-table-column :label="$t('GzhFenweiTag.fieldId')" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.fieldId }}</span>
+            <el-tag :type="scope.row.fieldId | dictFirst(dictionary.style_dict)">
+              <span>{{ scope.row.fieldId | dictFirst(dictionary.fw_field_dict) }}</span>
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="$t('GzhFenweiTag.name')" align="center">
@@ -193,6 +184,7 @@ export default {
     /** 获取列表 **/
     getList() {
       this.listLoading = true
+      this.listQuery.openId = this.$route.params.openId
       fetchList(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total

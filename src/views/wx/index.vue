@@ -51,6 +51,11 @@
             <span>{{ scope.row.weixinNumber }}</span>
           </template>
         </el-table-column> -->
+        <el-table-column :label="$t('GzhAccount.fwAppid')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.fwAppid }}</span>
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('GzhAccount.weixinAppid')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.weixinAppid }}</span>
@@ -61,6 +66,13 @@
             <span>{{ scope.row.weixinAppsecret }}</span>
           </template>
         </el-table-column> -->
+        <el-table-column :label="$t('GzhAccount.fwField')" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.fwField | dictFirst(dictionary.style_dict)">
+              <span>{{ scope.row.fwField | dictFirst(dictionary.fw_field_dict) }}</span>
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('GzhAccount.accountType')" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.accountType | dictFirst(dictionary.style_dict)">
@@ -205,17 +217,39 @@
         <!-- <el-form-item :label="$t('GzhAccount.weixinNumber')">
           <el-input v-model="temp.weixinNumber" />
         </el-form-item> -->
+        <el-form-item :label="$t('GzhAccount.fwAppid')">
+          <el-input v-model="temp.fwAppid" />
+        </el-form-item>
+        <el-form-item :label="$t('GzhAccount.fwAppsecret')">
+          <el-input v-model="temp.fwAppsecret" />
+        </el-form-item>
         <el-form-item :label="$t('GzhAccount.weixinAppid')">
           <el-input v-model="temp.weixinAppid" />
         </el-form-item>
         <el-form-item :label="$t('GzhAccount.weixinAppsecret')">
           <el-input v-model="temp.weixinAppsecret" />
         </el-form-item>
-        <el-form-item :label="$t('GzhAccount.accountType')">
+        <!-- <el-form-item :label="$t('GzhAccount.accountType')">
           <el-input v-model="temp.accountType" />
         </el-form-item>
         <el-form-item :label="$t('GzhAccount.authStatus')">
           <el-input v-model="temp.authStatus" />
+        </el-form-item> -->
+
+        <el-form-item :label="$t('GzhAccount.accountType')">
+          <el-radio-group v-model="temp.accountType">
+            <el-radio-button v-for="item in dictionary.account_type_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('GzhAccount.authStatus')">
+          <el-radio-group v-model="temp.authStatus">
+            <el-radio-button v-for="item in dictionary.auth_status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('GzhAccount.fwField')">
+          <el-radio-group v-model="temp.fwField">
+            <el-radio-button v-for="item in dictionary.fw_field_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <!-- <el-form-item :label="$t('GzhAccount.accessToken')">
           <el-input v-model="temp.accessToken" />
