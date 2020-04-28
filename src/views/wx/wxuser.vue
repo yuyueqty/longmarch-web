@@ -56,22 +56,22 @@
         style="width: 100%;"
         @sort-change="sortChange"
         @selection-change="handleSelectionChange"
-        @click="$router.push({name:'GzhFenweiTagManage',params:{openId: scope.row.openId}})"
+        @row-click="showUserTag"
       >
-        <el-table-column
+        <!-- <el-table-column
           type="selection"
           width="55"
-        />
+        /> -->
         <el-table-column :label="$t('GzhUser.headImgUrl')" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row.headImgUrl" style="border-radius: 100px;width: 35px; height: 35px;" :src="scope.row.headImgUrl" class="avatar" @click="$router.push({name:'GzhFenweiTagManage',params:{openId: scope.row.openId}})">
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhUser.openId')" align="center" width="280">
+        <!-- <el-table-column :label="$t('GzhUser.openId')" align="center" width="280">
           <template slot-scope="scope">
-            <span @click="$router.push({name:'GzhFenweiTagManage',params:{openId: scope.row.openId}})">{{ scope.row.openId }}</span>
+            <span @click="showUserTag(scope.row.openId)">{{ scope.row.openId }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('GzhUser.nickname')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.nickname }}</span>
@@ -141,6 +141,14 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog :visible.sync="dialogTag">
+      <pie-chart ref="child" height="400px" />
+      <!-- <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogTag = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+      </div> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -151,10 +159,11 @@ import { fetchList, create, update, remove, changeStatus, batchSync, analyseTag 
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
+import PieChart from '../dashboard/admin/components/PieChart'
 
 export default {
   name: 'GzhUserManage',
-  components: { Pagination },
+  components: { Pagination, PieChart },
   directives: { waves, permission },
   filters: {
     dictFirst(status, dict) {
@@ -167,6 +176,7 @@ export default {
   },
   data() {
     return {
+      chart: null,
       tableKey: 0,
       list: [],
       ids: [],
@@ -210,6 +220,7 @@ export default {
         updateTime: undefined
       },
       dialogFormVisible: false,
+      dialogTag: false,
       dialogStatus: 'create',
       textMap: {
         update: '编辑粉丝表',
@@ -438,6 +449,12 @@ export default {
     },
     downloadWxUser() {
       window.open(process.env.VUE_APP_BASE_API + '/wx/gzh-user/download.xls')
+    },
+    showUserTag(row, event, column) {
+      this.dialogTag = true
+      if (this.$refs.child !== undefined) {
+        this.$refs.child.showTag(row.openId)
+      }
     }
   }
 }

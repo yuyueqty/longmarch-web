@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+export function fetchList2(data) {
+  return request({
+    url: '/wx/gzh-fenwei-tag/search',
+    method: 'post',
+    data
+  })
+}
+
 export function fetchList(data) {
   return request({
     url: '/wx/gzh-fenwei-tag/search',

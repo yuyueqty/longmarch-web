@@ -6,6 +6,7 @@
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
+import { fetchList2 } from '@/api/GzhFenweiTagApi'
 
 export default {
   mixins: [resize],
@@ -30,7 +31,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.initChart()
+      this.initChart2()
     })
   },
   beforeDestroy() {
@@ -41,7 +42,45 @@ export default {
     this.chart = null
   },
   methods: {
-    initChart() {
+    showTag(openId) {
+      fetchList2({ 'openId': openId }).then(response => {
+        this.initChart(response)
+      })
+    },
+    initChart(response) {
+      this.chart = echarts.init(this.$el, 'macarons')
+      const data1 = []
+      const data2 = []
+      response.data.records.forEach(r => {
+        data1.push(r.content)
+        data2.push({ 'value': r.score, 'name': r.content })
+      })
+      this.chart.setOption({
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          left: 'center',
+          bottom: '10',
+          data: data1
+        },
+        calculable: true,
+        series: [
+          {
+            name: response.info,
+            type: 'pie',
+            roseType: 'radius',
+            radius: [15, 95],
+            center: ['50%', '38%'],
+            data: data2,
+            animationEasing: 'cubicInOut',
+            animationDuration: 600
+          }
+        ]
+      })
+    },
+    initChart2() {
       this.chart = echarts.init(this.$el, 'macarons')
 
       this.chart.setOption({
@@ -52,25 +91,23 @@ export default {
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['Industries', 'Technology', 'Forex', 'Gold', 'Forecasts']
+          data: ['有魄力、敢于冒险、追求事业成功', '喜欢对事情作出评价', '善于推陈出新']
         },
         calculable: true,
         series: [
           {
-            name: 'WEEKLY WRITE ARTICLES',
+            name: '用户：画地为牢 性别：男 地区：-- 行业：交友',
             type: 'pie',
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
             data: [
-              { value: 320, name: 'Industries' },
-              { value: 240, name: 'Technology' },
-              { value: 149, name: 'Forex' },
-              { value: 100, name: 'Gold' },
-              { value: 59, name: 'Forecasts' }
+              { value: 320, name: '有魄力、敢于冒险、追求事业成功' },
+              { value: 240, name: '喜欢对事情作出评价' },
+              { value: 149, name: '善于推陈出新' }
             ],
             animationEasing: 'cubicInOut',
-            animationDuration: 2600
+            animationDuration: 600
           }
         ]
       })
