@@ -61,3 +61,19 @@ export function downloadWxUser(data) {
     method: 'get'
   })
 }
+
+export function syncMore(data) {
+  return request({
+    url: '/wx/gzh-user/syncMore',
+    method: 'post',
+    data
+  })
+}
+
+export function analyseMore(data) {
+  return request({
+    url: '/wx/gzh-user/analyseMore',
+    method: 'post',
+    data
+  })
+}

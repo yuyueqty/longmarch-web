@@ -1,10 +1,9 @@
 import request from '@/utils/request'
 
-export function fetchList2(data) {
+export function openid(openId) {
   return request({
-    url: '/wx/gzh-fenwei-tag/search',
-    method: 'post',
-    data
+    url: '/wx/gzh-fenwei-tag/openid/' + openId,
+    method: 'get'
   })
 }
 

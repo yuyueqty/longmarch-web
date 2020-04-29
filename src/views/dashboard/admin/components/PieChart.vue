@@ -6,7 +6,7 @@
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
-import { fetchList2 } from '@/api/GzhFenweiTagApi'
+import { openid } from '@/api/GzhFenweiTagApi'
 
 export default {
   name: 'PieChart',
@@ -23,14 +23,6 @@ export default {
     height: {
       type: String,
       default: '300px'
-    },
-    userInfo: {
-      type: String,
-      default: ''
-    },
-    openId: {
-      type: String,
-      default: ''
     }
   },
   data() {
@@ -52,18 +44,12 @@ export default {
   },
   methods: {
     showTag(openId) {
-      fetchList2({ 'openId': openId }).then(response => {
-        this.initChart(response)
+      openid(openId).then(response => {
+        this.initChart(response.data)
       })
     },
-    initChart(response) {
+    initChart(data) {
       this.chart = echarts.init(this.$el, 'macarons')
-      const data1 = []
-      const data2 = []
-      response.data.records.forEach(r => {
-        data1.push(r.content)
-        data2.push({ 'value': r.score, 'name': r.content })
-      })
       this.chart.setOption({
         tooltip: {
           trigger: 'item',
@@ -72,17 +58,17 @@ export default {
         legend: {
           left: 'center',
           bottom: '10',
-          data: data1
+          data: data.names
         },
         calculable: true,
         series: [
           {
-            name: response.info,
+            name: data.info,
             type: 'pie',
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
-            data: data2,
+            data: data.tags,
             animationEasing: 'cubicInOut',
             animationDuration: 600
           }

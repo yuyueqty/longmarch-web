@@ -29,22 +29,13 @@
             {{ $t('table.search') }}
           </el-button>
         </el-form>
-        <!-- <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-          {{ $t('table.add') }}
-        </el-button> -->
-        <!-- <el-button v-permission="['wx:gzhuser:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="deleteData()">
-          {{ $t('table.batchDelete') }}
-        </el-button> -->
-        <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(true)">
+        <el-button v-permission="['wx:gzhuser:sync']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(true)">
           {{ $t('table.fullSync') }}
         </el-button>
-        <!-- <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(false)">
-          {{ $t('table.incrSync') }}
-        </el-button> -->
-        <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
+        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
           {{ $t('table.analyseTag') }}
         </el-button>
-        <el-button v-permission="['wx:gzhuser:create']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
+        <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
           {{ $t('table.downloadWxUser') }}
         </el-button>
       </div>
@@ -64,14 +55,9 @@
         /> -->
         <el-table-column :label="$t('GzhUser.headImgUrl')" align="center">
           <template slot-scope="scope">
-            <img v-if="scope.row.headImgUrl" style="border-radius: 100px;width: 35px; height: 35px;" :src="scope.row.headImgUrl" class="avatar" @click="$router.push({name:'GzhFenweiTagManage',params:{openId: scope.row.openId}})">
+            <img v-if="scope.row.headImgUrl" style="border-radius: 100px;width: 35px; height: 35px;" :src="scope.row.headImgUrl" class="avatar">
           </template>
         </el-table-column>
-        <!-- <el-table-column :label="$t('GzhUser.openId')" align="center" width="280">
-          <template slot-scope="scope">
-            <span @click="showUserTag(scope.row.openId)">{{ scope.row.openId }}</span>
-          </template>
-        </el-table-column> -->
         <el-table-column :label="$t('GzhUser.nickname')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.nickname }}</span>
@@ -82,16 +68,6 @@
             <span>{{ scope.row.sexDesc }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column :label="$t('GzhUser.subscribeTime')" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.subscribeTime }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('GzhUser.bindStatus')" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.bindStatus }}</span>
-          </template>
-        </el-table-column> -->
         <el-table-column :label="$t('GzhUser.province')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.province }}</span>
@@ -107,16 +83,21 @@
             <span>{{ scope.row.country }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column v-if="checkPermission(['wx:gzhuser:update', 'wx:wx_gzh_user:delete'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
+        <el-table-column :label="$t('GzhUser.createTime')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.createTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="checkPermission(['wx:gzhuser:sync', 'wx:gzhuser:analyse'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['wx:gzhuser:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-              {{ $t('table.edit') }}
+            <el-button v-permission="['wx:gzhuser:sync']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncMore(row)">
+              同步
             </el-button>
-            <el-button v-permission="['wx:gzhuser:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
-              {{ $t('table.delete') }}
+            <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="danger" @click="analyseMore(row)">
+              解析
             </el-button>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
     </el-card>
@@ -155,7 +136,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, changeStatus, batchSync, analyseTag } from '@/api/GzhUserApi'
+import { fetchList, create, update, remove, changeStatus, batchSync, analyseTag, analyseMore, syncMore } from '@/api/GzhUserApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -458,10 +439,80 @@ export default {
       window.open(process.env.VUE_APP_BASE_API + '/wx/gzh-user/download.xls')
     },
     showUserTag(row, event, column) {
-      this.dialogTag = true
-      if (this.$refs.child !== undefined) {
-        this.$refs.child.showTag(row.openId)
+      if (event.label !== '操作') {
+        this.dialogTag = true
+        if (this.$refs.child !== undefined) {
+          this.$refs.child.showTag(row.openId)
+        }
       }
+    },
+    syncMore(row) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【同步微信用户信息】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            syncMore(_ids).then(() => {
+              done()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    analyseMore(row) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【解析微信用户标签】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            analyseMore(_ids).then(() => {
+              done()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
     }
   }
 }
