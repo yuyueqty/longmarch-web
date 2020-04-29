@@ -9,6 +9,7 @@ import resize from './mixins/resize'
 import { fetchList2 } from '@/api/GzhFenweiTagApi'
 
 export default {
+  name: 'PieChart',
   mixins: [resize],
   props: {
     className: {
@@ -22,6 +23,14 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    userInfo: {
+      type: String,
+      default: ''
+    },
+    openId: {
+      type: String,
+      default: ''
     }
   },
   data() {

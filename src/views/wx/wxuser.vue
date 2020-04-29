@@ -219,8 +219,8 @@ export default {
         updateBy: undefined,
         updateTime: undefined
       },
-      dialogFormVisible: false,
       dialogTag: false,
+      dialogFormVisible: false,
       dialogStatus: 'create',
       textMap: {
         update: '编辑粉丝表',
@@ -229,6 +229,13 @@ export default {
       rules: {
       }
     }
+  },
+  beforeDestroy() {
+    if (!this.chart) {
+      return
+    }
+    this.chart.dispose()
+    this.chart = null
   },
   computed: {
     ...mapGetters(['dictionary']),
@@ -435,7 +442,7 @@ export default {
       batchSync(sync).then(response => {
         this.$message({
           type: 'success',
-          message: '同步完成!'
+          message: '同步数量:' + response.data + ',请稍等'
         })
       })
     },
