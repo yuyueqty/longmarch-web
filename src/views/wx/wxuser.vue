@@ -63,37 +63,37 @@
             <span>{{ scope.row.nickname }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhUser.sexDesc')" align="center">
+        <el-table-column prop="sex" sortable="custom" :label="$t('GzhUser.sexDesc')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.sexDesc }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhUser.province')" align="center">
+        <el-table-column prop="province" sortable="custom" :label="$t('GzhUser.province')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.province }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhUser.city')" align="center">
+        <el-table-column prop="city" sortable="custom" :label="$t('GzhUser.city')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.city }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhUser.country')" align="center">
+        <el-table-column prop="country" sortable="custom" :label="$t('GzhUser.country')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.country }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhUser.createTime')" align="center">
+        <el-table-column prop="create_time" sortable="custom" :label="$t('GzhUser.createTime')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['wx:gzhuser:sync', 'wx:gzhuser:analyse'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['wx:gzhuser:syncone', 'wx:gzhuser:analyseone'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['wx:gzhuser:sync']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncMore(row)">
+            <el-button v-permission="['wx:gzhuser:syncone']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncMore(row)">
               同步
             </el-button>
-            <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="danger" @click="analyseMore(row)">
+            <el-button v-permission="['wx:gzhuser:analyseone']" class="filter-item" style="margin-left: 10px;" type="danger" @click="analyseMore(row)">
               解析
             </el-button>
           </template>

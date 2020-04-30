@@ -485,7 +485,7 @@ export default {
     isDeleted: '是否删除（1 已删除，0 未删除，默 0）',
     tenantId: '租户编号',
     createBy: '创建者ID',
-    createTime: '创建时间',
+    createTime: '同步时间',
     updateBy: '更新ID',
     updateTime: '更新时间'
   },

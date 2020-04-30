@@ -169,7 +169,7 @@
             <span>{{ scope.row.updateTime }}</span>
           </template>
         </el-table-column> -->
-        <el-table-column v-if="checkPermission(['wx:gzhaccount:update', 'wx:wx_gzh_account:delete'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['wx:gzhaccount:update', 'wx:wx_gzh_account:delete', 'wx:gzhaccount:setting'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
             <el-button v-permission="['wx:gzhaccount:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
               {{ $t('table.edit') }}
@@ -177,7 +177,7 @@
             <el-button v-permission="['wx:gzhaccount:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
               {{ $t('table.delete') }}
             </el-button>
-            <el-button v-permission="['wx:gzhaccount:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="setDefault(row)">
+            <el-button v-if="!row.defaultAccount" v-permission="['wx:gzhaccount:setting']" class="filter-item" style="margin-left: 10px;" type="danger" @click="setDefault(row)">
               {{ $t('table.set_default') }}
             </el-button>
           </template>
@@ -491,7 +491,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           create(this.temp).then(() => {
-            this.list.unshift(this.temp)
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -518,13 +518,7 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
+            this.getList()
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',

@@ -136,6 +136,7 @@
 import permission from '@/directive/permission/index.js'
 import { getByParameterName, update } from '@/api/SysParameter'
 import { mapGetters } from 'vuex'
+import { loadRoles } from '@/api/SysUser'
 
 export default {
   name: 'ParameterManage',
@@ -180,7 +181,15 @@ export default {
     this.getByParameterName(this.activeName)
   },
   methods: {
+    loadRoles() {
+      loadRoles().then(response => {
+        this.roles = response.data
+      })
+    },
     getByParameterName(parameterName) {
+      if (parameterName === 'default_user_role') {
+        this.loadRoles()
+      }
       getByParameterName(parameterName).then(response => {
         this.parameterObj = response.data || {}
       })
