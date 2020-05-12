@@ -89,7 +89,10 @@ export default {
     gzhAccountManage: 'GzhAccountManage',
     gzhUserManage: 'GzhUserManage',
     gzhUserTagManage: 'GzhUserTagManage',
-    gzhFenweiTagManage: 'GzhFenweiTagManage'
+    gzhFenweiTagManage: 'GzhFenweiTagManage',
+    WxRuleManage: 'WxRuleManage',
+    gzhTagManage: 'GzhTagManage',
+    gzhTagRuleManage: 'GzhTagRuleManage'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -513,6 +516,28 @@ export default {
     content: 'Content',
     rank: 'Rank',
     score: 'Score',
+    createBy: 'CreateBy',
+    createTime: 'CreateTime',
+    updateBy: 'UpdateBy',
+    updateTime: 'UpdateTime'
+  },
+  GzhTag: {
+    id: 'Id',
+    name: 'Name',
+    desc: 'Desc',
+    createBy: 'CreateBy',
+    createTime: 'CreateTime',
+    updateBy: 'UpdateBy',
+    updateTime: 'UpdateTime'
+  },
+  GzhTagRule: {
+    id: 'Id',
+    rid: 'Rid',
+    score: 'Score',
+    compute: 'Compute',
+    content: 'Content',
+    tagId: 'TagId',
+    gzhId: 'GzhId',
     createBy: 'CreateBy',
     createTime: 'CreateTime',
     updateBy: 'UpdateBy',

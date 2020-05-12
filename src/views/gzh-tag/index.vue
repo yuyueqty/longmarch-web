@@ -2,12 +2,20 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="filter-container clearfix">
-        <el-button v-permission="['wx:gzhaccount:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+        <el-form :inline="true" :model="listQuery" class="demo-form-inline">
+          <el-form-item class="postInfo-container-item">
+            <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('table.fuzzySearch')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+            {{ $t('table.search') }}
+          </el-button>
+        </el-form>
+        <el-button v-permission="['wx:gzhtag:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
           {{ $t('table.add') }}
         </el-button>
-        <!-- <el-button v-permission="['wx:gzhaccount:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="deleteData()">
+        <el-button v-permission="['wx:gzhtag:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="deleteData()">
           {{ $t('table.batchDelete') }}
-        </el-button> -->
+        </el-button>
       </div>
       <el-table
         :key="tableKey"
@@ -18,59 +26,32 @@
         @sort-change="sortChange"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column :label="$t('GzhAccount.jwid')" align="center">
+        <el-table-column
+          type="selection"
+          width="55"
+        />
+        <!-- <el-table-column :label="$t('GzhTag.id')" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.jwid }}</span>
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column> -->
+        <el-table-column :label="$t('GzhTag.name')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhAccount.fwAppid')" align="center">
+        <el-table-column :label="$t('GzhTag.desc')" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.fwAppid }}</span>
+            <span>{{ scope.row.desc }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhAccount.weixinAppid')" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.weixinAppid }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('GzhAccount.fwField')" align="center">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.fwField | dictFirst(dictionary.style_dict)">
-              <span>{{ scope.row.fwField | dictFirst(dictionary.fw_field_dict) }}</span>
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('GzhAccount.accountType')" align="center">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.accountType | dictFirst(dictionary.style_dict)">
-              <span>{{ scope.row.accountType | dictFirst(dictionary.account_type_dict) }}</span>
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('GzhAccount.authStatus')" align="center">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.authStatus | dictFirst(dictionary.style_dict)">
-              <span>{{ scope.row.authStatus | dictFirst(dictionary.auth_status_dict) }}</span>
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('GzhAccount.defaultAccount')" align="center">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.defaultAccount | dictFirst(dictionary.style_dict)">
-              <span>{{ scope.row.defaultAccount | dictFirst(dictionary.auth_status_dict) }}</span>
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column v-if="checkPermission(['wx:gzhaccount:update', 'wx:wx_gzh_account:delete', 'wx:gzhaccount:setting'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['wx:gzhaccount:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+            <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
               {{ $t('table.edit') }}
             </el-button>
-            <el-button v-permission="['wx:gzhaccount:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
+            <el-button v-permission="['wx:gzhtag:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
               {{ $t('table.delete') }}
-            </el-button>
-            <el-button v-if="!row.defaultAccount" v-permission="['wx:gzhaccount:setting']" class="filter-item" style="margin-left: 10px;" type="danger" @click="setDefault(row)">
-              {{ $t('table.set_default') }}
             </el-button>
           </template>
         </el-table-column>
@@ -79,35 +60,14 @@
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
-        <el-form-item :label="$t('GzhAccount.jwid')">
-          <el-input v-model="temp.jwid" />
+        <el-form-item :label="$t('GzhTag.id')">
+          <el-input v-model="temp.id" />
         </el-form-item>
-        <el-form-item :label="$t('GzhAccount.fwAppid')">
-          <el-input v-model="temp.fwAppid" />
+        <el-form-item :label="$t('GzhTag.name')">
+          <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item :label="$t('GzhAccount.fwAppsecret')">
-          <el-input v-model="temp.fwAppsecret" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhAccount.weixinAppid')">
-          <el-input v-model="temp.weixinAppid" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhAccount.weixinAppsecret')">
-          <el-input v-model="temp.weixinAppsecret" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhAccount.accountType')">
-          <el-radio-group v-model="temp.accountType">
-            <el-radio-button v-for="item in dictionary.account_type_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item :label="$t('GzhAccount.authStatus')">
-          <el-radio-group v-model="temp.authStatus">
-            <el-radio-button v-for="item in dictionary.auth_status_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item :label="$t('GzhAccount.fwField')">
-          <el-radio-group v-model="temp.fwField">
-            <el-radio-button v-for="item in dictionary.fw_field_dict" :key="item.value" :label="item.value">{{ item.label }}</el-radio-button>
-          </el-radio-group>
+        <el-form-item :label="$t('GzhTag.desc')">
+          <el-input v-model="temp.desc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -125,13 +85,13 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, changeStatus, setDefault } from '@/api/GzhAccountApi'
+import { fetchList, create, update, remove, changeStatus } from '@/api/GzhTagApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'GzhAccountManage',
+  name: 'GzhTagManage',
   components: { Pagination },
   directives: { waves, permission },
   filters: {
@@ -155,34 +115,8 @@ export default {
       },
       temp: {
         id: undefined,
-        jwid: undefined,
-        wxName: undefined,
-        loginName: undefined,
-        loginPasswd: undefined,
-        applicationType: undefined,
-        qrcodeimg: undefined,
-        weixinNumber: undefined,
-        weixinAppid: undefined,
-        weixinAppsecret: undefined,
-        accountType: undefined,
-        authStatus: undefined,
-        accessToken: undefined,
-        tokenGettime: undefined,
-        apiticket: undefined,
-        apiticketGettime: undefined,
-        jsapiticket: undefined,
-        jsapiticketGettime: undefined,
-        authType: undefined,
-        businessInfo: undefined,
-        funcInfo: undefined,
-        nickName: undefined,
-        headimgurl: undefined,
-        authorizationInfo: undefined,
-        authorizerRefreshToken: undefined,
-        token: undefined,
-        authorizationStatus: undefined,
-        isDeleted: undefined,
-        tenantId: undefined,
+        name: undefined,
+        desc: undefined,
         createBy: undefined,
         createTime: undefined,
         updateBy: undefined,
@@ -191,12 +125,11 @@ export default {
       dialogFormVisible: false,
       dialogStatus: 'create',
       textMap: {
-        update: '编辑系统公众号表',
-        create: '添加系统公众号表'
+        update: '编辑标签',
+        create: '添加标签'
       },
       rules: {
-      },
-      uploadActionUrl: process.env.VUE_APP_BASE_API + '/file/upload'
+      }
     }
   },
   computed: {
@@ -238,34 +171,8 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        jwid: undefined,
-        wxName: undefined,
-        loginName: undefined,
-        loginPasswd: undefined,
-        applicationType: undefined,
-        qrcodeimg: undefined,
-        weixinNumber: undefined,
-        weixinAppid: undefined,
-        weixinAppsecret: undefined,
-        accountType: undefined,
-        authStatus: undefined,
-        accessToken: undefined,
-        tokenGettime: undefined,
-        apiticket: undefined,
-        apiticketGettime: undefined,
-        jsapiticket: undefined,
-        jsapiticketGettime: undefined,
-        authType: undefined,
-        businessInfo: undefined,
-        funcInfo: undefined,
-        nickName: undefined,
-        headimgurl: undefined,
-        authorizationInfo: undefined,
-        authorizerRefreshToken: undefined,
-        token: undefined,
-        authorizationStatus: undefined,
-        isDeleted: undefined,
-        tenantId: undefined,
+        name: undefined,
+        desc: undefined,
         createBy: undefined,
         createTime: undefined,
         updateBy: undefined,
@@ -286,7 +193,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           create(this.temp).then(() => {
-            this.getList()
+            this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -313,7 +220,13 @@ export default {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
-            this.getList()
+            for (const v of this.list) {
+              if (v.id === this.temp.id) {
+                const index = this.list.indexOf(v)
+                this.list.splice(index, 1, this.temp)
+                break
+              }
+            }
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -360,10 +273,6 @@ export default {
         })
       })
     },
-    /** 上传事件 **/
-    handlePictureCardPreview(response, file, fileList) {
-      this.temp.qrcodeimg = response.data.url
-    },
     /** 多选触发操作 **/
     handleSelectionChange(selectionIds) {
       this.ids = selectionIds
@@ -399,17 +308,6 @@ export default {
           break
         }
       }
-    },
-    setDefault(row) {
-      setDefault(row.id).then(() => {
-        this.getList()
-        this.$notify({
-          title: '成功',
-          message: '设置成功',
-          type: 'success',
-          duration: 2000
-        })
-      })
     }
   }
 }

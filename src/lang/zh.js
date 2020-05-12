@@ -89,7 +89,10 @@ export default {
     gzhAccountManage: '公众号管理',
     gzhUserManage: '粉丝管理',
     gzhUserTagManage: '标签管理',
-    gzhFenweiTagManage: '分维标签'
+    gzhFenweiTagManage: '分维标签',
+    WxRuleManage: '规则管理',
+    gzhTagManage: '标签管理',
+    gzhTagRuleManage: '标签规则'
   },
   navbar: {
     dashboard: '首页',
@@ -472,7 +475,7 @@ export default {
     bindStatus: '绑定状态',
     bindTime: '绑定时间',
     tagIds: '标签id',
-    fenWeiTags: '分维标签',
+    fenWeiTags: '标签',
     province: '省份',
     city: '城市',
     country: '国家',
@@ -517,6 +520,28 @@ export default {
     content: '标签内容',
     rank: '可信度',
     score: '分数',
+    createBy: '创建者ID',
+    createTime: '创建时间',
+    updateBy: '更新ID',
+    updateTime: '更新时间'
+  },
+  GzhTag: {
+    id: '主键',
+    name: '签名称',
+    desc: '描述',
+    createBy: '创建者ID',
+    createTime: '创建时间',
+    updateBy: '更新ID',
+    updateTime: '更新时间'
+  },
+  GzhTagRule: {
+    id: '主键',
+    rid: '规则ID',
+    score: '分数',
+    compute: '计算',
+    content: '标签内容',
+    tagId: '新标签ID',
+    gzhId: '公众号ID',
     createBy: '创建者ID',
     createTime: '创建时间',
     updateBy: '更新ID',

@@ -35,7 +35,10 @@
         <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
           {{ $t('table.analyseTag') }}
         </el-button>
-        <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
+        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
+          二次解析
+        </el-button>
+        <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="processTag()">
           {{ $t('table.downloadWxUser') }}
         </el-button>
       </div>
@@ -61,6 +64,11 @@
         <el-table-column :label="$t('GzhUser.nickname')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('GzhUser.fenWeiTags')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.fenWeiTags }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="sex" sortable="custom" :label="$t('GzhUser.sexDesc')" align="center">
@@ -136,7 +144,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, changeStatus, batchSync, analyseTag, analyseMore, syncMore } from '@/api/GzhUserApi'
+import { fetchList, create, update, remove, changeStatus, batchSync, processTag, analyseTag, analyseMore, syncMore } from '@/api/GzhUserApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -211,19 +219,19 @@ export default {
       }
     }
   },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    this.chart.dispose()
-    this.chart = null
-  },
   computed: {
     ...mapGetters(['dictionary']),
     batchDeleteButtonStatus() {
       return this.ids.length <= 0
     }
   },
+  // beforeDestroy() {
+  //   if (!this.chart) {
+  //     return
+  //   }
+  //   this.chart.dispose()
+  //   this.chart = null
+  // },
   created() {
     this.getList()
   },
@@ -431,7 +439,7 @@ export default {
       analyseTag().then(response => {
         this.$message({
           type: 'success',
-          message: response.message
+          message: '解析数量:' + response.data + ',请稍等'
         })
       })
     },
@@ -445,6 +453,14 @@ export default {
           this.$refs.child.showTag(row.openId)
         }
       }
+    },
+    processTag() {
+      processTag().then(response => {
+        this.$message({
+          type: 'success',
+          message: '二次开始,请稍等'
+        })
+      })
     },
     syncMore(row) {
       const h = this.$createElement

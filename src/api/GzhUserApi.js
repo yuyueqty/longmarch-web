@@ -77,3 +77,10 @@ export function analyseMore(data) {
     data
   })
 }
+
+export function processTag() {
+  return request({
+    url: '/wx/gzh-user/process',
+    method: 'get'
+  })
+}
