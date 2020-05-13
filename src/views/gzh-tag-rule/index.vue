@@ -143,7 +143,8 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
-        current: 1
+        current: 1,
+        size: 10
       },
       temp: {
         id: undefined,

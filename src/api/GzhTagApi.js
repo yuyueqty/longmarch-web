@@ -39,3 +39,18 @@ export function changeStatus(data) {
     data
   })
 }
+
+export function syncTagToWx(data) {
+  return request({
+    url: '/wx/gzh-tag/syncTagToWx',
+    method: 'post',
+    data
+  })
+}
+
+export function batchTagging(tagId) {
+  return request({
+    url: '/wx/gzh-tag/batchTagging/' + tagId,
+    method: 'get'
+  })
+}

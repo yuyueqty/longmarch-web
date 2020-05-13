@@ -40,15 +40,26 @@
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhTag.desc')" align="center">
+        <el-table-column :label="$t('GzhTag.wxTagId')" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.desc }}</span>
+            <span>{{ scope.row.wxTagId }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
+        <el-table-column :label="$t('GzhTag.description')" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.description }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])" fixed="right" :label="$t('table.actions')" width="500px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
             <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
               {{ $t('table.edit') }}
+            </el-button>
+            <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncTagToWx(row)">
+              同步到远程
+            </el-button>
+            <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchTagging(row)">
+              批量打标签
             </el-button>
             <el-button v-permission="['wx:gzhtag:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
               {{ $t('table.delete') }}
@@ -66,8 +77,8 @@
         <el-form-item :label="$t('GzhTag.name')">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item :label="$t('GzhTag.desc')">
-          <el-input v-model="temp.desc" />
+        <el-form-item :label="$t('GzhTag.description')">
+          <el-input v-model="temp.description" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -85,7 +96,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, changeStatus } from '@/api/GzhTagApi'
+import { fetchList, create, update, remove, changeStatus, syncTagToWx, batchTagging } from '@/api/GzhTagApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -111,12 +122,14 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
-        current: 1
+        current: 1,
+        size: 10
       },
       temp: {
         id: undefined,
+        wxTagId: undefined,
         name: undefined,
-        desc: undefined,
+        description: undefined,
         createBy: undefined,
         createTime: undefined,
         updateBy: undefined,
@@ -171,8 +184,9 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
+        wxTagId: undefined,
         name: undefined,
-        desc: undefined,
+        description: undefined,
         createBy: undefined,
         createTime: undefined,
         updateBy: undefined,
@@ -267,6 +281,50 @@ export default {
         }
       }).then(action => {
         this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    /** 将标签同步到远程 **/
+    syncTagToWx(row) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【将标签同步到远程】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            syncTagToWx(_ids).then(() => {
+              done()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    /** 将标签同步到远程 **/
+    batchTagging(row) {
+      batchTagging(row.id).then(() => {
         this.$message({
           type: 'success',
           message: '操作完成'

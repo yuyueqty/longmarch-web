@@ -523,8 +523,9 @@ export default {
   },
   GzhTag: {
     id: 'Id',
+    wxTagId: 'WxTagId',
     name: 'Name',
-    desc: 'Desc',
+    description: 'Desc',
     createBy: 'CreateBy',
     createTime: 'CreateTime',
     updateBy: 'UpdateBy',

@@ -35,10 +35,10 @@
         <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
           {{ $t('table.analyseTag') }}
         </el-button>
-        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
+        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="processTag()">
           二次解析
         </el-button>
-        <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="processTag()">
+        <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
           {{ $t('table.downloadWxUser') }}
         </el-button>
       </div>

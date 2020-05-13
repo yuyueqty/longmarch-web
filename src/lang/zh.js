@@ -527,8 +527,9 @@ export default {
   },
   GzhTag: {
     id: '主键',
+    wxTagId: '微信标签ID',
     name: '签名称',
-    desc: '描述',
+    description: '描述',
     createBy: '创建者ID',
     createTime: '创建时间',
     updateBy: '更新ID',
