@@ -92,7 +92,8 @@ export default {
     gzhFenweiTagManage: 'GzhFenweiTagManage',
     WxRuleManage: 'WxRuleManage',
     gzhTagManage: 'GzhTagManage',
-    gzhTagRuleManage: 'GzhTagRuleManage'
+    gzhTagRuleManage: 'GzhTagRuleManage',
+    gzhTagSettingManage: 'GzhTagSettingManage'
   },
   navbar: {
     dashboard: 'Dashboard',

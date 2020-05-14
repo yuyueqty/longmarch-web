@@ -1,10 +1,9 @@
 import request from '@/utils/request'
 
-export function list(data) {
+export function list() {
   return request({
     url: '/wx/gzh-tag/list',
-    method: 'post',
-    data
+    method: 'post'
   })
 }
 

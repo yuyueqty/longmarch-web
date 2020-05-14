@@ -92,7 +92,8 @@ export default {
     gzhFenweiTagManage: '分维标签',
     WxRuleManage: '规则管理',
     gzhTagManage: '标签管理',
-    gzhTagRuleManage: '标签规则'
+    gzhTagRuleManage: '标签规则',
+    gzhTagSettingManage: '标签设置'
   },
   navbar: {
     dashboard: '首页',

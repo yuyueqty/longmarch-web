@@ -36,10 +36,10 @@
           ②解析分维标签
         </el-button>
         <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="processTag()">
-          ③解析营销解析
+          ③解析营销标签
         </el-button>
         <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
-          {{ $t('table.downloadWxUser') }}
+          ④{{ $t('table.downloadWxUser') }}
         </el-button>
       </div>
       <el-table
@@ -102,7 +102,7 @@
         <el-table-column v-if="checkPermission(['wx:gzhuser:syncone', 'wx:gzhuser:analyseone'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
             <el-button v-permission="['wx:gzhuser:syncone']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-              修改备注
+              备注
             </el-button>
             <el-button v-permission="['wx:gzhuser:syncone']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncMore(row)">
               同步
@@ -178,7 +178,7 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
-        size: 10,
+        size: 20,
         current: 1
       },
       temp: {

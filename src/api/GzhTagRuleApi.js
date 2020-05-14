@@ -39,3 +39,18 @@ export function changeStatus(data) {
     data
   })
 }
+
+export function removeRule(id) {
+  return request({
+    url: '/wx/gzh-tag-rule/removeRule/' + id,
+    method: 'get'
+  })
+}
+
+export function saveData(tagId, data) {
+  return request({
+    url: '/wx/gzh-tag-rule/save/' + tagId,
+    method: 'post',
+    data
+  })
+}

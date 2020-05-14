@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col :span="8">
+      <el-col :span="10">
         <el-card class="box-card">
           <div slot="header" class="filter-container clearfix">
             <el-button
@@ -22,14 +22,9 @@
             @selection-change="handleSelectionChange"
             @row-click="loadRule"
           >
-            <el-table-column :label="$t('GzhTag.name')">
+            <el-table-column :label="$t('GzhTag.name')" width="160">
               <template slot-scope="scope">
-                <span>{{ scope.row.name }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column :label="$t('GzhTag.wxTagId')" align="center">
-              <template slot-scope="scope">
-                <span>{{ scope.row.wxTagId }}</span>
+                <span>{{ scope.row.name }}（{{ scope.row.wxTagId }}）</span>
               </template>
             </el-table-column>
             <el-table-column :label="$t('GzhTag.description')">
@@ -41,7 +36,7 @@
               v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])"
               fixed="right"
               :label="$t('table.actions')"
-              width="200px"
+              width="100px"
               align="center"
               class-name="small-padding fixed-width"
             >
@@ -50,29 +45,22 @@
                   v-permission="['wx:gzhtag:update']"
                   class="filter-item"
                   style="margin-left: 10px;"
-                  type="primary"
+                  type="text"
                   @click="handleUpdate(row)"
-                ><i class="el-icon-edit" /></el-button>
+                >编辑</el-button>
                 <el-button
                   v-permission="['wx:gzhtag:delete']"
                   class="filter-item"
                   style="margin-left: 10px;"
-                  type="danger"
+                  type="text"
                   @click="deleteData(row)"
-                ><i class="el-icon-delete" /></el-button>
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="listQuery.current"
-            :limit.sync="listQuery.size"
-            @pagination="getList"
-          />
         </el-card>
       </el-col>
-      <el-col :span="16">
+      <el-col :span="14">
         <el-card class="box-card">
           <div slot="header" class="filter-container clearfix">
             <el-button
@@ -94,17 +82,24 @@
           >
             <el-table-column :label="$t('GzhTagRule.rid')" align="center">
               <template slot-scope="scope">
-                <el-input v-if="dialogStatus==='create'" v-model="scope.row.rid" />
+                <el-input v-model="scope.row.rid" :disabled="scope.row.id!==undefined" />
               </template>
             </el-table-column>
-            <el-table-column :label="$t('GzhTagRule.content')">
+            <el-table-column :label="$t('GzhTagRule.content')" width="200">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.content" />
               </template>
             </el-table-column>
             <el-table-column :label="$t('GzhTagRule.compute')" align="center">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.compute" />
+                <el-select v-model="scope.row.compute" clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in computeOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
               </template>
             </el-table-column>
             <el-table-column :label="$t('GzhTagRule.score')" align="center">
@@ -116,7 +111,7 @@
               v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])"
               fixed="right"
               :label="$t('table.actions')"
-              width="200px"
+              width="100px"
               align="center"
               class-name="small-padding fixed-width"
             >
@@ -125,16 +120,16 @@
                   v-permission="['wx:gzhtag:update']"
                   class="filter-item"
                   style="margin-left: 10px;"
-                  type="primary"
-                  @click="handleDelete(scope.$index, scope.row)"
-                ><i class="el-icon-delete" /></el-button>
+                  type="text"
+                  @click="saveData(scope.$index, scope.row)"
+                >保存</el-button>
                 <el-button
                   v-permission="['wx:gzhtag:delete']"
                   class="filter-item"
                   style="margin-left: 10px;"
-                  type="danger"
-                  @click="handleDelete(scope.$index, scope.row)"
-                ><i class="el-icon-delete" /></el-button>
+                  type="text"
+                  @click="removeData(scope.$index, scope.row)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -165,23 +160,17 @@
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
 import { list, loadRule, create, update, remove } from '@/api/GzhTagApi'
-import Pagination from '@/components/Pagination'
+import { removeRule, saveData } from '@/api/GzhTagRuleApi'
 
 export default {
-  components: { Pagination },
   directives: { permission },
   data() {
     return {
       list: [],
       list2: [],
       tableKey: 0,
-      total: 0,
       listLoading: true,
       dialogFormVisible: false,
-      listQuery: {
-        current: 1,
-        size: 10
-      },
       temp: {
         id: undefined,
         wxTagId: undefined,
@@ -192,11 +181,21 @@ export default {
         updateBy: undefined,
         updateTime: undefined
       },
+      computeOption: [
+        {
+          value: 'lt',
+          label: '小于'
+        }, {
+          value: 'gt',
+          label: '大于'
+        }
+      ],
       textMap: {
         update: '编辑标签',
         create: '添加标签'
       },
-      dialogStatus: 'create'
+      dialogStatus: 'create',
+      tagId: undefined
     }
   },
   created() {
@@ -208,10 +207,10 @@ export default {
     /** 获取列表 **/
     getList() {
       this.listLoading = true
-      list(this.listQuery).then(response => {
-        this.list = response.data.records
-        this.list2 = response.data.records[0].gzhTagRuleList
-        this.total = response.data.total
+      list().then(response => {
+        this.list = response.data
+        this.list2 = response.gzhTagRuleList
+        this.tagId = response.data[0].id
         this.listLoading = false
       })
     },
@@ -224,6 +223,7 @@ export default {
       if (event.label !== '操作') {
         loadRule(row.id).then(response => {
           this.list2 = response.data
+          this.tagId = row.id
         })
       }
     },
@@ -343,6 +343,31 @@ export default {
       }
       // 添加新的行数
       this.list2.push(newValue)
+    },
+    saveData(index, row) {
+      saveData(this.tagId, row).then(response => {
+        // this.list2.push(index, response.data)
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    removeData(index, row) {
+      if (row.id === undefined) {
+        this.list2.pop(row)
+      } else {
+        removeRule(row.id).then(response => {
+          this.list2.pop(row)
+          this.$message({
+            type: 'success',
+            message: '操作完成'
+          })
+        })
+      }
+    },
+    changeSwitch($event, row) {
+      row.compute = $event
     }
   }
 }
