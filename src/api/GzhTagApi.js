@@ -1,5 +1,20 @@
 import request from '@/utils/request'
 
+export function list(data) {
+  return request({
+    url: '/wx/gzh-tag/list',
+    method: 'post',
+    data
+  })
+}
+
+export function loadRule(tagId) {
+  return request({
+    url: '/wx/gzh-tag/loadRule/' + tagId,
+    method: 'get'
+  })
+}
+
 export function fetchList(data) {
   return request({
     url: '/wx/gzh-tag/search',
@@ -52,5 +67,13 @@ export function batchTagging(tagId) {
   return request({
     url: '/wx/gzh-tag/batchTagging/' + tagId,
     method: 'get'
+  })
+}
+
+export function remoteTagRemove(data) {
+  return request({
+    url: '/wx/gzh-tag/wxTagRemove',
+    method: 'post',
+    data
   })
 }

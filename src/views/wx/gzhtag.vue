@@ -2,8 +2,28 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="filter-container clearfix">
-        <el-button class="filter-item" style="float: right;margin-left: 2%;" @click="$router.push({name:'GzhUserManage'})">
-          {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
+        <el-form :inline="true" :model="listQuery" class="demo-form-inline">
+          <el-form-item class="postInfo-container-item">
+            <el-input v-model="listQuery.fuzzySearch" clearable :placeholder="$t('table.fuzzySearch')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+          </el-form-item>
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+            {{ $t('table.search') }}
+          </el-button>
+        </el-form>
+        <el-button v-permission="['wx:gzhtag:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+          {{ $t('table.add') }}
+        </el-button>
+        <el-button v-permission="['wx:gzhtag:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="deleteData()">
+          {{ $t('table.batchDelete') }}
+        </el-button>
+        <el-button v-permission="['wx:gzhtag:update']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncTagToWx(row)">
+          同步远程标签
+        </el-button>
+        <el-button v-permission="['wx:gzhtag:update']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" @click="remoteTagRemove()">
+          删除远程标签
+        </el-button>
+        <el-button v-permission="['wx:gzhtag:update']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchTagging(row)">
+          批量打标签
         </el-button>
       </div>
       <el-table
@@ -19,86 +39,58 @@
           type="selection"
           width="55"
         />
-        <!-- <el-table-column :label="$t('GzhFenweiTag.id')" align="center">
+        <!-- <el-table-column :label="$t('GzhTag.id')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column> -->
-        <!-- <el-table-column :label="$t('GzhFenweiTag.gzhId')" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.gzhId }}</span>
-          </template>
-        </el-table-column> -->
-        <el-table-column :label="$t('GzhFenweiTag.openId')" align="center" width="280">
-          <template slot-scope="scope">
-            <span>{{ scope.row.openId }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('GzhFenweiTag.fieldId')" align="center">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.fieldId | dictFirst(dictionary.style_dict)">
-              <span>{{ scope.row.fieldId | dictFirst(dictionary.fw_field_dict) }}</span>
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('GzhFenweiTag.name')" align="center">
+        <el-table-column :label="$t('GzhTag.name')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhFenweiTag.content')" align="center">
+        <el-table-column :label="$t('GzhTag.wxTagId')" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.content }}</span>
+            <span>{{ scope.row.wxTagId }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhFenweiTag.rank')" align="center">
+        <el-table-column :label="$t('GzhTag.description')" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.rank }}</span>
+            <span>{{ scope.row.description }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhFenweiTag.score')" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.score }}</span>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column v-if="checkPermission(['wx:gzhfenweitag:update', 'wx:wx_gzh_fenwei_tag:delete'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])" fixed="right" :label="$t('table.actions')" width="500px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['wx:gzhfenweitag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+            <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
               {{ $t('table.edit') }}
             </el-button>
-            <el-button v-permission="['wx:gzhfenweitag:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
+            <!-- <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncTagToWx(row)">
+              同步到远程
+            </el-button>
+            <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncTagToWx(row)">
+              删除远程标签
+            </el-button>
+            <el-button v-permission="['wx:gzhtag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchTagging(row)">
+              批量打标签
+            </el-button> -->
+            <el-button v-permission="['wx:gzhtag:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
               {{ $t('table.delete') }}
             </el-button>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
-        <el-form-item :label="$t('GzhFenweiTag.id')">
+        <!-- <el-form-item :label="$t('GzhTag.id')">
           <el-input v-model="temp.id" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhFenweiTag.gzhId')">
-          <el-input v-model="temp.gzhId" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhFenweiTag.openId')">
-          <el-input v-model="temp.openId" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhFenweiTag.fieldId')">
-          <el-input v-model="temp.fieldId" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhFenweiTag.name')">
+        </el-form-item> -->
+        <el-form-item :label="$t('GzhTag.name')">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item :label="$t('GzhFenweiTag.content')">
-          <el-input v-model="temp.content" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhFenweiTag.rank')">
-          <el-input v-model="temp.rank" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhFenweiTag.score')">
-          <el-input v-model="temp.score" />
+        <el-form-item :label="$t('GzhTag.description')">
+          <el-input v-model="temp.description" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -116,14 +108,13 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, changeStatus } from '@/api/GzhFenweiTagApi'
+import { fetchList, create, update, remove, changeStatus, syncTagToWx, batchTagging, remoteTagRemove } from '@/api/GzhTagApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
-// import RaddarChart from './components/RaddarChart'
 
 export default {
-  name: 'GzhFenweiTagManage',
+  name: 'GzhTagManage',
   components: { Pagination },
   directives: { waves, permission },
   filters: {
@@ -143,17 +134,14 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
-        current: 1
+        current: 1,
+        size: 10
       },
       temp: {
         id: undefined,
-        gzhId: undefined,
-        openId: undefined,
-        fieldId: undefined,
+        wxTagId: undefined,
         name: undefined,
-        content: undefined,
-        rank: undefined,
-        score: undefined,
+        description: undefined,
         createBy: undefined,
         createTime: undefined,
         updateBy: undefined,
@@ -162,8 +150,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: 'create',
       textMap: {
-        update: '编辑公众号粉丝分维解析标签',
-        create: '添加公众号粉丝分维解析标签'
+        update: '编辑标签',
+        create: '添加标签'
       },
       rules: {
       }
@@ -184,7 +172,6 @@ export default {
     /** 获取列表 **/
     getList() {
       this.listLoading = true
-      this.listQuery.openId = this.$route.params.openId
       fetchList(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
@@ -209,13 +196,9 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        gzhId: undefined,
-        openId: undefined,
-        fieldId: undefined,
+        wxTagId: undefined,
         name: undefined,
-        content: undefined,
-        rank: undefined,
-        score: undefined,
+        description: undefined,
         createBy: undefined,
         createTime: undefined,
         updateBy: undefined,
@@ -310,6 +293,85 @@ export default {
         }
       }).then(action => {
         this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    /** 将标签同步到远程 **/
+    syncTagToWx(row) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【将标签同步到远程】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            syncTagToWx(_ids).then(() => {
+              done()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    /** 远程标签删除逻辑 **/
+    remoteTagRemove(row) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【删除字典】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
+              return obj.id
+            })
+            remoteTagRemove(_ids).then(() => {
+              done()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    /** 将标签同步到远程 **/
+    batchTagging(row) {
+      batchTagging(row.id).then(() => {
         this.$message({
           type: 'success',
           message: '操作完成'

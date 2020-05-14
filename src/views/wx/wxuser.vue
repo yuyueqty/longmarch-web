@@ -30,13 +30,13 @@
           </el-button>
         </el-form>
         <el-button v-permission="['wx:gzhuser:sync']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(true)">
-          {{ $t('table.fullSync') }}
+          ①同步微信用户
         </el-button>
         <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
-          {{ $t('table.analyseTag') }}
+          ②解析分维标签
         </el-button>
         <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="processTag()">
-          二次解析
+          ③解析营销解析
         </el-button>
         <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
           {{ $t('table.downloadWxUser') }}
@@ -63,7 +63,10 @@
         </el-table-column>
         <el-table-column :label="$t('GzhUser.nickname')" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.nickname }}</span>
+            <span v-if="scope.row.remark">
+              {{ scope.row.remark }}（{{ scope.row.nickname }}）
+            </span>
+            <span v-if="!scope.row.remark">{{ scope.row.nickname }}</span>
           </template>
         </el-table-column>
         <el-table-column :label="$t('GzhUser.fenWeiTags')" align="center">
@@ -96,8 +99,11 @@
             <span>{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['wx:gzhuser:syncone', 'wx:gzhuser:analyseone'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['wx:gzhuser:syncone', 'wx:gzhuser:analyseone'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
+            <el-button v-permission="['wx:gzhuser:syncone']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+              修改备注
+            </el-button>
             <el-button v-permission="['wx:gzhuser:syncone']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncMore(row)">
               同步
             </el-button>
@@ -111,11 +117,11 @@
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
+        <el-form-item :label="$t('GzhUser.nickname')">
+          <el-input v-model="temp.nickname" disabled />
+        </el-form-item>
         <el-form-item :label="$t('GzhUser.remark')">
           <el-input v-model="temp.remark" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhUser.sexDesc')">
-          <el-input v-model="temp.sexDesc" />
         </el-form-item>
         <el-form-item :label="$t('GzhUser.mobile')">
           <el-input v-model="temp.mobile" />

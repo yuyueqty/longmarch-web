@@ -18,7 +18,7 @@ export function create(data) {
 
 export function update(data) {
   return request({
-    url: '/wx/gzh-user/update',
+    url: '/wx/gzh-user/remarkModify',
     method: 'post',
     data
   })

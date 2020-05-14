@@ -189,7 +189,7 @@ export default {
     fullSync: '同步微信用户信息',
     incrSync: '增量同步微信用户',
     analyseTag: '解析微信用户标签',
-    downloadWxUser: '导出微信用户标签',
+    downloadWxUser: '导出用户信息',
     set_default: '设置默认'
   },
   example: {
@@ -475,7 +475,7 @@ export default {
     bindStatus: '绑定状态',
     bindTime: '绑定时间',
     tagIds: '标签id',
-    fenWeiTags: '标签',
+    fenWeiTags: '营销标签',
     province: '省份',
     city: '城市',
     country: '国家',
