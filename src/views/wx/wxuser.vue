@@ -36,10 +36,13 @@
           ②解析分维标签
         </el-button>
         <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="processTag()">
-          ③解析营销标签
+          ③解析营销标签(同步微信公众号平台)
+        </el-button>
+        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="wxuserTagRemove()">
+          ④取消用户标签(同步微信公众号平台)
         </el-button>
         <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
-          ④{{ $t('table.downloadWxUser') }}
+          {{ $t('table.downloadWxUser') }}
         </el-button>
       </div>
       <el-table
@@ -150,7 +153,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, changeStatus, batchSync, processTag, analyseTag, analyseMore, syncMore } from '@/api/GzhUserApi'
+import { fetchList, create, update, remove, changeStatus, batchSync, processTag, analyseTag, analyseMore, syncMore, wxuserTagRemove } from '@/api/GzhUserApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -521,6 +524,37 @@ export default {
               return obj.id
             })
             analyseMore(_ids).then(() => {
+              done()
+              instance.confirmButtonLoading = false
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        this.getList()
+        this.$message({
+          type: 'success',
+          message: '操作完成'
+        })
+      })
+    },
+    wxuserTagRemove(row) {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '提示',
+        message: h('p', null, [
+          h('span', null, '【批量取消用户标签】操作，是否继续? ')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            wxuserTagRemove().then(() => {
               done()
               instance.confirmButtonLoading = false
             })

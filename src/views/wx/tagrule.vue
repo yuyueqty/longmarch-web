@@ -210,7 +210,10 @@ export default {
       list().then(response => {
         this.list = response.data
         this.list2 = response.gzhTagRuleList
-        this.tagId = response.data[0].id
+        console.log(response.data)
+        if (response.data.length > 0) {
+          this.tagId = response.data[0].id
+        }
         this.listLoading = false
       })
     },
@@ -253,8 +256,8 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          create(this.temp).then(() => {
-            this.list.unshift(this.temp)
+          create(this.temp).then(response => {
+            this.list.unshift(response.data)
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -305,7 +308,7 @@ export default {
       this.$msgbox({
         title: '提示',
         message: h('p', null, [
-          h('span', null, '【删除字典】操作，是否继续? ')
+          h('span', null, '【删除标签】操作，是否继续? ')
         ]),
         showCancelButton: true,
         confirmButtonText: '确定',
@@ -346,7 +349,6 @@ export default {
     },
     saveData(index, row) {
       saveData(this.tagId, row).then(response => {
-        // this.list2.push(index, response.data)
         this.$message({
           type: 'success',
           message: '操作完成'

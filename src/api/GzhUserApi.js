@@ -84,3 +84,10 @@ export function processTag() {
     method: 'get'
   })
 }
+
+export function wxuserTagRemove() {
+  return request({
+    url: '/wx/gzh-user/wxuserTagRemove',
+    method: 'get'
+  })
+}
