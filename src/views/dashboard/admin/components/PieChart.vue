@@ -43,13 +43,14 @@ export default {
     this.chart = null
   },
   methods: {
-    showTag(openId) {
+    showTag(openId, user) {
       openid(openId).then(response => {
-        this.initChart(response.data)
+        this.initChart(response.data, user)
       })
     },
-    initChart(data) {
+    initChart(data, user) {
       this.chart = echarts.init(this.$el, 'macarons')
+      const info = '用户：' + user.nickname + '  营销标签：' + (user.fenWeiTags === null ? '无' : user.fenWeiTags)
       this.chart.setOption({
         tooltip: {
           trigger: 'item',
@@ -63,7 +64,7 @@ export default {
         calculable: true,
         series: [
           {
-            name: data.info,
+            name: info,
             type: 'pie',
             roseType: 'radius',
             radius: [15, 95],

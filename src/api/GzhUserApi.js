@@ -78,16 +78,16 @@ export function analyseMore(data) {
   })
 }
 
-export function processTag() {
+export function tagAnalysis() {
   return request({
-    url: '/wx/gzh-user/process',
+    url: '/wx/gzh-user/tagAnalysis',
     method: 'get'
   })
 }
 
-export function wxuserTagRemove() {
+export function tagRemove() {
   return request({
-    url: '/wx/gzh-user/wxuserTagRemove',
+    url: '/wx/gzh-user/tagRemove',
     method: 'get'
   })
 }
