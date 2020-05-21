@@ -23,7 +23,7 @@
             <span>{{ scope.row.jwid }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('GzhAccount.fwAppid')" align="center">
+        <!-- <el-table-column :label="$t('GzhAccount.fwAppid')" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.fwAppid }}</span>
           </template>
@@ -32,7 +32,7 @@
           <template slot-scope="scope">
             <span>{{ scope.row.weixinAppid }}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('GzhAccount.fwField')" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.fwField | dictFirst(dictionary.style_dict)">
@@ -80,19 +80,19 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
         <el-form-item :label="$t('GzhAccount.jwid')">
-          <el-input v-model="temp.jwid" />
+          <el-input v-model="temp.jwid" placeholder="公众号名称" />
         </el-form-item>
-        <el-form-item :label="$t('GzhAccount.fwAppid')">
+        <!-- <el-form-item :label="$t('GzhAccount.fwAppid')">
           <el-input v-model="temp.fwAppid" />
         </el-form-item>
         <el-form-item :label="$t('GzhAccount.fwAppsecret')">
           <el-input v-model="temp.fwAppsecret" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item :label="$t('GzhAccount.weixinAppid')">
-          <el-input v-model="temp.weixinAppid" />
+          <el-input v-model="temp.weixinAppid" placeholder="微信开发者ID(AppID)" />
         </el-form-item>
         <el-form-item :label="$t('GzhAccount.weixinAppsecret')">
-          <el-input v-model="temp.weixinAppsecret" />
+          <el-input v-model="temp.weixinAppsecret" placeholder="微信开发者密码(AppSecret)" />
         </el-form-item>
         <el-form-item :label="$t('GzhAccount.accountType')">
           <el-radio-group v-model="temp.accountType">
@@ -161,11 +161,14 @@ export default {
         loginPasswd: undefined,
         applicationType: undefined,
         qrcodeimg: undefined,
+        fwAppid: '619125947727085568',
+        fwAppsecret: '5a85862f532c43d0b089c81b4c296a07',
         weixinNumber: undefined,
         weixinAppid: undefined,
         weixinAppsecret: undefined,
         accountType: undefined,
         authStatus: undefined,
+        fwField: undefined,
         accessToken: undefined,
         tokenGettime: undefined,
         apiticket: undefined,
@@ -191,8 +194,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: 'create',
       textMap: {
-        update: '编辑系统公众号表',
-        create: '添加系统公众号表'
+        update: '编辑微信公众号',
+        create: '添加微信公众号'
       },
       rules: {
       },
@@ -244,11 +247,14 @@ export default {
         loginPasswd: undefined,
         applicationType: undefined,
         qrcodeimg: undefined,
+        fwAppid: '619125947727085568',
+        fwAppsecret: '5a85862f532c43d0b089c81b4c296a07',
         weixinNumber: undefined,
         weixinAppid: undefined,
         weixinAppsecret: undefined,
-        accountType: undefined,
-        authStatus: undefined,
+        accountType: 2,
+        authStatus: 1,
+        fwField: 4,
         accessToken: undefined,
         tokenGettime: undefined,
         apiticket: undefined,

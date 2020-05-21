@@ -28,17 +28,20 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             {{ $t('table.search') }}
           </el-button>
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-refresh" @click="refresh">
+            刷新操作状态
+          </el-button>
         </el-form>
-        <el-button v-permission="['wx:gzhuser:sync']" class="filter-item" style="margin-left: 10px;" type="primary" @click="batchSync(true)">
+        <el-button v-permission="['wx:gzhuser:sync']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncWxUserInfo()">
           ①同步微信用户
         </el-button>
-        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
+        <el-button v-permission="['wx:gzhuser:analyse']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
           ②解析分维标签
         </el-button>
-        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagAnalysis()">
+        <el-button v-permission="['wx:gzhuser:analyse']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagAnalysis()">
           ③解析营销标签(同步微信公众号平台)
         </el-button>
-        <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagRemove()">
+        <el-button v-permission="['wx:gzhuser:analyse']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagRemove()">
           ④取消用户标签(同步微信公众号平台)
         </el-button>
         <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
@@ -153,7 +156,7 @@
 <script>
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
-import { fetchList, create, update, remove, changeStatus, batchSync, tagAnalysis, analyseTag, analyseMore, syncMore, tagRemove } from '@/api/GzhUserApi'
+import { fetchList, create, update, remove, changeStatus, syncMore, refresh, tagAnalysis, analyseTag, analyseMore, syncWxUserInfo, tagRemove } from '@/api/GzhUserApi'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -225,7 +228,8 @@ export default {
         create: '添加粉丝表'
       },
       rules: {
-      }
+      },
+      lock: null
     }
   },
   computed: {
@@ -234,23 +238,36 @@ export default {
       return this.ids.length <= 0
     }
   },
-  // beforeDestroy() {
-  //   if (!this.chart) {
-  //     return
-  //   }
-  //   this.chart.dispose()
-  //   this.chart = null
-  // },
   created() {
     this.getList()
   },
   methods: {
     /** 检查权限 **/
     checkPermission,
+    refresh() {
+      refresh().then(response => {
+        const { lock1, lock2, lock3, lock4 } = response.data
+        if (lock1 !== null || lock2 !== null || lock3 !== null || lock4 !== null) {
+          this.lock = 'lock'
+          this.$message({
+            type: 'warning',
+            message: '正在进行中，请稍等...'
+          })
+        } else {
+          this.lock = null
+          this.getList()
+          this.$message({
+            type: 'success',
+            message: '操作已完成'
+          })
+        }
+      })
+    },
     /** 获取列表 **/
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
+        refresh()
         this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
@@ -436,73 +453,83 @@ export default {
         }
       }
     },
-    batchSync() {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '提示',
-        message: h('p', null, [
-          h('span', null, '【同步微信用户】操作，是否继续? ')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            batchSync().then(() => {
-              done()
-              this.getList()
-              instance.confirmButtonLoading = false
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
-        this.getList()
+    /** 同步微信用户 */
+    syncWxUserInfo() {
+      if (this.lock !== null) {
         this.$message({
-          type: 'success',
-          message: '操作完成'
+          type: 'warning',
+          message: '正在同步中，请稍等...'
         })
-      })
+      } else {
+        const h = this.$createElement
+        this.$msgbox({
+          title: '提示',
+          message: h('p', null, [
+            h('span', null, '【同步微信用户】操作，是否继续? ')
+          ]),
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              instance.confirmButtonLoading = true
+              instance.confirmButtonText = '执行中...'
+              syncWxUserInfo().then(() => {
+                this.refresh()
+                done()
+                instance.confirmButtonLoading = false
+              })
+            } else {
+              done()
+            }
+          }
+        }).then(action => {
+
+        })
+      }
     },
+    /** 解析分维标签 */
     analyseTag() {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '提示',
-        message: h('p', null, [
-          h('span', null, '【解析用户分维标签】操作，是否继续? ')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            analyseTag().then(() => {
-              done()
-              this.getList()
-              instance.confirmButtonLoading = false
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
-        this.getList()
+      if (this.lock !== null) {
         this.$message({
-          type: 'success',
-          message: '操作完成'
+          type: 'warning',
+          message: '正在解析中，请稍等...'
         })
-      })
+      } else {
+        const h = this.$createElement
+        this.$msgbox({
+          title: '提示',
+          message: h('p', null, [
+            h('span', null, '【解析用户分维标签】操作，是否继续? ')
+          ]),
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              instance.confirmButtonLoading = true
+              instance.confirmButtonText = '执行中...'
+              analyseTag().then(() => {
+                this.refresh()
+                done()
+                instance.confirmButtonLoading = false
+              })
+            } else {
+              done()
+            }
+          }
+        }).then(action => {
+
+        })
+      }
     },
+    /** 下载用户数据 */
     downloadWxUser() {
       window.open(process.env.VUE_APP_BASE_API + '/wx/gzh-user/download.xls')
     },
+    /** 展示用户标签 */
     showUserTag(row, event, column) {
       if (event.label !== '操作') {
         this.dialogTag = true
@@ -511,38 +538,43 @@ export default {
         }
       }
     },
-    tagAnalysis(row) {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '提示',
-        message: h('p', null, [
-          h('span', null, '【批量解析用户运营标签】操作，是否继续? ')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            tagAnalysis().then(() => {
-              done()
-              this.getList()
-              instance.confirmButtonLoading = false
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
-        this.getList()
+    /** 二次解析用户营销标签 */
+    tagAnalysis() {
+      if (this.lock !== null) {
         this.$message({
-          type: 'success',
-          message: '操作完成'
+          type: 'warning',
+          message: '正在二次解析中，请稍等...'
         })
-      })
+      } else {
+        const h = this.$createElement
+        this.$msgbox({
+          title: '提示',
+          message: h('p', null, [
+            h('span', null, '【批量解析用户运营标签】操作，是否继续? ')
+          ]),
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              instance.confirmButtonLoading = true
+              instance.confirmButtonText = '执行中...'
+              tagAnalysis().then(() => {
+                this.refresh()
+                done()
+                instance.confirmButtonLoading = false
+              })
+            } else {
+              done()
+            }
+          }
+        }).then(action => {
+
+        })
+      }
     },
+    /** 单次同步用户 */
     syncMore(row) {
       const h = this.$createElement
       this.$msgbox({
@@ -577,6 +609,7 @@ export default {
         })
       })
     },
+    /** 单次解析用户 */
     analyseMore(row) {
       const h = this.$createElement
       this.$msgbox({
@@ -597,7 +630,6 @@ export default {
             })
             analyseMore(_ids).then(() => {
               done()
-              this.getList()
               instance.confirmButtonLoading = false
             })
           } else {
@@ -612,38 +644,43 @@ export default {
         })
       })
     },
+    /** 取消用户标签 */
     tagRemove(row) {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '提示',
-        message: h('p', null, [
-          h('span', null, '【批量取消用户标签】操作，是否继续? ')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            tagRemove().then(() => {
-              done()
-              this.getList()
-              instance.confirmButtonLoading = false
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
-        this.getList()
+      if (this.lock !== null) {
         this.$message({
-          type: 'success',
-          message: '操作完成'
+          type: 'warning',
+          message: '正在取消中，请稍等...'
         })
-      })
+      } else {
+        const h = this.$createElement
+        this.$msgbox({
+          title: '提示',
+          message: h('p', null, [
+            h('span', null, '【批量取消用户标签】操作，是否继续? ')
+          ]),
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              instance.confirmButtonLoading = true
+              instance.confirmButtonText = '执行中...'
+              tagRemove().then(() => {
+                this.refresh()
+                done()
+                instance.confirmButtonLoading = false
+              })
+            } else {
+              done()
+            }
+          }
+        }).then(action => {
+
+        })
+      }
     }
+
   }
 }
 </script>

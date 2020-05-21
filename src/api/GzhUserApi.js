@@ -40,11 +40,10 @@ export function changeStatus(data) {
   })
 }
 
-export function batchSync(data) {
+export function syncWxUserInfo() {
   return request({
     url: '/wx/gzh-user/syncWxUserInfo',
-    method: 'get',
-    params: { 'batchSync': data }
+    method: 'get'
   })
 }
 
@@ -88,6 +87,13 @@ export function tagAnalysis() {
 export function tagRemove() {
   return request({
     url: '/wx/gzh-user/tagRemove',
+    method: 'get'
+  })
+}
+
+export function refresh() {
+  return request({
+    url: '/wx/gzh-user/refresh',
     method: 'get'
   })
 }
