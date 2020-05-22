@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <el-card class="box-card">
+      <!-- <aside>
+        1. 使用说明
+      </aside> -->
       <div slot="header" class="filter-container clearfix">
         <el-form :inline="true" :model="listQuery" class="demo-form-inline">
           <el-form-item class="postInfo-container-item">
@@ -28,9 +31,6 @@
           <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
             {{ $t('table.search') }}
           </el-button>
-          <el-button v-waves class="filter-item" type="primary" icon="el-icon-refresh" @click="refresh">
-            刷新操作状态
-          </el-button>
         </el-form>
         <el-button v-permission="['wx:gzhuser:sync']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncWxUserInfo()">
           ①同步微信用户
@@ -46,6 +46,9 @@
         </el-button>
         <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
           {{ $t('table.downloadWxUser') }}
+        </el-button>
+        <el-button v-waves class="filter-item" type="warning" icon="el-icon-refresh" @click="refresh">
+          刷新操作状态
         </el-button>
       </div>
       <el-table

@@ -106,7 +106,7 @@ export default {
   login: {
     title: '长 征 管 理 系 统 登 录',
     registerTitle: '用 户 注 册',
-    register: '注册（演示环境，请自行注册账号体验，注册账号默认权限Admin）',
+    register: '注册',
     logIn: '登录',
     username: '账号',
     password: '密码',

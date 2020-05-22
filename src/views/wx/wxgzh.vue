@@ -5,9 +5,10 @@
         <el-button v-permission="['wx:gzhaccount:create']" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
           {{ $t('table.add') }}
         </el-button>
-        <!-- <el-button v-permission="['wx:gzhaccount:delete']" :disabled="batchDeleteButtonStatus" class="filter-item" style="margin-left: 10px;" type="danger" icon="el-icon-delete" @click="deleteData()">
-          {{ $t('table.batchDelete') }}
-        </el-button> -->
+        <aside>
+          公众号必须是【已认证】号，需要将【122.51.244.159】IP加入微信公众号白名单
+          <a target="_blank" class="link-type" href="https://www.yuque.com/docs/share/6f1f88cc-172b-45a3-a7b8-e1b57fe3ae74?#">白名单教程</a>
+        </aside>
       </div>
       <el-table
         :key="tableKey"
@@ -78,6 +79,9 @@
       <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="getList" />
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <aside>
+        <a target="_blank" class="link-type" href="https://www.yuque.com/docs/share/196f5cc4-8fe6-4e50-8d4a-30ccc7f7eb3a?#">微信公众号【开发者ID(AppID)】和【开发者密码(AppSecret)】获取方式</a>
+      </aside>
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
         <el-form-item :label="$t('GzhAccount.jwid')">
           <el-input v-model="temp.jwid" placeholder="公众号名称" />
