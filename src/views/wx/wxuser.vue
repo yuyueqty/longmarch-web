@@ -32,16 +32,16 @@
             {{ $t('table.search') }}
           </el-button>
         </el-form>
-        <el-button v-permission="['wx:gzhuser:sync']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncWxUserInfo()">
+        <el-button v-permission="['wx:gzhuser:sync:all']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncWxUserInfo()">
           ①同步微信用户
         </el-button>
-        <el-button v-permission="['wx:gzhuser:analyse']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
+        <el-button v-permission="['wx:gzhuser:analyse:all']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="analyseTag()">
           ②解析分维标签
         </el-button>
-        <el-button v-permission="['wx:gzhuser:analyse']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagAnalysis()">
+        <el-button v-permission="['wx:gzhuser:analysis']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagAnalysis()">
           ③解析营销标签(同步微信公众号平台)
         </el-button>
-        <el-button v-permission="['wx:gzhuser:analyse']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagRemove()">
+        <el-button v-permission="['wx:gzhuser:remove']" :disabled="lock!==null" class="filter-item" style="margin-left: 10px;" type="primary" @click="tagRemove()">
           ④取消用户标签(同步微信公众号平台)
         </el-button>
         <el-button v-permission="['wx:gzhuser:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="downloadWxUser()">
@@ -68,6 +68,7 @@
         <el-table-column :label="$t('GzhUser.headImgUrl')" align="center">
           <template slot-scope="scope">
             <img v-if="scope.row.headImgUrl" style="border-radius: 100px;width: 35px; height: 35px;" :src="scope.row.headImgUrl" class="avatar">
+            <!-- <el-image @click="show" style="border-radius: 100px;width: 35px; height: 35px;" :src="scope.row.headImgUrl" :preview-src-list="srcList" /> -->
           </template>
         </el-table-column>
         <el-table-column :label="$t('GzhUser.nickname')" align="center">
@@ -108,15 +109,15 @@
             <span>{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['wx:gzhuser:syncone', 'wx:gzhuser:analyseone'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['wx:gzhUser:update', 'wx:gzhuser:sync', 'wx:gzhuser:analyse'])" fixed="right" :label="$t('table.actions')" width="350px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['wx:gzhuser:syncone']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
-              备注
+            <el-button v-permission="['wx:gzhUser:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+              备注/标记
             </el-button>
-            <el-button v-permission="['wx:gzhuser:syncone']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncMore(row)">
+            <el-button v-permission="['wx:gzhuser:sync']" class="filter-item" style="margin-left: 10px;" type="primary" @click="syncMore(row)">
               同步
             </el-button>
-            <el-button v-permission="['wx:gzhuser:analyseone']" class="filter-item" style="margin-left: 10px;" type="danger" @click="analyseMore(row)">
+            <el-button v-permission="['wx:gzhuser:analyse']" class="filter-item" style="margin-left: 10px;" type="danger" @click="analyseMore(row)">
               解析
             </el-button>
           </template>
@@ -126,15 +127,26 @@
     </el-card>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
-        <el-form-item :label="$t('GzhUser.nickname')">
-          <el-input v-model="temp.nickname" disabled />
-        </el-form-item>
-        <el-form-item :label="$t('GzhUser.remark')">
-          <el-input v-model="temp.remark" />
-        </el-form-item>
-        <el-form-item :label="$t('GzhUser.mobile')">
-          <el-input v-model="temp.mobile" />
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <img v-if="temp.headImgUrl" :src="temp.headImgUrl" class="avatar">
+          </el-col>
+          <el-col :span="16">
+            <el-form-item :label="$t('GzhUser.nickname')">
+              <el-input v-model="temp.nickname" disabled />
+            </el-form-item>
+            <el-form-item :label="$t('GzhUser.remark')">
+              <el-input v-model="temp.remark" />
+            </el-form-item>
+            <el-form-item :label="$t('GzhUser.mobile')">
+              <el-input v-model="temp.mobile" />
+            </el-form-item>
+            <el-form-item label="标记">
+              <el-radio v-model="temp.fenWeiTags" label="家长">家长</el-radio>
+              <el-radio v-model="temp.fenWeiTags" label="学生">学生</el-radio>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -187,7 +199,7 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
-        size: 20,
+        size: 100,
         current: 1
       },
       temp: {
@@ -272,6 +284,9 @@ export default {
       fetchList(this.listQuery).then(response => {
         refresh()
         this.list = response.data.records
+        this.srcList = this.list.map(item => {
+          return item.headImgUrl
+        })
         this.total = response.data.total
         this.listLoading = false
       })
@@ -534,7 +549,7 @@ export default {
     },
     /** 展示用户标签 */
     showUserTag(row, event, column) {
-      if (event.label !== '操作') {
+      if (event.label !== '操作' && event.label !== '用户头像') {
         this.dialogTag = true
         if (this.$refs.child !== undefined) {
           this.$refs.child.showTag(row.openId, row)

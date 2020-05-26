@@ -465,7 +465,7 @@ export default {
     openId: 'OpenID',
     nickname: '昵称',
     nicknameTxt: '过滤后昵称',
-    remark: '备注名称',
+    remark: '备注',
     headImgUrl: '用户头像',
     sexDesc: '性别',
     sex: '性别',

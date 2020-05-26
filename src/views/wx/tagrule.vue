@@ -5,7 +5,7 @@
         <el-card class="box-card">
           <div slot="header" class="filter-container clearfix">
             <el-button
-              v-permission="['wx:gzhtag:create']"
+              v-permission="['wx:gzhTag:create']"
               class="filter-item"
               style="margin-left: 10px;"
               type="primary"
@@ -33,7 +33,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])"
+              v-if="checkPermission(['wx:gzhTag:update', 'wx:gzhTag:delete'])"
               fixed="right"
               :label="$t('table.actions')"
               width="100px"
@@ -42,14 +42,14 @@
             >
               <template slot-scope="{row}">
                 <el-button
-                  v-permission="['wx:gzhtag:update']"
+                  v-permission="['wx:gzhTag:update']"
                   class="filter-item"
                   style="margin-left: 10px;"
                   type="text"
                   @click="handleUpdate(row)"
                 >编辑</el-button>
                 <el-button
-                  v-permission="['wx:gzhtag:delete']"
+                  v-permission="['wx:gzhTag:delete']"
                   class="filter-item"
                   style="margin-left: 10px;"
                   type="text"
@@ -64,7 +64,7 @@
         <el-card class="box-card">
           <div slot="header" class="filter-container clearfix">
             <el-button
-              v-permission="['wx:gzhtag:create']"
+              v-permission="['wx:gzhTagRule:create']"
               class="filter-item"
               style="margin-left: 10px;"
               type="primary"
@@ -108,7 +108,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              v-if="checkPermission(['wx:gzhtag:update', 'wx:wx_gzh_tag:delete'])"
+              v-if="checkPermission(['wx:gzhTagRule:update', 'wx:gzhTagRule:delete'])"
               fixed="right"
               :label="$t('table.actions')"
               width="100px"
@@ -117,14 +117,14 @@
             >
               <template slot-scope="scope">
                 <el-button
-                  v-permission="['wx:gzhtag:update']"
+                  v-permission="['wx:gzhTagRule:update']"
                   class="filter-item"
                   style="margin-left: 10px;"
                   type="text"
                   @click="saveData(scope.$index, scope.row)"
                 >保存</el-button>
                 <el-button
-                  v-permission="['wx:gzhtag:delete']"
+                  v-permission="['wx:gzhTagRule:delete']"
                   class="filter-item"
                   style="margin-left: 10px;"
                   type="text"
