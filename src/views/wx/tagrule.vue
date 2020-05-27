@@ -44,17 +44,19 @@
                 <el-button
                   v-permission="['wx:gzhTag:update']"
                   class="filter-item"
-                  style="margin-left: 10px;"
-                  type="text"
+                  type="primary"
+                  icon="el-icon-edit"
+                  circle
                   @click="handleUpdate(row)"
-                >编辑</el-button>
+                />
                 <el-button
                   v-permission="['wx:gzhTag:delete']"
                   class="filter-item"
-                  style="margin-left: 10px;"
-                  type="text"
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
                   @click="deleteData(row)"
-                >删除</el-button>
+                />
               </template>
             </el-table-column>
           </el-table>
@@ -80,14 +82,22 @@
             style="width: 100%;"
             @selection-change="handleSelectionChange"
           >
-            <el-table-column :label="$t('GzhTagRule.rid')" align="center">
+            <el-table-column :label="$t('GzhTagRule.content')" align="center">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.rid" :disabled="scope.row.id!==undefined" />
+                <el-select v-model="scope.row.rid" clearable placeholder="选择分维标签">
+                  <el-option
+                    v-for="item in list3"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="item.disabled"
+                  />
+                </el-select>
               </template>
             </el-table-column>
-            <el-table-column :label="$t('GzhTagRule.content')" width="200">
+            <el-table-column :label="$t('GzhTagRule.rid')" align="center">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.content" />
+                <el-input v-model="scope.row.rid" disabled />
               </template>
             </el-table-column>
             <el-table-column :label="$t('GzhTagRule.compute')" align="center">
@@ -117,19 +127,31 @@
             >
               <template slot-scope="scope">
                 <el-button
+                  v-if="scope.row.id===undefined"
                   v-permission="['wx:gzhTagRule:update']"
                   class="filter-item"
-                  style="margin-left: 10px;"
-                  type="text"
+                  type="success"
+                  icon="el-icon-check"
+                  circle
                   @click="saveData(scope.$index, scope.row)"
-                >保存</el-button>
+                />
+                <el-button
+                  v-if="scope.row.id!==undefined"
+                  v-permission="['wx:gzhTagRule:update']"
+                  class="filter-item"
+                  type="primary"
+                  icon="el-icon-edit"
+                  circle
+                  @click="saveData(scope.$index, scope.row)"
+                />
                 <el-button
                   v-permission="['wx:gzhTagRule:delete']"
                   class="filter-item"
-                  style="margin-left: 10px;"
-                  type="text"
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
                   @click="removeData(scope.$index, scope.row)"
-                >删除</el-button>
+                />
               </template>
             </el-table-column>
           </el-table>
@@ -137,7 +159,13 @@
       </el-col>
     </el-row>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :model="temp" label-position="right" label-width="80px" style="width: 500px; margin-left:50px;">
+      <el-form
+        ref="dataForm"
+        :model="temp"
+        label-position="right"
+        label-width="80px"
+        style="width: 500px; margin-left:50px;"
+      >
         <el-form-item :label="$t('GzhTag.name')">
           <el-input v-model="temp.name" />
         </el-form-item>
@@ -146,12 +174,11 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          @click="dialogStatus==='create'?createData():updateData()"
+        >{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -160,7 +187,7 @@
 import permission from '@/directive/permission/index.js'
 import checkPermission from '@/utils/permission'
 import { list, loadRule, create, update, remove } from '@/api/GzhTagApi'
-import { removeRule, saveData } from '@/api/GzhTagRuleApi'
+import { removeRule, saveData, fenweiTags } from '@/api/GzhTagRuleApi'
 
 export default {
   directives: { permission },
@@ -168,6 +195,7 @@ export default {
     return {
       list: [],
       list2: [],
+      list3: [],
       tableKey: 0,
       listLoading: true,
       dialogFormVisible: false,
@@ -185,7 +213,8 @@ export default {
         {
           value: 'lt',
           label: '小于'
-        }, {
+        },
+        {
           value: 'gt',
           label: '大于'
         }
@@ -214,6 +243,7 @@ export default {
         if (response.data.length > 0) {
           this.tagId = response.data[0].id
         }
+        this.getFenweiTags(this.list2)
         this.listLoading = false
       })
     },
@@ -227,6 +257,7 @@ export default {
         loadRule(row.id).then(response => {
           this.list2 = response.data
           this.tagId = row.id
+          this.buildData(this.list3, this.list2)
         })
       }
     },
@@ -280,7 +311,7 @@ export default {
     },
     /** 更新逻辑 **/
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs['dataForm'].validate(valid => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
           update(tempData).then(() => {
@@ -318,9 +349,12 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
-            const _ids = row !== undefined ? [row.id] : this.ids.map(obj => {
-              return obj.id
-            })
+            const _ids =
+              row !== undefined
+                ? [row.id]
+                : this.ids.map(obj => {
+                  return obj.id
+                })
             remove(_ids).then(() => {
               done()
               instance.confirmButtonLoading = false
@@ -337,17 +371,26 @@ export default {
         })
       })
     },
-    addLine() { // 添加行数
+    addLine() {
+      // 添加行数
       var newValue = {
         rid: undefined,
-        score: undefined,
-        compute: undefined,
+        score: 75,
+        compute: 'gt',
         content: undefined
       }
       // 添加新的行数
       this.list2.push(newValue)
+      this.buildData(this.list3, this.list2)
     },
     saveData(index, row) {
+      if (row.rid === undefined) {
+        this.$message({
+          type: 'warning',
+          message: '请选择规则标签'
+        })
+        return
+      }
       saveData(this.tagId, row).then(response => {
         this.$message({
           type: 'success',
@@ -370,6 +413,23 @@ export default {
     },
     changeSwitch($event, row) {
       row.compute = $event
+    },
+    getFenweiTags(list2) {
+      fenweiTags().then(response => {
+        this.list3 = response.data
+        this.buildData(this.list3, list2)
+      })
+    },
+    buildData(list1, list2) {
+      for (let i = 0; i < list1.length; i++) {
+        list1[i]['disabled'] = false
+        for (let j = 0; j < list2.length; j++) {
+          if (list1[i].value === list2[j].rid) {
+            list1[i]['disabled'] = true
+            break
+          }
+        }
+      }
     }
   }
 }

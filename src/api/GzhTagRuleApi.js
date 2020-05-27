@@ -54,3 +54,10 @@ export function saveData(tagId, data) {
     data
   })
 }
+
+export function fenweiTags() {
+  return request({
+    url: '/wx/gzh-fenwei-tag/getFenweiTags',
+    method: 'get'
+  })
+}
