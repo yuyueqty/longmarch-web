@@ -199,7 +199,7 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
-        size: 100,
+        size: 10,
         current: 1
       },
       temp: {

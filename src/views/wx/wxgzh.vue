@@ -155,6 +155,7 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
+        size: 10,
         current: 1
       },
       temp: {
