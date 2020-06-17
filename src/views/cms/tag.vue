@@ -50,7 +50,7 @@
             <span>{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['cms:tag:update', 'cms:cms_tag:delete'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['cms:tag:update', 'cms:tag:delete'])" fixed="right" :label="$t('table.actions')" width="200px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
             <el-button v-permission="['cms:tag:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
               {{ $t('table.edit') }}
@@ -113,6 +113,7 @@ export default {
       total: 0,
       listLoading: true,
       listQuery: {
+        size: 10,
         current: 1
       },
       temp: {
@@ -233,7 +234,7 @@ export default {
       this.$msgbox({
         title: '提示',
         message: h('p', null, [
-          h('span', null, '【删除字典】操作，是否继续? ')
+          h('span', null, '【删除文章标签】操作，是否继续? ')
         ]),
         showCancelButton: true,
         confirmButtonText: '确定',
@@ -255,7 +256,6 @@ export default {
           }
         }
       }).then(action => {
-        this.getList()
         this.$message({
           type: 'success',
           message: '操作完成'

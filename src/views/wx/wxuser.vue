@@ -502,9 +502,7 @@ export default {
               done()
             }
           }
-        }).then(action => {
-
-        })
+        }).then(action => {})
       }
     },
     /** 解析分维标签 */
@@ -538,9 +536,7 @@ export default {
               done()
             }
           }
-        }).then(action => {
-
-        })
+        }).then(action => {})
       }
     },
     /** 下载用户数据 */
@@ -587,9 +583,7 @@ export default {
               done()
             }
           }
-        }).then(action => {
-
-        })
+        }).then(action => {})
       }
     },
     /** 单次同步用户 */
@@ -693,9 +687,7 @@ export default {
               done()
             }
           }
-        }).then(action => {
-
-        })
+        }).then(action => {})
       }
     }
 

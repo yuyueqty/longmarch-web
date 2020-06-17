@@ -76,6 +76,7 @@ export default {
     cmsManage: '内容管理',
     articleManage: '文章管理',
     categoryManage: '分类管理',
+    articleTagManage: '文章标签',
     departmentManage: '部门管理',
     sysMonitor: '系统监控',
     sqlMonitor: 'SQL监控',
@@ -91,7 +92,7 @@ export default {
     gzhUserTagManage: '标签管理',
     gzhFenweiTagManage: '分维标签',
     WxRuleManage: '规则管理',
-    gzhTagManage: '标签管理',
+    gzhTagManage: '设置标签',
     gzhTagRuleManage: '标签规则',
     gzhTagSettingManage: '标签设置'
   },
