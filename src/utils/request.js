@@ -98,9 +98,9 @@ service.interceptors.response.use(
     //   })
     //   return Promise.reject(error)
     // }
-    store.dispatch('user/logout').then(() => {
-      location.reload()
-    })
+    // store.dispatch('user/logout').then(() => {
+    //   location.reload()
+    // })
   }
 )
 
