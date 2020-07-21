@@ -94,7 +94,10 @@ export default {
     WxRuleManage: '规则管理',
     gzhTagManage: '设置标签',
     gzhTagRuleManage: '标签规则',
-    gzhTagSettingManage: '标签设置'
+    gzhTagSettingManage: '标签设置',
+    douyinManage: '抖音管理',
+    douyinAccountManage: '抖音账号',
+    douyinFansManage: '抖音粉丝'
   },
   navbar: {
     dashboard: '首页',

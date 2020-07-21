@@ -93,7 +93,10 @@ export default {
     WxRuleManage: 'WxRuleManage',
     gzhTagManage: 'GzhTagManage',
     gzhTagRuleManage: 'GzhTagRuleManage',
-    gzhTagSettingManage: 'GzhTagSettingManage'
+    gzhTagSettingManage: 'GzhTagSettingManage',
+    douyinManage: 'DouyinManage',
+    douyinAccountManage: 'DouyinAccountManage',
+    douyinFansManage: 'DouyinFansManage'
   },
   navbar: {
     dashboard: 'Dashboard',
