@@ -97,7 +97,8 @@ export default {
     gzhTagSettingManage: '标签设置',
     douyinManage: '抖音管理',
     douyinAccountManage: '抖音账号',
-    douyinFansManage: '抖音粉丝'
+    douyinFansManage: '抖音粉丝',
+    douyinVideoManage: '抖音视频'
   },
   navbar: {
     dashboard: '首页',

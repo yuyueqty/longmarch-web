@@ -1,78 +1,80 @@
 <template>
   <div class="app-container">
-    <!-- $t is vue-i18n global function to translate lang -->
-    <el-input v-model="filename" :placeholder="$t('zip.placeholder')" style="width:300px;" prefix-icon="el-icon-document" />
-    <el-button :loading="downloadLoading" style="margin-bottom:20px;" type="primary" icon="document" @click="handleDownload">
-      {{ $t('zip.export') }} Zip
-    </el-button>
-    <el-table v-loading="listLoading" :data="list" element-loading-text="拼命加载中" border fit highlight-current-row>
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="95" align="center">
-        <template slot-scope="scope">
-          <el-tag>{{ scope.row.author }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Readings" width="115" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Date" width="220">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-row>
+      <el-col v-for="item in list" :key="item.openId" :span="8" :offset="2">
+        <el-card :body-style="{ padding: '0px' }">
+          <el-avatar :size="60" icon="el-icon-user-solid">
+            <img :src="item.avatar">
+          </el-avatar>
+          <div style="padding: 20px;">
+            <span>{{ item.nickname }}</span>
+            <div class="bottom clearfix">
+              <!-- <time class="time">{{ currentDate }}</time> -->
+              <el-button type="text" class="button">操作按钮</el-button>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/Article'
+import { fetchList } from '@/api/DouyinAccount'
 
 export default {
   name: 'ExportZip',
   data() {
     return {
-      list: null,
+      list: [],
       listLoading: true,
       downloadLoading: false,
       filename: ''
     }
   },
   created() {
-    this.fetchData()
+    this.getList()
   },
   methods: {
-    async fetchData() {
+    getList() {
       this.listLoading = true
-      const { data } = await fetchList()
-      this.list = data.items
-      this.listLoading = false
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Zip').then(zip => {
-        const tHeader = ['Id', 'Title', 'Author', 'Readings', 'Date']
-        const filterVal = ['id', 'title', 'author', 'pageviews', 'display_time']
-        const list = this.list
-        const data = this.formatJson(filterVal, list)
-        zip.export_txt_to_zip(tHeader, data, this.filename, this.filename)
-        this.downloadLoading = false
+      fetchList(this.listQuery).then(response => {
+        this.list = response.data
+        this.listLoading = false
       })
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
     }
   }
 }
 </script>
+
+<style>
+  .time {
+    font-size: 13px;
+    color: #999;
+  }
+
+  .bottom {
+    margin-top: 13px;
+    line-height: 12px;
+  }
+
+  .button {
+    padding: 0;
+    float: right;
+  }
+
+  .image {
+    width: 100%;
+    display: block;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+      display: table;
+      content: "";
+  }
+
+  .clearfix:after {
+      clear: both
+  }
+</style>

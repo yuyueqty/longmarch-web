@@ -96,7 +96,8 @@ export default {
     gzhTagSettingManage: 'GzhTagSettingManage',
     douyinManage: 'DouyinManage',
     douyinAccountManage: 'DouyinAccountManage',
-    douyinFansManage: 'DouyinFansManage'
+    douyinFansManage: 'DouyinFansManage',
+    douyinVideoManage: 'DouyinVideoManage'
   },
   navbar: {
     dashboard: 'Dashboard',
