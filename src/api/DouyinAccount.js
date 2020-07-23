@@ -6,3 +6,10 @@ export function fetchList() {
     method: 'get'
   })
 }
+
+export function oauth() {
+  return request({
+    url: '/douyin/loginUrl',
+    method: 'get'
+  })
+}

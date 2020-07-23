@@ -3,14 +3,12 @@
     <el-row>
       <el-col v-for="item in list" :key="item.openId" :span="8" :offset="2">
         <el-card :body-style="{ padding: '0px' }">
-          <el-avatar :size="60" icon="el-icon-user-solid">
-            <img :src="item.avatar">
-          </el-avatar>
+          <img class="img_class" :src="item.avatar">
           <div style="padding: 20px;">
             <span>{{ item.nickname }}</span>
             <div class="bottom clearfix">
               <!-- <time class="time">{{ currentDate }}</time> -->
-              <el-button type="text" class="button">操作按钮</el-button>
+              <el-button type="text" class="button" @click="authorization">授权</el-button>
             </div>
           </div>
         </el-card>
@@ -20,7 +18,8 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/DouyinAccount'
+import openWindow from '@/utils/open-window'
+import { fetchList, oauth } from '@/api/DouyinAccount'
 
 export default {
   name: 'ExportZip',
@@ -42,39 +41,22 @@ export default {
         this.list = response.data
         this.listLoading = false
       })
+    },
+    authorization() {
+      oauth().then(response => {
+        console.log(response.data)
+        const url = response.data
+        openWindow(url, '抖音授权', 800, 1000)
+      })
     }
   }
 }
 </script>
 
 <style>
-  .time {
-    font-size: 13px;
-    color: #999;
-  }
-
-  .bottom {
-    margin-top: 13px;
-    line-height: 12px;
-  }
-
-  .button {
-    padding: 0;
-    float: right;
-  }
-
-  .image {
-    width: 100%;
-    display: block;
-  }
-
-  .clearfix:before,
-  .clearfix:after {
-      display: table;
-      content: "";
-  }
-
-  .clearfix:after {
-      clear: both
-  }
+.img_class {
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+}
 </style>
