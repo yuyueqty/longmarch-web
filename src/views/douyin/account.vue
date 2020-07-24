@@ -5,10 +5,22 @@
         <el-card :body-style="{ padding: '0px' }">
           <img class="img_class" :src="item.avatar">
           <div style="padding: 20px;">
+            <el-tag v-if="item.defaultAccount===1" type="danger">默认</el-tag>
             <span>{{ item.nickname }}</span>
+            <span>{{ item.location }}</span>
+            <span>{{ item.genderStr }}</span>
+            <span>粉丝数：{{ item.fansNum }}</span>
+            <span>关注数：{{ item.followingNum }}</span>
+            <span>点赞数：{{ item.likeNum }}</span>
+            <span>评论数：{{ item.commentNum }}</span>
+            <span>分享数：{{ item.shareNum }}</span>
+            <span>主页访问数：{{ item.profileNum }}</span>
+            <span>视频数：{{ item.videoNum }}</span>
+            <span>播放数：{{ item.videoPlayNum }}</span>
             <div class="bottom clearfix">
               <!-- <time class="time">{{ currentDate }}</time> -->
               <el-button type="text" class="button" @click="authorization">授权</el-button>
+              <el-button type="text" class="button" @click="setDefault(item.openId)">设置默认</el-button>
             </div>
           </div>
         </el-card>
@@ -19,7 +31,7 @@
 
 <script>
 import openWindow from '@/utils/open-window'
-import { fetchList, oauth } from '@/api/DouyinAccount'
+import { fetchList, oauth, setDefault } from '@/api/DouyinAccount'
 
 export default {
   name: 'ExportZip',
@@ -47,6 +59,11 @@ export default {
         console.log(response.data)
         const url = response.data
         openWindow(url, '抖音授权', 800, 1000)
+      })
+    },
+    setDefault(openId) {
+      setDefault(openId).then(response => {
+        this.getList()
       })
     }
   }

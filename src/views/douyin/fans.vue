@@ -1,34 +1,40 @@
 <template>
   <div class="app-container">
-    <el-input v-model="filename" :placeholder="$t('zip.placeholder')" style="width:300px;" prefix-icon="el-icon-document" />
-    <el-button :loading="downloadLoading" style="margin-bottom:20px;" type="primary" icon="document" @click="handleDownload">
-      {{ $t('zip.export') }} Zip
-    </el-button>
     <el-table v-loading="listLoading" :data="list" element-loading-text="拼命加载中" border fit highlight-current-row>
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
       <el-table-column label="Title">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.nickname }}
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="95" align="center">
+      <el-table-column label="Author" align="center">
         <template slot-scope="scope">
-          <el-tag>{{ scope.row.author }}</el-tag>
+          <el-tag>{{ scope.row.openId }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Readings" width="115" align="center">
+      <el-table-column label="Readings" align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          <img style="margin-top: -10px;border-radius: 100px;width: 50px; height: 50px;" :src="scope.row.avatar" class="avatar">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Date" width="220">
+      <el-table-column label="Readings" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.country }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Readings" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.province }}
+        </template>
+      </el-table-column>
+      <el-table-column label="Readings" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.city }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="Date">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
+          <span>{{ scope.row.gender }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -36,7 +42,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/DouyinAccount'
+import { fetchList } from '@/api/DouyinFans'
 
 export default {
   name: 'ExportZip',
@@ -45,18 +51,23 @@ export default {
       list: null,
       listLoading: true,
       downloadLoading: false,
-      filename: ''
+      filename: '',
+      listQuery: {
+        count: 10,
+        cursor: 0
+      }
     }
   },
   created() {
-    this.fetchData()
+    this.getList()
   },
   methods: {
-    async fetchData() {
+    getList() {
       this.listLoading = true
-      const { data } = await fetchList()
-      this.list = data.items
-      this.listLoading = false
+      fetchList(this.listQuery).then(response => {
+        this.list = response.data
+        this.listLoading = false
+      })
     }
   }
 }

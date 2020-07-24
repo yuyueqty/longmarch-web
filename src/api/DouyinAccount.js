@@ -13,3 +13,10 @@ export function oauth() {
     method: 'get'
   })
 }
+
+export function setDefault(openId) {
+  return request({
+    url: '/douyin/setDefault/' + openId,
+    method: 'post'
+  })
+}
