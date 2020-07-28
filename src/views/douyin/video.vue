@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col v-for="item in list" :key="item.itemId" :span="8">
+      <el-col v-for="item in list" :key="item.itemId" :span="4">
         <el-card :body-style="{ padding: '10px' }">
           <img :src="item.cover" class="image">
-          <div style="padding: 14px;">
+          <div style="padding: 10px;">
             <span>{{ item.title }}</span>
             <div style="padding: 10px;">
               <el-tag
@@ -98,7 +98,8 @@ export default {
   }
 
   .image {
-    width: 100%;
+    width: 300px;
+    height: 450px;
     display: block;
   }
 
@@ -118,7 +119,8 @@ export default {
   }
 
   .el-col-8 {
-    padding: 20px;
-    /* height: 450px; */
+    padding: 10px;
+    height: 450px;
+    width: 300px;
   }
 </style>

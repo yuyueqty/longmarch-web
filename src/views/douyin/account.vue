@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <div><el-button type="text" class="button" @click="authorization">添加抖音账号</el-button></div>
     <el-row>
       <el-col v-for="item in list" :key="item.openId" :span="8" :offset="2">
         <el-card :body-style="{ padding: '0px' }">
@@ -19,7 +20,7 @@
             <span>播放数：{{ item.videoPlayNum }}</span>
             <div class="bottom clearfix">
               <!-- <time class="time">{{ currentDate }}</time> -->
-              <el-button type="text" class="button" @click="authorization">授权</el-button>
+              <el-button type="text" class="button" @click="refresh(item.openId)">刷新Token</el-button>
               <el-button type="text" class="button" @click="setDefault(item.openId)">设置默认</el-button>
             </div>
           </div>
@@ -31,7 +32,7 @@
 
 <script>
 import openWindow from '@/utils/open-window'
-import { fetchList, oauth, setDefault } from '@/api/DouyinAccount'
+import { fetchList, oauth, refreshToken, setDefault } from '@/api/DouyinAccount'
 
 export default {
   name: 'ExportZip',
@@ -54,11 +55,15 @@ export default {
         this.listLoading = false
       })
     },
+    refresh(openId) {
+      refreshToken(openId).then(response => {
+        console.log(response.data)
+      })
+    },
     authorization() {
       oauth().then(response => {
-        console.log(response.data)
         const url = response.data
-        openWindow(url, '抖音授权', 800, 1000)
+        openWindow(url, '抖音授权', 800, 900, null)
       })
     },
     setDefault(openId) {

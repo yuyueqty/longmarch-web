@@ -14,6 +14,13 @@ export function oauth() {
   })
 }
 
+export function refreshToken(openId) {
+  return request({
+    url: '/douyin/refreshToken/' + openId,
+    method: 'get'
+  })
+}
+
 export function setDefault(openId) {
   return request({
     url: '/douyin/setDefault/' + openId,
