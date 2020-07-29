@@ -1,69 +1,57 @@
 <template>
   <div class="app-container">
-    <el-row>
-      <el-col v-for="item in list" :key="item.itemId" :span="4">
-        <el-card :body-style="{ padding: '10px' }">
-          <img :src="item.cover" class="image">
-          <div style="padding: 10px;">
-            <span>{{ item.title }}</span>
-            <div style="padding: 10px;">
-              <el-tag
-                :key="item.isReviewed"
-                type="success"
-                effect="dark"
-              >
-                {{ item.isReviewed?'审核通过':'审核失败' }}
-              </el-tag>
-              <el-tag
-                :key="item.isTop"
-                type="danger"
-                effect="dark"
-              >
-                {{ item.isTop?'已置顶':'未置顶' }}
-              </el-tag>
-            </div>
-            <div class="bottom clearfix">
-              <el-badge :value="item.statistics.commentCount" class="item">
-                <el-button size="small">评论数</el-button>
-              </el-badge>
-              <el-badge :value="item.statistics.diggCount" class="item">
-                <el-button size="small">点赞数</el-button>
-              </el-badge>
-              <el-badge :value="item.statistics.downloadCount" class="item" type="primary">
-                <el-button size="small">下载数</el-button>
-              </el-badge>
-              <el-badge :value="item.statistics.forwardCount" class="item" type="warning">
-                <el-button size="small">转发数</el-button>
-              </el-badge>
-              <el-badge :value="item.statistics.playCount" class="item" type="warning">
-                <el-button size="small">播放数</el-button>
-              </el-badge>
-              <el-badge :value="item.statistics.shareCount" class="item" type="warning">
-                <el-button size="small">分享数</el-button>
-              </el-badge>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <vue-waterfall-easy ref="waterfall" height="150vh" :imgs-arr="imgsArr" @scrollReachBottom="getList">
+      <div slot-scope="props" class="img-info">
+        <p class="some-info">
+          <el-tag effect="dark">{{ props.value.isReviewed?'已审核':'未审核' }}</el-tag>
+          <el-tag effect="dark" type="success">{{ props.value.isTop?'已置顶':'未置顶' }}</el-tag>
+          <el-button type="danger" icon="el-icon-delete" circle @click.stop="deleteVideo(props.value.itemId)" />
+        </p>
+        <p class="some-info">
+          <el-badge :value="props.value.statistics.commentCount" :max="999" class="item">
+            <el-button size="mini">评论数</el-button>
+          </el-badge>
+          <el-badge :value="props.value.statistics.diggCount" :max="999" class="item">
+            <el-button size="mini">点赞数</el-button>
+          </el-badge>
+          <el-badge :value="props.value.statistics.downloadCount" :max="999" class="item" type="primary">
+            <el-button size="mini">下载数</el-button>
+          </el-badge>
+        </p>
+        <p class="some-info">
+          <el-badge :value="props.value.statistics.playCount" :max="999" class="item" type="primary">
+            <el-button size="mini">播放数</el-button>
+          </el-badge>
+          <el-badge :value="props.value.statistics.forwardCount" :max="999" class="item" type="warning">
+            <el-button size="mini">转发数</el-button>
+          </el-badge>
+          <el-badge :value="props.value.statistics.shareCount" :max="999" class="item" type="warning">
+            <el-button size="mini">分享数</el-button>
+          </el-badge>
+        </p>
+        <p class="some-info">{{ props.value.info }}</p>
+      </div>
+    </vue-waterfall-easy>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/DouyinVideo'
+import { fetchList, videoDelete } from '@/api/DouyinVideo'
+import vueWaterfallEasy from 'vue-waterfall-easy'
 
 export default {
   name: 'ExportZip',
+  components: {
+    vueWaterfallEasy
+  },
   data() {
     return {
-      list: null,
-      listLoading: true,
-      downloadLoading: false,
-      filename: '',
       listQuery: {
         count: 10,
         cursor: 0
-      }
+      },
+      imgsArr: [],
+      group: 0
     }
   },
   created() {
@@ -71,10 +59,26 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data
-        this.listLoading = false
+        if (response.data != null) {
+          this.listQuery.cursor++
+          response.data.map(item => {
+            item['src'] = item.cover
+            item['href'] = item.shareUrl
+            item['info'] = item.title
+            this.imgsArr = this.imgsArr.concat(item)
+            this.group++
+          })
+        } else {
+          this.$refs.waterfall.waterfallOver()
+          return
+        }
+      })
+    },
+    deleteVideo(itemId) {
+      const videoDeleteBody = { 'itemId': itemId }
+      videoDelete(videoDeleteBody).then(response => {
+        this.getList()
       })
     }
   }
@@ -82,45 +86,7 @@ export default {
 </script>
 
 <style>
-  .time {
-    font-size: 13px;
-    color: #999;
-  }
-
-  .bottom {
-    margin-top: 13px;
-    line-height: 12px;
-  }
-
-  .button {
-    padding: 0;
-    float: right;
-  }
-
-  .image {
-    width: 300px;
-    height: 450px;
-    display: block;
-  }
-
-  .clearfix:before,
-  .clearfix:after {
-      display: table;
-      content: "";
-  }
-
-  .clearfix:after {
-      clear: both
-  }
-
-  .item {
-    margin-top: 10px;
-    margin-right: 40px;
-  }
-
-  .el-col-8 {
-    padding: 10px;
-    height: 450px;
-    width: 300px;
+  .some-info {
+    padding-left: 15px;
   }
 </style>

@@ -8,3 +8,11 @@ export function fetchList(data) {
     params: qs.parse(data)
   })
 }
+
+export function videoDelete(data) {
+  return request({
+    url: '/videoDelete',
+    method: 'post',
+    params: qs.parse(data)
+  })
+}
