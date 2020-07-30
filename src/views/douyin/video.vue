@@ -1,31 +1,32 @@
 <template>
   <div class="app-container">
+    <el-button type="danger" icon="el-icon-edit" circle @click="createVideo()" />
     <vue-waterfall-easy ref="waterfall" height="150vh" :imgs-arr="imgsArr" @scrollReachBottom="getList">
       <div slot-scope="props" class="img-info">
         <p class="some-info">
-          <el-tag effect="dark">{{ props.value.isReviewed?'已审核':'未审核' }}</el-tag>
-          <el-tag effect="dark" type="success">{{ props.value.isTop?'已置顶':'未置顶' }}</el-tag>
+          <el-tag effect="dark">{{ props.value.is_reviewed?'已审核':'未审核' }}</el-tag>
+          <el-tag effect="dark" type="success">{{ props.value.is_top?'已置顶':'未置顶' }}</el-tag>
           <el-button type="danger" icon="el-icon-delete" circle @click.stop="deleteVideo(props.value.itemId)" />
         </p>
         <p class="some-info">
-          <el-badge :value="props.value.statistics.commentCount" :max="999" class="item">
+          <el-badge :value="props.value.statistics.comment_count" :max="999" class="item">
             <el-button size="mini">评论数</el-button>
           </el-badge>
-          <el-badge :value="props.value.statistics.diggCount" :max="999" class="item">
+          <el-badge :value="props.value.statistics.digg_count" :max="999" class="item">
             <el-button size="mini">点赞数</el-button>
           </el-badge>
-          <el-badge :value="props.value.statistics.downloadCount" :max="999" class="item" type="primary">
+          <el-badge :value="props.value.statistics.download_count" :max="999" class="item" type="primary">
             <el-button size="mini">下载数</el-button>
           </el-badge>
         </p>
         <p class="some-info">
-          <el-badge :value="props.value.statistics.playCount" :max="999" class="item" type="primary">
+          <el-badge :value="props.value.statistics.play_count" :max="999" class="item" type="primary">
             <el-button size="mini">播放数</el-button>
           </el-badge>
-          <el-badge :value="props.value.statistics.forwardCount" :max="999" class="item" type="warning">
+          <el-badge :value="props.value.statistics.forward_count" :max="999" class="item" type="warning">
             <el-button size="mini">转发数</el-button>
           </el-badge>
-          <el-badge :value="props.value.statistics.shareCount" :max="999" class="item" type="warning">
+          <el-badge :value="props.value.statistics.share_count" :max="999" class="item" type="warning">
             <el-button size="mini">分享数</el-button>
           </el-badge>
         </p>
@@ -51,7 +52,8 @@ export default {
         cursor: 0
       },
       imgsArr: [],
-      group: 0
+      group: 0,
+      has_more: true
     }
   },
   created() {
@@ -59,27 +61,31 @@ export default {
   },
   methods: {
     getList() {
-      fetchList(this.listQuery).then(response => {
-        if (response.data != null) {
+      if (this.has_more) {
+        fetchList(this.listQuery).then(response => {
           this.listQuery.cursor++
-          response.data.map(item => {
+          this.has_more = response.data.has_more
+          response.data.list.map(item => {
             item['src'] = item.cover
-            item['href'] = item.shareUrl
+            item['href'] = item.share_url
             item['info'] = item.title
             this.imgsArr = this.imgsArr.concat(item)
             this.group++
           })
-        } else {
-          this.$refs.waterfall.waterfallOver()
-          return
-        }
-      })
+        })
+      } else {
+        this.$refs.waterfall.waterfallOver()
+        return
+      }
     },
     deleteVideo(itemId) {
       const videoDeleteBody = { 'itemId': itemId }
       videoDelete(videoDeleteBody).then(response => {
         this.getList()
       })
+    },
+    createVideo() {
+      this.$router.push({ name: 'DouyinVideoPost' })
     }
   }
 }
