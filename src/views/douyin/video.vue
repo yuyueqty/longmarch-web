@@ -1,12 +1,13 @@
 <template>
   <div class="app-container">
     <el-button type="danger" icon="el-icon-edit" circle @click="createVideo()" />
+    <el-button type="danger" icon="el-icon-search" circle @click="$router.push({ name: 'HotearchVideos' })" />
     <vue-waterfall-easy ref="waterfall" height="150vh" :imgs-arr="imgsArr" @scrollReachBottom="getList">
       <div slot-scope="props" class="img-info">
         <p class="some-info">
           <el-tag effect="dark">{{ props.value.is_reviewed?'已审核':'未审核' }}</el-tag>
           <el-tag effect="dark" type="success">{{ props.value.is_top?'已置顶':'未置顶' }}</el-tag>
-          <el-button type="danger" icon="el-icon-delete" circle @click.stop="deleteVideo(props.value.itemId)" />
+          <el-button type="danger" icon="el-icon-delete" circle @click.stop.prevent="deleteVideo(props.value.item_id)" />
         </p>
         <p class="some-info">
           <el-badge :value="props.value.statistics.comment_count" :max="999" class="item">
@@ -81,7 +82,7 @@ export default {
     deleteVideo(itemId) {
       const videoDeleteBody = { 'itemId': itemId }
       videoDelete(videoDeleteBody).then(response => {
-        this.getList()
+        this.$router.push({ name: 'DouyinVideoManage' })
       })
     },
     createVideo() {

@@ -1,81 +1,83 @@
 <template>
   <div>
-    <el-row :gutter="15">
-      <el-form ref="elForm" :model="formData" :rules="rules" size="medium" label-width="100px">
-        <el-col :span="12">
-          <el-row>
-            <el-col :span="24">
-              <el-form-item label-width="0" prop="field113">
-                <el-input
-                  v-model="formData.field113"
-                  type="textarea"
-                  placeholder="请输入"
-                  readonly
-                  :autosize="{minRows: 4, maxRows: 10}"
-                  :style="{width: '100%'}"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="" prop="file" required>
-                <el-upload
-                  ref="file"
-                  :file-list="field108fileList"
-                  :action="field108Action"
-                  :before-upload="field108BeforeUpload"
-                  list-type="picture-card"
-                >
-                  <i class="el-icon-plus" />
-                  <div slot="tip" class="el-upload__tip">只能上传不超过 300MB 的文件</div>
-                </el-upload>
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="" prop="field114">
-                <el-input
-                  v-model="formData.field114"
-                  type="textarea"
-                  placeholder="请输入视频描述"
-                  :autosize="{minRows: 4, maxRows: 4}"
-                  :style="{width: '100%'}"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="24">
-              <el-form-item label="" prop="field104">
-                <el-button type="success" icon="el-icon-s-promotion" size="medium"> 发布 </el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item size="large">
-            <el-button type="primary" @click="submitForm">提交</el-button>
-            <el-button @click="resetForm">重置</el-button>
-          </el-form-item>
-        </el-col>
-      </el-form>
-    </el-row>
+    <el-form
+      ref="elForm"
+      :model="formData"
+      :rules="rules"
+      size="medium"
+      label-width="100px"
+      label-position="left"
+    >
+      <el-row>
+        <el-form-item label="" prop="field113">
+          <p>发布小视频</p>
+          <p>1、视频时长不超过60s，30s内的竖屏小视频推荐效果最佳</p>
+          <p>2、无水印、高清晰度的视频效果更佳</p>
+        </el-form-item>
+        <el-form-item label="" prop="file">
+          <el-upload
+            ref="file"
+            :file-list="filefileList"
+            :action="fileAction"
+            :with-credentials="true"
+            :before-upload="fileBeforeUpload"
+            :on-success="fileSuccessUpload"
+            list-type="picture-card"
+            accept="video/*"
+          >
+            <i class="el-icon-plus" />
+            <div slot="tip" class="el-upload__tip">只能上传不超过 300MB 的video/*文件</div>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="" prop="videoId">
+          <el-input v-model="formData.videoId" type="text" disabled />
+        </el-form-item>
+        <el-form-item label="" prop="text">
+          <el-input
+            v-model="formData.text"
+            type="textarea"
+            placeholder="请输入视频描述"
+            :autosize="{minRows: 4, maxRows: 4}"
+            :style="{width: '100%'}"
+          />
+        </el-form-item>
+      </el-row>
+      <el-form-item size="large">
+        <el-button type="success" icon="el-icon-s-promotion" @click="submitForm">发布</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 <script>
+import { videoCreate } from '@/api/DouyinVideo'
+
 export default {
   components: {},
   props: [],
   data() {
     return {
       formData: {
-        field113: '发布小视频\n\n1、视频时长不超过60s，30s内的竖屏小视频推荐效果最佳\n\n2、无水印、高清晰度的视频效果更佳',
-        file: null,
-        field114: undefined,
-        field104: undefined
+        videoId: '',
+        text: ''
+        // poiId: '',
+        // poiName: '',
+        // microAppUrl: '',
+        // microAppTitle: '',
+        // articleId: '',
+        // articleTitle: '',
+        // atUsers: '',
+        // microAppId: '',
+        // timelinessLabel: '',
+        // gameContent: '',
+        // gameId: '',
+        // timelinessKeyword: ''
       },
       rules: {
         field113: [],
         field114: []
       },
-      field108Action: 'http://localhost:8081/lmapi/douyin/videoUpload',
-      field108fileList: []
+      fileAction: 'http://localhost:8081/lmapi/videoUpload',
+      filefileList: []
     }
   },
   computed: {},
@@ -87,17 +89,34 @@ export default {
       this.$refs['elForm'].validate(valid => {
         if (!valid) return
         // TODO 提交表单
+        videoCreate(this.formData).then(response => {
+          this.$notify({
+            title: '成功',
+            message: '创建成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.$router.push({ name: 'DouyinVideoManage' })
+        })
       })
     },
     resetForm() {
       this.$refs['elForm'].resetFields()
     },
-    field108BeforeUpload(file) {
+    fileBeforeUpload(file) {
       const isRightSize = file.size / 1024 / 1024 < 300
       if (!isRightSize) {
         this.$message.error('文件大小超过 300MB')
       }
-      return isRightSize
+      const isAccept = new RegExp('video/*').test(file.type)
+      if (!isAccept) {
+        this.$message.error('应该选择video/*类型的文件')
+      }
+      return isRightSize && isAccept
+    },
+    fileSuccessUpload(response, file, fileList) {
+      console.log(response.data.video.video_id)
+      this.formData.videoId = response.data.video.video_id
     }
   }
 }

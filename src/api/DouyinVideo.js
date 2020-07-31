@@ -16,3 +16,11 @@ export function videoDelete(data) {
     params: qs.parse(data)
   })
 }
+
+export function videoCreate(data) {
+  return request({
+    url: '/videoCreate',
+    method: 'post',
+    params: qs.parse(data)
+  })
+}
