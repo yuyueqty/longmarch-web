@@ -2,6 +2,7 @@
   <div class="app-container">
     <el-button type="danger" icon="el-icon-edit" circle @click="createVideo()" />
     <el-button type="danger" icon="el-icon-search" circle @click="$router.push({ name: 'HotearchVideos' })" />
+    <el-button type="danger" icon="el-icon-search" circle @click="$router.push({ name: 'DouyinStarHot' })" />
     <vue-waterfall-easy ref="waterfall" height="150vh" :imgs-arr="imgsArr" @scrollReachBottom="getList">
       <div slot-scope="props" class="img-info">
         <p class="some-info">

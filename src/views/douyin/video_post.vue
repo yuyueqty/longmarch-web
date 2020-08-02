@@ -37,8 +37,10 @@
             v-model="formData.text"
             type="textarea"
             placeholder="请输入视频描述"
+            placement="bottom-start"
             :autosize="{minRows: 4, maxRows: 4}"
             :style="{width: '100%'}"
+            @input="getKeyWord"
           />
         </el-form-item>
       </el-row>
@@ -46,38 +48,65 @@
         <el-button type="success" icon="el-icon-s-promotion" @click="submitForm">发布</el-button>
       </el-form-item>
     </el-form>
+    <el-dialog :visible.sync="dialogTag">
+      <el-button type="primary" @click="firstPage()">第一页</el-button>
+      <el-button type="primary" @click="nextPage()">下一页</el-button>
+      <el-table
+        ref="multipleTable"
+        :data="fans"
+        tooltip-effect="dark"
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="55"
+        />
+        <el-table-column prop="name" label="昵称">
+          <template slot-scope="scope">
+            <span>{{ scope.row.nickname }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="头像">
+          <template slot-scope="scope">
+            <img style="border-radius: 100px;width: 50px; height: 50px;" :src="scope.row.avatar" class="avatar">
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { videoCreate } from '@/api/DouyinVideo'
+import { fetchList } from '@/api/DouyinFans'
 
 export default {
   components: {},
   props: [],
   data() {
     return {
+      keyWords: ['@', '#'],
       formData: {
         videoId: '',
         text: ''
-        // poiId: '',
-        // poiName: '',
-        // microAppUrl: '',
-        // microAppTitle: '',
-        // articleId: '',
-        // articleTitle: '',
-        // atUsers: '',
-        // microAppId: '',
-        // timelinessLabel: '',
-        // gameContent: '',
-        // gameId: '',
-        // timelinessKeyword: ''
       },
+      listQuery: {
+        count: 10,
+        cursor: 0
+      },
+      hasMore: false,
       rules: {
         field113: [],
         field114: []
       },
       fileAction: 'http://localhost:8081/lmapi/videoUpload',
-      filefileList: []
+      filefileList: [],
+      dialogTag: false,
+      listLoading: false,
+      fans: [],
+      openIds: [],
+      fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
+      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
     }
   },
   computed: {},
@@ -117,6 +146,36 @@ export default {
     fileSuccessUpload(response, file, fileList) {
       console.log(response.data.video.video_id)
       this.formData.videoId = response.data.video.video_id
+    },
+    getKeyWord(key) {
+      const n = key.substr(key.length - 1)
+      if (n === '@' && this.fans.length === 0) {
+        this.getList(this.listQuery)
+      }
+      this.dialogTag = true
+    },
+    handleSelectionChange(val) {
+      for (let i = 0; i < val.length; i++) {
+        this.formData.text = this.formData.text + '@' + val[i].open_id
+      }
+    },
+    getList() {
+      this.listLoading = true
+      fetchList(this.listQuery).then(response => {
+        this.fans = response.data.list
+        this.hasMore = response.data.has_more
+        this.listQuery.cursor = response.data.cursor
+        this.listLoading = false
+      })
+    },
+    firstPage() {
+      this.listQuery.cursor = 0
+      this.getList()
+    },
+    nextPage() {
+      if (this.hasMore) {
+        this.getList()
+      }
     }
   }
 }

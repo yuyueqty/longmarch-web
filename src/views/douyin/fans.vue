@@ -1,5 +1,7 @@
 <template>
   <div class="app-container">
+    <el-button type="primary" @click="firstPage()">第一页</el-button>
+    <el-button type="primary" @click="nextPage()">下一页</el-button>
     <el-table v-loading="listLoading" :data="list" element-loading-text="拼命加载中" border fit highlight-current-row>
       <el-table-column label="nickname">
         <template slot-scope="scope">
@@ -37,6 +39,8 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-button type="primary" @click="firstPage()">第一页</el-button>
+    <el-button type="primary" @click="nextPage()">下一页</el-button>
   </div>
 </template>
 
@@ -62,6 +66,7 @@ export default {
       listLoading: true,
       downloadLoading: false,
       filename: '',
+      hasMore: false,
       listQuery: {
         count: 10,
         cursor: 0
@@ -76,8 +81,19 @@ export default {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
         this.list = response.data.list
+        this.hasMore = response.data.has_more
+        this.listQuery.cursor = response.data.cursor
         this.listLoading = false
       })
+    },
+    firstPage() {
+      this.listQuery.cursor = 0
+      this.getList()
+    },
+    nextPage() {
+      if (this.hasMore) {
+        this.getList()
+      }
     }
   }
 }
