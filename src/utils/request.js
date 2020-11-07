@@ -20,7 +20,7 @@ service.interceptors.request.use(
       // let each request carry token
       // ['X-Token'] is a custom headers key
       // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+      config.headers['token'] = getToken()
     }
     return config
   },
@@ -56,7 +56,7 @@ service.interceptors.response.use(
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          store.dispatch('user/logout').then(() => {
+          store.dispatch('user/resetToken').then(() => {
             location.reload()
           })
         })
@@ -89,18 +89,10 @@ service.interceptors.response.use(
   },
   error => {
     // Error: Network Error
-    console.log(error)
-    // if (error.toString().indexOf('Error: Network Error') !== -1) {
-    //   Message({
-    //     message: '网络请求超时',
-    //     title: '网络请求超时',
-    //     duration: 5000
-    //   })
-    //   return Promise.reject(error)
-    // }
-    // store.dispatch('user/logout').then(() => {
-    //   location.reload()
-    // })
+    console.log(error) // for debug
+    store.dispatch('user/resetToken').then(() => {
+      location.reload()
+    })
   }
 )
 
