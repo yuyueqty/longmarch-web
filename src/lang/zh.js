@@ -422,9 +422,10 @@ export default {
     username: '用户名称',
     host: 'IP',
     sessionId: '会话ID',
+    isValid: '状态',
     startTimestamp: '创建时间',
     lastAccessTime: '最后活跃时间',
-    timeout: '超时（小时）'
+    timeout: '超时（分钟）'
   },
   GzhAccount: {
     id: '',

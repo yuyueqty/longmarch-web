@@ -7,8 +7,8 @@ export function onlineUsers() {
   })
 }
 
-export function kickOutUser(username) {
+export function kickOutUser(sessionId) {
   return request({
-    url: '/kickOutUser?username=' + username
+    url: '/kickOutUser?sessionId=' + sessionId
   })
 }

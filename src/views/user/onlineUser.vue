@@ -36,6 +36,11 @@
             <span>{{ scope.row.timeout }}</span>
           </template>
         </el-table-column>
+        <el-table-column :label="$t('onlineUserInfo.isValid')">
+          <template slot-scope="scope">
+            <span>{{ scope.row.isValid ? "有效" : "无效" }}</span>
+          </template>
+        </el-table-column>
         <el-table-column :label="$t('onlineUserInfo.startTimestamp')">
           <template slot-scope="scope">
             <span>{{ scope.row.startTimestamp }}</span>
@@ -48,7 +53,7 @@
         </el-table-column>
         <el-table-column v-if="checkPermission(['sys:kickout:onlineuser'])" fixed="right" :label="$t('table.actions')">
           <template slot-scope="{row}">
-            <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="kickOutUser(row.username)">
+            <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="kickOutUser(row.sessionId)">
               {{ $t('table.kickOutUser') }}
             </el-button>
           </template>
@@ -81,8 +86,8 @@ export default {
         this.listLoading = false
       })
     },
-    kickOutUser(username) {
-      kickOutUser(username).then(response => {
+    kickOutUser(sessionId) {
+      kickOutUser(sessionId).then(response => {
         this.getList()
         this.$notify({
           title: '成功',

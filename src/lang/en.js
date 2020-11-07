@@ -414,12 +414,13 @@ export default {
     updateTime: 'UpdateTime'
   },
   onlineUserInfo: {
-    username: '用户名称',
-    host: 'IP',
-    sessionId: '会话ID',
-    startTimestamp: '创建时间',
-    lastAccessTime: '最后活跃时间',
-    timeout: '超时（小时）'
+    username: 'Username',
+    host: 'Host',
+    sessionId: 'SessionId',
+    isValid: 'Status',
+    startTimestamp: 'StartTimestamp',
+    lastAccessTime: 'LastAccessTime',
+    timeout: 'Timeout（Minutes）'
   },
   GzhAccount: {
     id: 'Id',
