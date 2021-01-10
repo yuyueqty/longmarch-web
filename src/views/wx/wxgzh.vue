@@ -58,19 +58,19 @@
         <el-table-column :label="$t('GzhAccount.defaultAccount')" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.defaultAccount | dictFirst(dictionary.style_dict)">
-              <span>{{ scope.row.defaultAccount | dictFirst(dictionary.auth_status_dict) }}</span>
+              <span>{{ scope.row.defaultAccount | dictFirst(dictionary.default_status_dict) }}</span>
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['wx:gzhaccount:update', 'wx:wx_gzh_account:delete', 'wx:gzhaccount:setting'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['wx:gzhAccount:update', 'wx:gzhAccount:delete', 'wx:gzhAccount:setting'])" fixed="right" :label="$t('table.actions')" width="300px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['wx:gzhaccount:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
+            <el-button v-permission="['wx:gzhAccount:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleUpdate(row)">
               {{ $t('table.edit') }}
             </el-button>
-            <el-button v-permission="['wx:gzhaccount:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
+            <el-button v-permission="['wx:gzhAccount:delete']" class="filter-item" style="margin-left: 10px;" type="danger" @click="deleteData(row)">
               {{ $t('table.delete') }}
             </el-button>
-            <el-button v-if="!row.defaultAccount" v-permission="['wx:gzhaccount:setting']" class="filter-item" style="margin-left: 10px;" type="danger" @click="setDefault(row)">
+            <el-button v-if="!row.defaultAccount" v-permission="['wx:gzhAccount:setting']" class="filter-item" style="margin-left: 10px;" type="danger" @click="setDefault(row)">
               {{ $t('table.set_default') }}
             </el-button>
           </template>
