@@ -8,7 +8,7 @@
         <el-button class="filter-item" style="float: right;margin-left: 2%;" @click="$router.push({name:'GeneratorTable'})">
           {{ $t('table.goBack') }}<i class="el-icon-arrow-right" />
         </el-button>
-        <el-button class="filter-item" type="primary" style="float: right;margin-left: 2%;" @click="batchSaveGenerator">
+        <el-button v-permission="['sys:generator:batch:save']" class="filter-item" type="primary" style="float: right;margin-left: 2%;" @click="batchSaveGenerator">
           {{ $t('table.batchSave') }}
         </el-button>
       </div>
@@ -106,7 +106,7 @@
         </el-table-column>
         <el-table-column fixed="right" :label="$t('table.actions')" width="50px" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['sys:generator:create']" type="success" icon="el-icon-check" circle @click="saveData(row)" />
+            <el-button v-permission="['sys:generator:save']" type="success" icon="el-icon-check" circle @click="saveData(row)" />
           </template>
         </el-table-column>
       </el-table>

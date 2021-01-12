@@ -46,9 +46,9 @@
             <span>{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column v-if="checkPermission(['sys:generator:update', 'sys:generator:download'])" fixed="right" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
+        <el-table-column v-if="checkPermission(['sys:generator:columns', 'sys:generator:download'])" fixed="right" :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button v-permission="['sys:generator:update']" class="filter-item" style="margin-left: 10px;" type="primary" @click="$router.push({name:'GeneratorColumn',params:{tableName: row.tableName}})">
+            <el-button v-permission="['sys:generator:columns']" class="filter-item" style="margin-left: 10px;" type="primary" @click="$router.push({name:'GeneratorColumn',params:{tableName: row.tableName}})">
               {{ $t('table.config') }}
             </el-button>
             <el-button v-permission="['sys:generator:download']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleDownload(row)">
